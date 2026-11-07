@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thiệp Cưới</title>
+  <meta name="description" content="Trân trọng kính mời bạn đến dự lễ cưới của chúng mình">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="envelope" class="envelope">
+    <div class="envelope-card">
+      <p class="small">Thiệp mời cưới</p>
+      <h1 class="script" data-names></h1>
+      <button id="openBtn" class="btn">Mở thiệp</button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero-inner reveal">
+      <p class="small">Chúng mình sắp cưới</p>
+      <h1 class="script" data-names></h1>
+      <p class="hero-date" id="heroDate"></p>
+      <div class="countdown" id="countdown">
+        <div><span id="cd-d">0</span><small>Ngày</small></div>
+        <div><span id="cd-h">0</span><small>Giờ</small></div>
+        <div><span id="cd-m">0</span><small>Phút</small></div>
+        <div><span id="cd-s">0</span><small>Giây</small></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section couple reveal">
+      <p class="quote" id="quote"></p>
+      <div class="couple-grid">
+        <div class="person">
+          <p class="small">Nhà trai</p>
+          <p class="parents" id="groomParents"></p>
+          <h2 class="script" id="groomName"></h2>
+        </div>
+        <div class="amp script">&amp;</div>
+        <div class="person">
+          <p class="small">Nhà gái</p>
+          <p class="parents" id="brideParents"></p>
+          <h2 class="script" id="brideName"></h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="title">Sự kiện cưới</h2>
+      <div class="events" id="events"></div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="title">Chuyện tình yêu</h2>
+      <div class="timeline" id="story"></div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="title">Album ảnh</h2>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="title">Xác nhận tham dự</h2>
+      <form id="rsvp" class="rsvp">
+        <input name="name" placeholder="Tên của bạn" required>
+        <input name="phone" placeholder="Số điện thoại">
+        <select name="attend">
+          <option value="yes">Mình sẽ đến</option>
+          <option value="no">Rất tiếc, mình không đến được</option>
+        </select>
+        <select name="guests">
+          <option value="1">1 người</option>
+          <option value="2">2 người</option>
+          <option value="3">3 người trở lên</option>
+        </select>
+        <textarea name="message" rows="3" placeholder="Lời chúc gửi đến cô dâu chú rể"></textarea>
+        <button class="btn" type="submit">Gửi xác nhận</button>
+        <p class="rsvp-msg" id="rsvpMsg"></p>
+      </form>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="title">Hộp mừng cưới</h2>
+      <div class="gifts" id="gifts"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="script" data-names></p>
+    <p class="small">Cảm ơn bạn đã là một phần trong ngày vui của chúng mình</p>
+  </footer>
+
+  <button id="musicBtn" class="music" aria-label="Bật/tắt nhạc" hidden>Nhạc</button>
+  <audio id="bgm" loop></audio>
+  <div id="lightbox" class="lightbox" hidden><img alt=""></div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
