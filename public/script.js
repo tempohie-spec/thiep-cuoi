@@ -92,6 +92,10 @@
     audio.addEventListener("pause", () => mBtn.classList.remove("playing"));
   }
 
+  // Luôn bắt đầu từ đầu trang, không để trình duyệt tự cuộn về vị trí lần xem trước
+  window.scrollTo(0, 0);
+  window.addEventListener("pageshow", (e) => { if (e.persisted) window.scrollTo(0, 0); });
+
   // Envelope
   const env = $("#envelope");
   if (preview && !params.get("intro")) {
