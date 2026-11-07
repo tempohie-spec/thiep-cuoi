@@ -106,7 +106,7 @@
     $("#envNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
     $("#envDate").textContent = (W.introDate || "").trim() || $("#heroDate").textContent;
     $("#envGuest").textContent = `Thân mời: ${guest || "Quý khách"}`;
-    $("#letterNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+    $("#letterNames").textContent = guest || "Quý khách";
     let opened = false;
     const openIt = () => {
       if (opened) return;
@@ -119,8 +119,7 @@
         setTimeout(() => env.remove(), 1300);
       }, 4300);
     };
-    $("#openBtn").addEventListener("click", openIt);
-    $("#envSeal").addEventListener("click", openIt);
+    $(".env").addEventListener("click", openIt);
   }
 
   // Reveal on scroll
