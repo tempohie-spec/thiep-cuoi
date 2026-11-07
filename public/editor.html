@@ -65,6 +65,12 @@
     <div id="list-story"></div>
     <button type="button" data-add="story">Thêm mốc</button>
 
+    <h2>Ảnh nền trang Mở thiệp</h2>
+    <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Để trống thì dùng nền màu mặc định.</p>
+    <input data-k="introBg" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <label>Tải ảnh nền lên</label><input type="file" accept="image/*" id="introUp">
+    <button type="button" id="clearIntro" style="margin-top:8px">Xóa ảnh nền</button>
+
     <h2>Ảnh bìa</h2>
     <p class="hint">Ảnh nền đầu trang. Dán đường dẫn hoặc tải ảnh lên.</p>
     <input data-k="cover" placeholder="images/cover.jpg">
@@ -92,7 +98,7 @@
   </div>
 
   <div class="preview">
-    <div class="bar"><strong>Xem trước</strong><a href="index.html" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính</a></div>
+    <div class="bar"><strong>Xem trước</strong><button type="button" id="modeBtn">Xem trang Mở thiệp</button><a href="index.html" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính</a></div>
     <iframe id="frame" title="Xem trước thiệp"></iframe>
   </div>
 </div>
@@ -117,11 +123,12 @@
   const get = (o, p) => p.split(".").reduce((a, k) => (a == null ? "" : a[k]), o);
   const set = (o, p, v) => { const ks = p.split("."); const l = ks.pop(); ks.reduce((a, k) => a[k], o)[l] = v; };
 
-  let timer;
+  let timer, introMode = false;
+  const loadFrame = () => { $("#frame").src = "index.html?preview=1" + (introMode ? "&intro=1" : "") + "&t=" + Date.now(); };
   function changed() {
     try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch {}
     clearTimeout(timer);
-    timer = setTimeout(() => { $("#frame").src = "index.html?preview=1&t=" + Date.now(); }, 400);
+    timer = setTimeout(loadFrame, 400);
   }
 
   function renderLists() {
@@ -197,6 +204,17 @@
     return (await r.json()).url;
   }
 
+  $("#introUp").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { toast("Đang tải ảnh..."); cfg.introBg = await uploadImage(f); fill(); introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; changed(); toast("Đã tải ảnh nền"); } catch (err) { toastErr(err.message); }
+    e.target.value = "";
+  });
+  $("#clearIntro").addEventListener("click", () => { cfg.introBg = ""; fill(); changed(); });
+  $("#modeBtn").addEventListener("click", () => {
+    introMode = !introMode;
+    $("#modeBtn").textContent = introMode ? "Xem toàn bộ thiệp" : "Xem trang Mở thiệp";
+    loadFrame();
+  });
   $("#coverUp").addEventListener("change", async (e) => {
     const f = e.target.files[0]; if (!f) return;
     try { toast("Đang tải ảnh..."); cfg.cover = await uploadImage(f); fill(); changed(); toast("Đã tải ảnh bìa"); } catch (err) { toastErr(err.message); }
@@ -254,7 +272,7 @@
   }).catch(() => {});
 
   fill();
-  $("#frame").src = "index.html?preview=1&t=" + Date.now();
+  loadFrame();
 })();
 </script>
 </body>

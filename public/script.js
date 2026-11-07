@@ -91,12 +91,15 @@
 
   // Envelope
   const env = $("#envelope");
-  if (preview) {
+  if (preview && !params.get("intro")) {
     env.remove();
   } else {
+    if (W.introBg) {
+      env.style.backgroundImage = `linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), url('${String(W.introBg).replace(/'/g, "%27")}')`;
+    }
     const guest = params.get("to");
     if (guest) $("#envLabel").textContent = `Thân mời ${guest}`;
-    document.body.classList.add("locked");
+    if (!preview) document.body.classList.add("locked");
     const gi = (W.groom.name || "").trim().charAt(0).toUpperCase();
     const bi = (W.bride.name || "").trim().charAt(0).toUpperCase();
     $("#envSeal").textContent = gi + bi;
@@ -112,8 +115,8 @@
       setTimeout(() => {
         env.classList.add("leaving");
         document.body.classList.remove("locked");
-        setTimeout(() => env.remove(), 1000);
-      }, quick ? 100 : 2100);
+        setTimeout(() => env.remove(), 1300);
+      }, quick ? 100 : 4300);
     };
     $("#openBtn").addEventListener("click", openIt);
     $("#envSeal").addEventListener("click", openIt);
