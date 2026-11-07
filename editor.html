@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Trình chỉnh sửa thiệp</title>
+  <style>
+    :root { --accent: #b5838d; --line: #e5dcd3; --bg: #faf7f3; --ink: #3d3530; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, "Be Vietnam Pro", sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { display: grid; grid-template-columns: minmax(340px, 480px) 1fr; height: 100vh; }
+    .panel { overflow-y: auto; padding: 16px 20px 80px; border-right: 1px solid var(--line); background: #fff; }
+    .preview { background: #ddd; display: flex; flex-direction: column; min-width: 0; }
+    .preview .bar { padding: 8px 12px; font-size: .85rem; background: #fff; border-bottom: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
+    .preview iframe { flex: 1; border: 0; width: 100%; background: #fff; }
+    h1 { font-size: 1.2rem; margin: 0 0 4px; }
+    h2 { font-size: 1rem; margin: 24px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--accent); }
+    .hint { font-size: .8rem; color: #8a7f77; margin: 0 0 8px; }
+    label { display: block; font-size: .8rem; margin: 8px 0 2px; color: #6b615a; }
+    input, textarea { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
+    input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 10px 0; background: #fdfbf9; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: .9rem; }
+    button { font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--accent); background: #fff; color: var(--accent); padding: 6px 12px; }
+    button.primary { background: var(--accent); color: #fff; }
+    button.danger { border-color: #c0392b; color: #c0392b; padding: 2px 8px; }
+    .actions { position: sticky; bottom: 0; background: #fff; padding: 10px 0; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+    .toast { font-size: .85rem; color: #2e7d32; align-self: center; }
+    .toggle { display: none; }
+    @media (max-width: 800px) {
+      .wrap { grid-template-columns: 1fr; height: auto; }
+      .panel { border-right: 0; }
+      .preview { height: 80vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <h1>Chỉnh sửa thiệp cưới</h1>
+    <p class="hint">Nội dung được lưu tự động trên trình duyệt này và hiện ngay ở khung xem trước. Khi xong, bấm "Tải config.js" để lấy file đăng lên thiệp chính.</p>
+
+    <h2>Chú rể</h2>
+    <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
+    <label>Họ và tên đầy đủ</label><input data-k="groom.fullName">
+    <label>Bố mẹ chú rể</label><input data-k="groom.parents">
+
+    <h2>Cô dâu</h2>
+    <label>Tên hiển thị (ngắn)</label><input data-k="bride.name">
+    <label>Họ và tên đầy đủ</label><input data-k="bride.fullName">
+    <label>Bố mẹ cô dâu</label><input data-k="bride.parents">
+
+    <h2>Ngày cưới và lời mời</h2>
+    <label>Ngày giờ (dùng cho đồng hồ đếm ngược)</label><input type="datetime-local" id="date">
+    <label>Lời mời</label><textarea rows="3" data-k="quote"></textarea>
+
+    <h2>Sự kiện</h2>
+    <div id="list-events"></div>
+    <button type="button" data-add="events">Thêm sự kiện</button>
+
+    <h2>Chuyện tình yêu</h2>
+    <div id="list-story"></div>
+    <button type="button" data-add="story">Thêm mốc</button>
+
+    <h2>Album ảnh</h2>
+    <p class="hint">Mỗi dòng một ảnh. Có thể là đường dẫn trong thư mục images (ví dụ images/1.jpg) hoặc link ảnh trên mạng. Ảnh nền đầu trang là images/cover.jpg.</p>
+    <textarea rows="6" id="gallery"></textarea>
+
+    <h2>Hộp mừng cưới</h2>
+    <div id="list-gifts"></div>
+    <button type="button" data-add="gifts">Thêm tài khoản</button>
+
+    <h2>Khác</h2>
+    <label>Link nhận RSVP (Google Apps Script hoặc Formspree, có thể để trống)</label><input data-k="rsvpEndpoint">
+    <label>File nhạc nền (ví dụ music.mp3, có thể để trống)</label><input data-k="music">
+
+    <div class="actions">
+      <button class="primary" id="download" type="button">Tải config.js</button>
+      <button id="copy" type="button">Sao chép nội dung</button>
+      <button id="reset" type="button">Đặt lại</button>
+      <span class="toast" id="toast"></span>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="bar"><strong>Xem trước</strong><a href="index.html" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính</a></div>
+    <iframe id="frame" title="Xem trước thiệp"></iframe>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  const KEY = "wedding_draft";
+  const $ = (s) => document.querySelector(s);
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const base = clone(window.WEDDING);
+  let cfg = base;
+  try { const d = localStorage.getItem(KEY); if (d) cfg = JSON.parse(d); } catch {}
+
+  const schema = {
+    events: { label: "Sự kiện", fields: [["title", "Tên sự kiện"], ["time", "Thời gian"], ["lunar", "Ngày âm lịch"], ["place", "Địa điểm"], ["address", "Địa chỉ"], ["map", "Link Google Maps"]], blank: { title: "", time: "", lunar: "", place: "", address: "", map: "" } },
+    story: { label: "Mốc", fields: [["year", "Năm"], ["title", "Tiêu đề"], ["text", "Nội dung", true]], blank: { year: "", title: "", text: "" } },
+    gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR (đường dẫn, có thể để trống)"]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
+  };
+
+  const get = (o, p) => p.split(".").reduce((a, k) => (a == null ? "" : a[k]), o);
+  const set = (o, p, v) => { const ks = p.split("."); const l = ks.pop(); ks.reduce((a, k) => a[k], o)[l] = v; };
+
+  let timer;
+  function changed() {
+    try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch {}
+    clearTimeout(timer);
+    timer = setTimeout(() => { $("#frame").src = "index.html?preview=1&t=" + Date.now(); }, 400);
+  }
+
+  function renderLists() {
+    Object.keys(schema).forEach((name) => {
+      const s = schema[name];
+      $("#list-" + name).innerHTML = (cfg[name] || []).map((item, i) => `
+        <div class="card">
+          <div class="card-head"><span>${s.label} ${i + 1}</span><button type="button" class="danger" data-del="${name}" data-i="${i}">Xóa</button></div>
+          ${s.fields.map(([f, lab, area]) => `<label>${lab}</label>` + (area
+            ? `<textarea rows="3" data-list="${name}" data-i="${i}" data-f="${f}"></textarea>`
+            : `<input data-list="${name}" data-i="${i}" data-f="${f}">`)).join("")}
+        </div>`).join("");
+      document.querySelectorAll(`[data-list="${name}"]`).forEach((el) => { el.value = cfg[name][el.dataset.i][el.dataset.f] || ""; });
+    });
+  }
+
+  function fill() {
+    document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
+    $("#date").value = (cfg.date || "").slice(0, 16);
+    $("#gallery").value = (cfg.gallery || []).join("\n");
+    renderLists();
+  }
+
+  document.addEventListener("input", (e) => {
+    const el = e.target;
+    if (el.dataset.k) set(cfg, el.dataset.k, el.value);
+    else if (el.dataset.list) cfg[el.dataset.list][el.dataset.i][el.dataset.f] = el.value;
+    else if (el.id === "date") { if (el.value) cfg.date = el.value + ":00+07:00"; }
+    else if (el.id === "gallery") cfg.gallery = el.value.split("\n").map((l) => l.trim()).filter(Boolean);
+    else return;
+    changed();
+  });
+
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t.dataset.add) { cfg[t.dataset.add].push(clone(schema[t.dataset.add].blank)); renderLists(); changed(); }
+    if (t.dataset.del) { cfg[t.dataset.del].splice(+t.dataset.i, 1); renderLists(); changed(); }
+  });
+
+  const output = () => "// Chỉnh sửa toàn bộ thông tin thiệp cưới tại đây\nwindow.WEDDING = " + JSON.stringify(cfg, null, 2) + ";\n";
+  const toast = (m) => { $("#toast").textContent = m; setTimeout(() => ($("#toast").textContent = ""), 2500); };
+
+  $("#download").addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([output()], { type: "text/javascript" }));
+    a.download = "config.js";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Đã tải config.js");
+  });
+  $("#copy").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(output()); toast("Đã sao chép"); } catch { toast("Không sao chép được, hãy dùng Tải config.js"); }
+  });
+  $("#reset").addEventListener("click", () => {
+    if (!confirm("Đặt lại về nội dung của thiệp đang đăng? Các chỉnh sửa chưa tải sẽ mất.")) return;
+    cfg = clone(base); fill(); changed();
+  });
+
+  fill();
+  $("#frame").src = "index.html?preview=1&t=" + Date.now();
+})();
+</script>
+</body>
+</html>

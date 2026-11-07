@@ -10,6 +10,10 @@ Trang web thiệp mời cưới tĩnh (HTML/CSS/JS thuần), không cần build.
 - Form xác nhận tham dự (RSVP), hộp mừng cưới có nút sao chép số tài khoản
 - Nhạc nền tùy chọn, responsive trên điện thoại
 
+## Hai trang song song
+- `/` là thiệp để gửi cho mọi người.
+- `/editor.html` là trang chỉnh sửa có xem trước trực tiếp. Điền xong bấm "Tải config.js" rồi thay file `config.js` trong repo để cập nhật thiệp chính.
+
 ## Tùy chỉnh
 1. Sửa thông tin trong `config.js`.
 2. Đặt ảnh vào `images/` (`cover.jpg` cho ảnh nền, `1.jpg`...`6.jpg` cho album).

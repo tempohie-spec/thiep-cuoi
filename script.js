@@ -1,5 +1,10 @@
 (function () {
-  const W = window.WEDDING;
+  const params = new URLSearchParams(location.search);
+  const preview = params.get("preview");
+  let W = window.WEDDING;
+  if (preview) {
+    try { const d = localStorage.getItem("wedding_draft"); if (d) W = JSON.parse(d); } catch {}
+  }
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const names = `${W.groom.name} &amp; ${W.bride.name}`;
@@ -76,10 +81,11 @@
   }
 
   // Envelope
-  const guest = new URLSearchParams(location.search).get("to");
+  const guest = params.get("to");
   if (guest) document.querySelector(".envelope-card .small").textContent = `Thân mời ${guest}`;
-  document.body.classList.add("locked");
-  $("#openBtn").addEventListener("click", () => {
+  if (preview) $("#envelope").remove();
+  else document.body.classList.add("locked");
+  $("#openBtn") && $("#openBtn").addEventListener("click", () => {
     $("#envelope").classList.add("open");
     document.body.classList.remove("locked");
     if (W.music) audio.play().catch(() => {});
