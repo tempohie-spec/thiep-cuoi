@@ -25,7 +25,7 @@
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
   if (W.cover) {
-    $(".hero").style.backgroundImage = `linear-gradient(rgba(251,247,242,.45), rgba(251,247,242,.55) 55%, rgba(251,247,242,.82)), url('${String(W.cover).replace(/'/g, "%27")}')`;
+    $(".hero").style.backgroundImage = `linear-gradient(rgba(253,246,229,.45), rgba(253,246,229,.55) 55%, rgba(253,246,229,.82)), url('${String(W.cover).replace(/'/g, "%27")}')`;
     $(".hero").style.backgroundPosition = `0% 0%, ${posOf(W.cover)}`;
   }
   $("#groomName").textContent = W.groom.fullName;
@@ -128,11 +128,30 @@
       setTimeout(() => {
         env.classList.add("leaving");
         document.body.classList.remove("locked");
-        setTimeout(() => env.remove(), 1300);
-      }, 4300);
+        setTimeout(() => env.remove(), 900);
+      }, 2700);
     };
     $(".env").addEventListener("click", openIt);
   }
+
+  // Lá vàng rơi nhè nhẹ
+  (() => {
+    const box = $("#leaves");
+    if (!box) return;
+    const colors = ["#e0a63a", "#d18f26", "#e9bd5c", "#c97b1d"];
+    const svg = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'><path d='M12 1C5 8 3 18 12 31C21 18 19 8 12 1Z' fill='${c}'/><path d='M12 4V29' stroke='rgba(120,70,10,.45)' stroke-width='1' fill='none'/></svg>`)}")`;
+    const n = innerWidth < 600 ? 9 : 14;
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement("span");
+      el.className = "leaf";
+      const size = 14 + Math.random() * 14;
+      el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${(0.55 + Math.random() * 0.35).toFixed(2)}`;
+      const leaf = document.createElement("i");
+      leaf.style.backgroundImage = svg(colors[i % colors.length]);
+      el.appendChild(leaf);
+      box.appendChild(el);
+    }
+  })();
 
   // Reveal on scroll
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
