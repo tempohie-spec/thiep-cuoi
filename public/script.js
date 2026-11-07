@@ -16,7 +16,10 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const names = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
   // Vị trí ảnh (do editor lưu): "x% y%", không hợp lệ thì căn giữa
-  const posOf = (u) => { const v = (W.imgPos && W.imgPos[u]) || ""; return /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(v) ? v : "50% 50%"; };
+  const okPos = (v) => /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(v || "");
+  const posOf = (u) => { const v = W.imgPos && W.imgPos[u]; return okPos(v) ? v : "50% 50%"; };
+  // Vị trí riêng cho máy tính (nếu có), không thì dùng vị trí của điện thoại
+  const posOfD = (u) => { const v = W.imgPosD && W.imgPosD[u]; return okPos(v) ? v : posOf(u); };
 
   document.title = `Thiệp Cưới ${W.groom.name} & ${W.bride.name}`;
   document.querySelectorAll("[data-names]").forEach((el) => (el.innerHTML = names));
@@ -26,7 +29,8 @@
   $("#quote").textContent = W.quote;
   if (W.cover) {
     $(".hero").style.backgroundImage = `linear-gradient(rgba(253,246,229,.45), rgba(253,246,229,.55) 55%, rgba(253,246,229,.82)), url('${String(W.cover).replace(/'/g, "%27")}')`;
-    $(".hero").style.backgroundPosition = `0% 0%, ${posOf(W.cover)}`;
+    $(".hero").style.setProperty("--pos", posOf(W.cover));
+    $(".hero").style.setProperty("--pos-d", posOfD(W.cover));
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
@@ -111,7 +115,8 @@
   } else {
     if (W.introBg) {
       env.style.backgroundImage = `linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), url('${String(W.introBg).replace(/'/g, "%27")}')`;
-      env.style.backgroundPosition = posOf(W.introBg);
+      env.style.setProperty("--pos", posOf(W.introBg));
+      env.style.setProperty("--pos-d", posOfD(W.introBg));
     }
     const guest = (params.get("to") || "").trim().slice(0, 60);
     document.body.classList.add("locked");

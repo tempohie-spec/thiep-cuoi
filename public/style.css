@@ -177,3 +177,11 @@ body {
 .hero { position: relative; }
 .hero::before { content: ""; position: absolute; inset: 0; background-image: var(--paper); background-size: 256px; mix-blend-mode: multiply; opacity: .75; pointer-events: none; }
 .hero-inner { position: relative; }
+
+/* Vị trí ảnh nền: điện thoại dùng --pos, máy tính (từ 760px) dùng --pos-d nếu có */
+.hero { background-position: 0% 0%, var(--pos, 50% 50%); }
+.envelope { background-position: var(--pos, center); }
+@media (min-width: 760px) {
+  .hero { background-position: 0% 0%, var(--pos-d, var(--pos, 50% 50%)); }
+  .envelope { background-position: var(--pos-d, var(--pos, center)); }
+}

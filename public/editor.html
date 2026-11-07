@@ -39,6 +39,9 @@
     .pos-frame { margin: 8px auto 12px; overflow: hidden; border-radius: 8px; border: 2px solid var(--accent); background: #eee; cursor: grab; touch-action: none; user-select: none; }
     .pos-frame:active { cursor: grabbing; }
     .pos-frame img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .seg { display: inline-flex; margin: 4px 0 6px; border: 1px solid var(--accent); border-radius: 999px; overflow: hidden; }
+    .seg button { border: 0; border-radius: 0; padding: 6px 16px; background: #fff; color: var(--accent); }
+    .seg button.on { background: var(--accent); color: #fff; }
     .modal-actions { display: flex; gap: 8px; justify-content: center; }
     .toggle { display: none; }
     @media (max-width: 800px) {
@@ -140,6 +143,8 @@
   <div class="modal-box">
     <h3>Kéo ảnh để chọn vị trí</h3>
     <p class="hint">Nhấn giữ và kéo ảnh trong khung. Khung có tỉ lệ gần giống cách ảnh hiện trên thiệp. Bấm Lưu vị trí khi ưng ý.</p>
+    <div class="seg" id="posDev" hidden><button type="button" data-dev="m" class="on">Điện thoại</button><button type="button" data-dev="d">Máy tính</button></div>
+    <p class="hint" id="posDevHint" hidden>Ảnh này hiện khác nhau trên điện thoại và máy tính. Chọn từng tab rồi kéo để đặt vị trí cho mỗi loại.</p>
     <div class="pos-frame" id="posFrame"><img id="posImg" alt="" draggable="false"></div>
     <div class="modal-actions"><button type="button" id="posCancel">Hủy</button><button type="button" class="primary" id="posSave">Lưu vị trí</button></div>
   </div>
@@ -229,18 +234,32 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const parsePos = (v) => { const m = /^(\d+(?:\.\d+)?)% (\d+(?:\.\d+)?)%$/.exec(v || ""); return m ? [+m[1], +m[2]] : [50, 50]; };
   const posCss = (u) => parsePos((cfg.imgPos || {})[u]).map((n) => n + "%").join(" ");
-  const posModal = $("#posModal"), posFrame = $("#posFrame"), posImg = $("#posImg");
+  const posModal = $("#posModal"), posFrame = $("#posFrame"), posImg = $("#posImg"), posDev = $("#posDev");
   let ps = null, drag = null;
-  function openPos(url, aspect) {
+  const frameSize = (a) => (a >= 1 ? "340px" : a > 0.7 ? "300px" : "230px");
+  const fmtPos = (p) => `${p[0].toFixed(1)}% ${p[1].toFixed(1)}%`;
+  // Hiện khung theo thiết bị đang chọn (điện thoại hoặc máy tính): mỗi thiết bị có tỉ lệ khung và vị trí riêng
+  function showDev(dev) {
+    ps.dev = dev;
+    const a = ps.aspects[dev], p = ps.pos[dev];
+    posFrame.style.aspectRatio = String(a);
+    posFrame.style.width = frameSize(a);
+    posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
+    posDev.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.dev === dev));
+  }
+  // aspect: tỉ lệ khung trên điện thoại; desktopAspect: tỉ lệ khung trên máy tính (nếu ảnh hiển thị khác nhau giữa hai loại)
+  function openPos(url, aspect, desktopAspect) {
     if (!url) return toastErr("Chưa có ảnh để chỉnh");
-    const [x, y] = parsePos((cfg.imgPos || {})[url]);
-    ps = { url, x, y };
-    posFrame.style.aspectRatio = String(aspect);
-    posFrame.style.width = aspect >= 1 ? "340px" : aspect > 0.7 ? "300px" : "230px";
-    posImg.style.objectPosition = `${x}% ${y}%`;
+    const m = parsePos((cfg.imgPos || {})[url]);
+    const d = parsePos((cfg.imgPosD || {})[url] || (cfg.imgPos || {})[url]);
+    ps = { url, aspects: { m: aspect, d: desktopAspect || aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktopAspect };
+    posDev.hidden = !ps.hasD;
+    $("#posDevHint").hidden = !ps.hasD;
     posImg.src = url;
+    showDev("m");
     posModal.hidden = false;
   }
+  posDev.addEventListener("click", (e) => { const b = e.target.closest("button[data-dev]"); if (b && ps) showDev(b.dataset.dev); });
   posFrame.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; posFrame.setPointerCapture(e.pointerId); });
   posFrame.addEventListener("pointermove", (e) => {
     if (!drag || !ps) return;
@@ -249,16 +268,19 @@
     const fw = posFrame.clientWidth, fh = posFrame.clientHeight;
     const nw = posImg.naturalWidth || fw, nh = posImg.naturalHeight || fh;
     const sc = Math.max(fw / nw, fh / nh), ox = nw * sc - fw, oy = nh * sc - fh;
-    if (ox > 1) ps.x = Math.min(100, Math.max(0, ps.x - (dx / ox) * 100));
-    if (oy > 1) ps.y = Math.min(100, Math.max(0, ps.y - (dy / oy) * 100));
-    posImg.style.objectPosition = `${ps.x}% ${ps.y}%`;
+    const p = ps.pos[ps.dev];
+    if (ox > 1) p[0] = Math.min(100, Math.max(0, p[0] - (dx / ox) * 100));
+    if (oy > 1) p[1] = Math.min(100, Math.max(0, p[1] - (dy / oy) * 100));
+    if (ps.dev === "d") ps.dTouched = true;
+    posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
   });
   ["pointerup", "pointercancel"].forEach((n) => posFrame.addEventListener(n, () => (drag = null)));
   $("#posCancel").addEventListener("click", () => { posModal.hidden = true; ps = null; });
   $("#posSave").addEventListener("click", () => {
     if (!ps) return;
     cfg.imgPos = cfg.imgPos || {};
-    cfg.imgPos[ps.url] = `${ps.x.toFixed(1)}% ${ps.y.toFixed(1)}%`;
+    cfg.imgPos[ps.url] = fmtPos(ps.pos.m);
+    if (ps.hasD && (ps.dTouched || (cfg.imgPosD || {})[ps.url])) { cfg.imgPosD = cfg.imgPosD || {}; cfg.imgPosD[ps.url] = fmtPos(ps.pos.d); }
     posModal.hidden = true; ps = null;
     renderThumbs(); changed(); toast("Đã lưu vị trí ảnh");
   });
@@ -270,7 +292,7 @@
     const th = e.target.closest && e.target.closest("[data-pos]");
     if (th) openPos(cfg.gallery[+th.dataset.pos], 3 / 4);
   });
-  $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16));
+  $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16, 1.6));
 
   // ---- Tải file nhạc nền: tải thẳng lên kho lưu trữ (file nhạc thường lớn hơn giới hạn của hàm API)
   $("#musicUp").addEventListener("change", async (e) => {
@@ -314,7 +336,7 @@
     if (!v) return toastErr("Chưa có link, hãy bấm Tạo link");
     try { await navigator.clipboard.writeText(v); toast("Đã sao chép"); } catch { $("#guestLinks").select(); toastErr("Hãy sao chép thủ công"); }
   });
-  $("#posCover").addEventListener("click", () => openPos(cfg.cover, 9 / 16));
+  $("#posCover").addEventListener("click", () => openPos(cfg.cover, 9 / 16, 1));
   // Đọc lỗi từ máy chủ: ưu tiên thông báo JSON, không có thì hiện mã HTTP và đoạn đầu nội dung
   async function apiError(r, fallback) {
     const t = await r.text().catch(() => "");
@@ -351,7 +373,7 @@
 
   $("#introUp").addEventListener("change", async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    try { toast("Đang tải ảnh..."); cfg.introBg = await uploadImage(f); fill(); introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; changed(); toast("Đã tải ảnh nền"); openPos(cfg.introBg, 9 / 16); } catch (err) { toastErr(err.message); }
+    try { toast("Đang tải ảnh..."); cfg.introBg = await uploadImage(f); fill(); introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; changed(); toast("Đã tải ảnh nền"); openPos(cfg.introBg, 9 / 16, 1.6); } catch (err) { toastErr(err.message); }
     e.target.value = "";
   });
   $("#clearIntro").addEventListener("click", () => { cfg.introBg = ""; fill(); changed(); });
@@ -362,7 +384,7 @@
   });
   $("#coverUp").addEventListener("change", async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    try { toast("Đang tải ảnh..."); cfg.cover = await uploadImage(f); fill(); changed(); toast("Đã tải ảnh bìa"); openPos(cfg.cover, 9 / 16); } catch (err) { toastErr(err.message); }
+    try { toast("Đang tải ảnh..."); cfg.cover = await uploadImage(f); fill(); changed(); toast("Đã tải ảnh bìa"); openPos(cfg.cover, 9 / 16, 1); } catch (err) { toastErr(err.message); }
     e.target.value = "";
   });
   $("#galUp").addEventListener("change", async (e) => {
