@@ -56,14 +56,18 @@ body.locked { overflow: hidden; }
 .envelope.open .env-text { opacity: 0; pointer-events: none; }
 
 /* Hero */
-.hero { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2rem 16px;
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px;
   background: linear-gradient(rgba(251,247,242,.7), rgba(251,247,242,.9)), url("images/cover.jpg") center/cover, #efe3d8; }
-.hero h1 { font-size: clamp(3rem, 7vw, 4.5rem); line-height: 1.2; margin: 1rem 0; }
-.hero-date { font-family: "Playfair Display", serif; font-size: 1.3rem; letter-spacing: .1em; }
-.countdown { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
-.countdown div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; width: 66px; padding: .8rem 0; }
-.countdown span { display: block; font-family: "Playfair Display", serif; font-size: 1.8rem; color: var(--accent); }
-.countdown small { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+/* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
+.hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8vh; }
+.hero[data-align="top"] { justify-content: flex-start; padding-top: 14vh; }
+.hero .small { color: var(--ink); font-weight: 500; }
+.hero h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); line-height: 1.15; margin: .4rem 0; color: #a2606f; -webkit-text-stroke: .7px #a2606f; text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
+.hero-date { font-family: "Playfair Display", serif; font-weight: 600; font-size: 1.2rem; letter-spacing: .1em; color: var(--ink); }
+.countdown { display: flex; gap: .7rem; justify-content: center; margin-top: 1.1rem; flex-wrap: wrap; }
+.countdown div { background: rgba(255, 255, 255, .93); border: 1px solid var(--line); border-radius: 10px; width: 60px; padding: .55rem 0; }
+.countdown span { display: block; font-family: "Playfair Display", serif; font-weight: 600; font-size: 1.6rem; color: #a2606f; }
+.countdown small { font-size: .68rem; font-weight: 500; color: var(--ink); text-transform: uppercase; letter-spacing: .1em; }
 
 .section { max-width: 592px; margin: 0 auto; padding: 3.5rem 16px; }
 .section.wide { max-width: 868px; }
@@ -71,10 +75,11 @@ body.locked { overflow: hidden; }
 /* Couple */
 .couple { text-align: center; }
 .quote { font-family: "Playfair Display", serif; font-style: italic; font-size: 1.15rem; max-width: 600px; margin: 0 auto 3rem; color: var(--muted); }
-.couple-grid { display: grid; grid-template-columns: 1fr; align-items: center; gap: 1rem; }
-.person h2 { font-size: 2.6rem; margin-top: .5rem; }
-.parents { font-size: .9rem; }
-.amp { font-size: 3rem; }
+.couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: .6rem; }
+.person h2 { font-size: clamp(1.6rem, 5.5vw, 2.2rem); line-height: 1.2; margin-top: .6rem; text-wrap: balance; }
+.parents { font-size: .88rem; font-weight: 600; color: var(--ink); line-height: 1.55; }
+.parents span { display: block; }
+.amp { font-size: 1.9rem; align-self: center; padding-top: 1.5rem; }
 
 /* Events */
 .events { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
@@ -127,10 +132,10 @@ body.locked { overflow: hidden; }
 
 @media (min-width: 760px) {
   .gallery { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .countdown { gap: 1.2rem; }
-  .countdown div { width: 88px; padding: 1rem 0; }
-  .countdown span { font-size: 2.3rem; }
-  .hero-date { font-size: 1.5rem; }
+  .countdown { gap: .9rem; }
+  .countdown div { width: 72px; padding: .7rem 0; }
+  .countdown span { font-size: 1.9rem; }
+  .hero-date { font-size: 1.3rem; }
   .title { font-size: 2.3rem; }
 }
 @media (prefers-reduced-motion: reduce) {

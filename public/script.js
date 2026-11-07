@@ -7,7 +7,8 @@
   } else {
     // Lấy nội dung đã đăng từ editor (nếu có), không có thì dùng config.js
     try {
-      const r = await fetch("/api/config", { cache: "no-store" });
+      // ?fresh=1 bỏ qua bộ nhớ đệm để chủ thiệp xem ngay bản vừa đăng
+      const r = await fetch(params.get("fresh") ? "/api/config?t=" + Date.now() : "/api/config", { cache: "no-store" });
       if (r.ok) { const d = await r.json(); if (d && d.groom && d.bride) W = { ...window.WEDDING, ...d }; }
     } catch {}
   }
@@ -29,8 +30,11 @@
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
-  $("#groomParents").textContent = W.groom.parents;
-  $("#brideParents").textContent = W.bride.parents;
+  // "Ông A & Bà B" được tách thành hai dòng riêng
+  const parentsHtml = (t) => String(t || "").split(/\s*&\s*/).filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("");
+  $("#groomParents").innerHTML = parentsHtml(W.groom.parents);
+  $("#brideParents").innerHTML = parentsHtml(W.bride.parents);
+  $(".hero").dataset.align = W.heroAlign || "bottom";
 
   $("#events").innerHTML = W.events.map((e) => `
     <div class="event">

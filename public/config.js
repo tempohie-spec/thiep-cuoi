@@ -36,5 +36,6 @@ window.WEDDING = {
   ],
   // Dán URL Google Apps Script / Formspree để nhận phản hồi RSVP. Để trống thì lưu tạm và hiển thị cảm ơn.
   rsvpEndpoint: "",
+  heroAlign: "bottom", // vị trí chữ trên ảnh bìa: top, center, bottom
   music: "" // ví dụ: "music.mp3"
 };

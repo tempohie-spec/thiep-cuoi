@@ -18,8 +18,8 @@
     h2 { font-size: 1rem; margin: 24px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--accent); }
     .hint { font-size: .8rem; color: #8a7f77; margin: 0 0 8px; }
     label { display: block; font-size: .8rem; margin: 8px 0 2px; color: #6b615a; }
-    input, textarea { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
-    input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    input, textarea, select { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
     .card { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 10px 0; background: #fdfbf9; }
     .card-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: .9rem; }
     button { font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--accent); background: #fff; color: var(--accent); padding: 6px 12px; }
@@ -58,12 +58,12 @@
     <h2>Chú rể</h2>
     <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
     <label>Họ và tên đầy đủ</label><input data-k="groom.fullName">
-    <label>Bố mẹ chú rể</label><input data-k="groom.parents">
+    <label>Bố mẹ chú rể (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="groom.parents">
 
     <h2>Cô dâu</h2>
     <label>Tên hiển thị (ngắn)</label><input data-k="bride.name">
     <label>Họ và tên đầy đủ</label><input data-k="bride.fullName">
-    <label>Bố mẹ cô dâu</label><input data-k="bride.parents">
+    <label>Bố mẹ cô dâu (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="bride.parents">
 
     <h2>Ngày cưới và lời mời</h2>
     <label>Ngày giờ (dùng cho đồng hồ đếm ngược)</label><input type="datetime-local" id="date">
@@ -92,6 +92,8 @@
     <input data-k="cover" placeholder="images/cover.jpg">
     <label>Tải ảnh bìa lên</label><input type="file" accept="image/*" id="coverUp">
     <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button></div>
+    <label>Vị trí chữ (tên, ngày, đồng hồ) trên ảnh bìa</label>
+    <select data-k="heroAlign"><option value="bottom">Phía dưới</option><option value="center">Ở giữa</option><option value="top">Phía trên</option></select>
 
     <h2>Album ảnh</h2>
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link). Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách.</p>
@@ -129,7 +131,7 @@
   </div>
 
   <div class="preview">
-    <div class="bar"><strong>Xem trước</strong><button type="button" id="modeBtn">Xem trang Mở thiệp</button><a href="index.html" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính</a></div>
+    <div class="bar"><strong>Xem trước</strong><button type="button" id="modeBtn">Xem trang Mở thiệp</button><a href="index.html?fresh=1" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính (bản mới nhất)</a></div>
     <iframe id="frame" title="Xem trước thiệp"></iframe>
   </div>
 </div>
@@ -151,7 +153,9 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   let base = clone(window.WEDDING);
   let cfg = base;
-  let hasDraft = false;
+  let hasDraft = false, touched = false;
+  const stable = (o) => JSON.stringify(o, (k, v) => (v && typeof v === "object" && !Array.isArray(v) ? Object.keys(v).sort().reduce((a, key) => ((a[key] = v[key]), a), {}) : v));
+  const SEEN = "wedding_pub_seen";
   try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...JSON.parse(d) }; hasDraft = true; } } catch {}
 
   const schema = {
@@ -196,6 +200,7 @@
 
   document.addEventListener("input", (e) => {
     const el = e.target;
+    touched = true;
     if (el.dataset.k) set(cfg, el.dataset.k, el.value);
     else if (el.dataset.list) cfg[el.dataset.list][el.dataset.i][el.dataset.f] = el.value;
     else if (el.id === "date") { if (el.value) cfg.date = el.value + ":00+07:00"; }
@@ -365,7 +370,15 @@
       toast("Đang đăng...");
       const r = await fetch("/api/config", { method: "POST", headers: { "content-type": "application/json", "x-admin-password": pwEl.value }, body: JSON.stringify(cfg) });
       if (!r.ok) throw new Error(await apiError(r, "Đăng thất bại"));
-      toast("Đã đăng thiệp. Khách sẽ thấy nội dung mới sau tối đa khoảng 1 phút.");
+      // Kiểm tra lại: đọc bản vừa lưu trên máy chủ và so với nội dung vừa đăng
+      const r2 = await fetch("/api/config?t=" + Date.now(), { cache: "no-store" });
+      const saved = r2.ok ? await r2.json() : null;
+      if (saved && stable(saved) === stable(cfg)) {
+        try { localStorage.setItem(SEEN, stable(saved)); } catch {}
+        toast("Đã đăng và kiểm tra xong. Bấm \"Mở thiệp chính (bản mới nhất)\" để xem ngay; khách sẽ thấy sau tối đa khoảng 1 phút.");
+      } else {
+        toastErr("Đã gửi nhưng chưa xác nhận được nội dung mới. Hãy bấm Đăng thiệp thêm một lần.");
+      }
     } catch (err) { toastErr(err.message); }
   });
 
@@ -388,7 +401,16 @@
   fetch("/api/config?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {
     if (d && d.groom && d.bride) {
       base = { ...clone(window.WEDDING), ...clone(d) };
+      const pubKey = stable(d);
+      let seen = null; try { seen = localStorage.getItem(SEEN); } catch {}
+      if (touched) return; // bạn đã gõ trong lúc chờ, không ghi đè
       if (!hasDraft) { cfg = clone(base); fill(); changed(); }
+      else if (stable(cfg) !== stable(base) && pubKey !== seen) {
+        // Bản nháp trong trình duyệt khác bản đang đăng, và bản đang đăng đã đổi từ lần mở trước
+        // (có thể bạn đã đăng từ máy khác). Đăng bản nháp cũ sẽ ghi đè nội dung mới hơn.
+        if (confirm("Bản thiệp đang đăng khác với bản nháp lưu trong trình duyệt này (có thể bạn đã đăng từ máy khác).\n\nBấm OK để dùng bản đang đăng. Bấm Hủy để giữ bản nháp.")) { cfg = clone(base); fill(); changed(); }
+      }
+      try { localStorage.setItem(SEEN, pubKey); } catch {}
     }
   }).catch(() => {});
 
