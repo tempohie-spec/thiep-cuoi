@@ -110,6 +110,12 @@
     <div class="row"><button type="button" id="makeLinks">Tạo link</button><button type="button" id="copyLinks">Sao chép tất cả</button></div>
     <textarea rows="6" id="guestLinks" readonly style="margin-top:8px"></textarea>
 
+    <h2>Nhập dữ liệu từ thiệp cũ</h2>
+    <p class="hint">Dùng khi chuyển sang trang mới. Mở link cũ dạng <b>https://tên-cũ.netlify.app/api/config</b> trong một tab, sao chép toàn bộ chữ hiện ra, dán vào ô dưới.</p>
+    <label>Địa chỉ trang cũ (để ảnh cũ vẫn hiện)</label><input id="oldBase" placeholder="https://hieuduyenwedding.netlify.app">
+    <label>Nội dung đã sao chép</label><textarea rows="4" id="oldJson"></textarea>
+    <div class="row"><button type="button" id="importOld">Nhập dữ liệu</button></div>
+
     <h2>Khác</h2>
     <label>Link nhận RSVP (Google Apps Script hoặc Formspree, có thể để trống)</label><input data-k="rsvpEndpoint">
     <label>File nhạc nền (ví dụ music.mp3, có thể để trống)</label><input data-k="music">
@@ -253,6 +259,24 @@
   });
   $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16));
 
+  // ---- Nhập dữ liệu từ thiệp cũ
+  $("#importOld").addEventListener("click", () => {
+    let d;
+    try { d = JSON.parse($("#oldJson").value); } catch { return toastErr("Nội dung dán vào không hợp lệ"); }
+    if (!d || !d.groom || !d.bride) return toastErr("Không thấy thông tin cô dâu chú rể trong nội dung này");
+    const base = $("#oldBase").value.trim().replace(/\/+$/, "");
+    // Ảnh cũ lưu dạng /api/img/... nên đổi sang địa chỉ đầy đủ của trang cũ để vẫn hiển thị
+    const fix = (u) => (typeof u === "string" && u.startsWith("/api/img/") ? base + u : u);
+    cfg = { ...clone(window.WEDDING), ...d };
+    ["cover", "introBg"].forEach((k) => { if (cfg[k]) cfg[k] = fix(cfg[k]); });
+    cfg.gallery = (cfg.gallery || []).map(fix);
+    (cfg.gifts || []).forEach((g) => { g.qr = fix(g.qr); });
+    const pos = {};
+    Object.keys(cfg.imgPos || {}).forEach((u) => { pos[fix(u)] = cfg.imgPos[u]; });
+    cfg.imgPos = pos;
+    fill(); changed(); toast("Đã nhập dữ liệu. Kiểm tra rồi bấm Đăng thiệp.");
+  });
+
   // ---- Tạo link riêng cho từng khách
   const siteBase = () => location.origin + location.pathname.replace(/[^/]*$/, "");
   $("#makeLinks").addEventListener("click", () => {
@@ -295,7 +319,7 @@
   async function uploadImage(file) {
     if (!pwEl.value) throw new Error("Hãy nhập mật khẩu quản trị trước");
     const blob = await compress(file);
-    const r = await fetch("/api/img", { method: "POST", headers: { "content-type": "image/jpeg", "x-admin-password": pwEl.value }, body: blob });
+    const r = await fetch("/api/img", { method: "POST", headers: { "content-type": "application/octet-stream", "x-image-type": "image/jpeg", "x-admin-password": pwEl.value }, body: blob });
     if (!r.ok) throw new Error(await apiError(r, "Tải ảnh thất bại"));
     return (await r.json()).url;
   }
@@ -341,7 +365,7 @@
       toast("Đang đăng...");
       const r = await fetch("/api/config", { method: "POST", headers: { "content-type": "application/json", "x-admin-password": pwEl.value }, body: JSON.stringify(cfg) });
       if (!r.ok) throw new Error(await apiError(r, "Đăng thất bại"));
-      toast("Đã đăng thiệp. Mở thiệp chính để xem.");
+      toast("Đã đăng thiệp. Khách sẽ thấy nội dung mới sau tối đa khoảng 1 phút.");
     } catch (err) { toastErr(err.message); }
   });
 
@@ -361,7 +385,7 @@
     cfg = clone(base); fill(); changed();
   });
 
-  fetch("/api/config", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {
+  fetch("/api/config?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {
     if (d && d.groom && d.bride) {
       base = { ...clone(window.WEDDING), ...clone(d) };
       if (!hasDraft) { cfg = clone(base); fill(); changed(); }
