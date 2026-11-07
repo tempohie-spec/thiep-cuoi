@@ -112,16 +112,16 @@
     <div class="row"><button type="button" id="makeLinks">Tạo link</button><button type="button" id="copyLinks">Sao chép tất cả</button></div>
     <textarea rows="6" id="guestLinks" readonly style="margin-top:8px"></textarea>
 
-    <h2>Nhập dữ liệu từ thiệp cũ</h2>
-    <p class="hint">Dùng khi chuyển sang trang mới. Mở link cũ dạng <b>https://tên-cũ.netlify.app/api/config</b> trong một tab, sao chép toàn bộ chữ hiện ra, dán vào ô dưới.</p>
-    <label>Địa chỉ trang cũ (để ảnh cũ vẫn hiện)</label><input id="oldBase" placeholder="https://hieuduyenwedding.netlify.app">
-    <label>Nội dung đã sao chép</label><textarea rows="4" id="oldJson"></textarea>
-    <div class="row"><button type="button" id="importOld">Nhập dữ liệu</button></div>
+    <h2>Nhạc nền</h2>
+    <p class="hint">Nhạc tự phát sau khi khách bấm mở thiệp, khách có nút bật tắt ở góc màn hình. Nên dùng file mp3 khoảng 3 đến 5MB (128kbps, 3 đến 4 phút) để khách tải nhanh và đỡ tốn băng thông.</p>
+    <label>Tải file nhạc lên (mp3, m4a, wav, tối đa 25MB)</label><input type="file" accept="audio/*" id="musicUp">
+    <p class="hint" id="musicStatus" style="margin-top:6px"></p>
+    <audio id="musicPreview" controls preload="none" hidden style="width:100%"></audio>
+    <label>Hoặc dán link file nhạc</label><input data-k="music" placeholder="https://...mp3">
+    <div class="row"><button type="button" id="clearMusic">Xóa nhạc</button></div>
 
     <h2>Khác</h2>
     <label>Link nhận RSVP (Google Apps Script hoặc Formspree, có thể để trống)</label><input data-k="rsvpEndpoint">
-    <label>File nhạc nền (ví dụ music.mp3, có thể để trống)</label><input data-k="music">
-
     <div class="actions">
       <button class="primary" id="publish" type="button">Đăng thiệp</button>
       <button id="download" type="button">Tải config.js</button>
@@ -190,10 +190,18 @@
     });
   }
 
+  // Ô nghe thử nhạc: hiện khi có link nhạc
+  function syncMusic() {
+    const mp = $("#musicPreview");
+    if (cfg.music) { if (mp.getAttribute("src") !== cfg.music) mp.src = cfg.music; mp.hidden = false; }
+    else { mp.removeAttribute("src"); mp.hidden = true; }
+  }
+
   function fill() {
     document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
     $("#date").value = (cfg.date || "").slice(0, 16);
     $("#gallery").value = (cfg.gallery || []).join("\n");
+    syncMusic();
     renderThumbs();
     renderLists();
   }
@@ -201,7 +209,7 @@
   document.addEventListener("input", (e) => {
     const el = e.target;
     touched = true;
-    if (el.dataset.k) set(cfg, el.dataset.k, el.value);
+    if (el.dataset.k) { set(cfg, el.dataset.k, el.value); if (el.dataset.k === "music") syncMusic(); }
     else if (el.dataset.list) cfg[el.dataset.list][el.dataset.i][el.dataset.f] = el.value;
     else if (el.id === "date") { if (el.value) cfg.date = el.value + ":00+07:00"; }
     else if (el.id === "gallery") { cfg.gallery = el.value.split("\n").map((l) => l.trim()).filter(Boolean); renderThumbs(); }
@@ -264,23 +272,35 @@
   });
   $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16));
 
-  // ---- Nhập dữ liệu từ thiệp cũ
-  $("#importOld").addEventListener("click", () => {
-    let d;
-    try { d = JSON.parse($("#oldJson").value); } catch { return toastErr("Nội dung dán vào không hợp lệ"); }
-    if (!d || !d.groom || !d.bride) return toastErr("Không thấy thông tin cô dâu chú rể trong nội dung này");
-    const base = $("#oldBase").value.trim().replace(/\/+$/, "");
-    // Ảnh cũ lưu dạng /api/img/... nên đổi sang địa chỉ đầy đủ của trang cũ để vẫn hiển thị
-    const fix = (u) => (typeof u === "string" && u.startsWith("/api/img/") ? base + u : u);
-    cfg = { ...clone(window.WEDDING), ...d };
-    ["cover", "introBg"].forEach((k) => { if (cfg[k]) cfg[k] = fix(cfg[k]); });
-    cfg.gallery = (cfg.gallery || []).map(fix);
-    (cfg.gifts || []).forEach((g) => { g.qr = fix(g.qr); });
-    const pos = {};
-    Object.keys(cfg.imgPos || {}).forEach((u) => { pos[fix(u)] = cfg.imgPos[u]; });
-    cfg.imgPos = pos;
-    fill(); changed(); toast("Đã nhập dữ liệu. Kiểm tra rồi bấm Đăng thiệp.");
+  // ---- Tải file nhạc nền: tải thẳng lên kho lưu trữ (file nhạc thường lớn hơn giới hạn của hàm API)
+  $("#musicUp").addEventListener("change", async (e) => {
+    const f = e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    const st = $("#musicStatus");
+    if (!pwEl.value) return toastErr("Hãy nhập mật khẩu quản trị trước");
+    if (f.size > 25 * 1024 * 1024) return toastErr("File quá lớn (tối đa 25MB)");
+    try {
+      st.textContent = "Đang tải nhạc lên...";
+      const { upload } = await import("/vendor/blob-client.js");
+      const name = "music/" + f.name.replace(/[^A-Za-z0-9._-]+/g, "-").slice(-80);
+      const blob = await upload(name, f, {
+        access: "public",
+        handleUploadUrl: "/api/music-token",
+        clientPayload: pwEl.value,
+        contentType: f.type || "audio/mpeg",
+        onUploadProgress: (p) => { st.textContent = "Đang tải nhạc lên... " + Math.round(p.percentage) + "%"; },
+      });
+      cfg.music = blob.url;
+      fill(); changed();
+      st.textContent = "Đã tải xong" + (f.size > 6 * 1024 * 1024 ? " (file hơi nặng, nên nén nhỏ hơn)" : "") + ". Bấm Đăng thiệp để áp dụng.";
+    } catch (err) {
+      st.textContent = "";
+      const m = String((err && err.message) || err);
+      toastErr("Tải nhạc thất bại: " + (/client token/i.test(m) ? "máy chủ từ chối cấp quyền, hãy kiểm tra mật khẩu quản trị." : m));
+    }
   });
+  $("#clearMusic").addEventListener("click", () => { cfg.music = ""; $("#musicStatus").textContent = ""; fill(); changed(); });
 
   // ---- Tạo link riêng cho từng khách
   const siteBase = () => location.origin + location.pathname.replace(/[^/]*$/, "");

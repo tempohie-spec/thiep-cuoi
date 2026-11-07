@@ -94,7 +94,7 @@
   // Music
   const audio = $("#bgm"), mBtn = $("#musicBtn");
   if (W.music) {
-    audio.src = W.music; mBtn.hidden = false;
+    audio.preload = "none"; audio.src = W.music; mBtn.hidden = false; // chỉ tải nhạc khi khách mở thiệp
     mBtn.addEventListener("click", () => (audio.paused ? audio.play() : audio.pause()));
     audio.addEventListener("play", () => mBtn.classList.add("playing"));
     audio.addEventListener("pause", () => mBtn.classList.remove("playing"));
@@ -144,8 +144,8 @@
     for (let i = 0; i < n; i++) {
       const el = document.createElement("span");
       el.className = "leaf";
-      const size = 14 + Math.random() * 14;
-      el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${(0.55 + Math.random() * 0.35).toFixed(2)}`;
+      const size = 9 + Math.random() * 9;
+      el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${(0.3 + Math.random() * 0.3).toFixed(2)}`;
       const leaf = document.createElement("i");
       leaf.style.backgroundImage = svg(colors[i % colors.length]);
       el.appendChild(leaf);
