@@ -1,6 +1,6 @@
 :root {
   /* Font doodle (nét vẽ tay) cho toàn bộ thiệp */
-  --font: "Playpen Sans", "Patrick Hand", "Comic Sans MS", cursive, sans-serif;
+  --font: "Mansalva", "Patrick Hand", "Comic Sans MS", cursive, sans-serif;
   /* Tông vàng ấm mùa thu */
   --bg: #fcf6ea;
   --card: #fffdf8;
@@ -14,11 +14,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: #eadcbc; }
 /* Trang là một cột dọc: phủ hết màn hình điện thoại, rộng tối đa 900px trên máy tính */
-body { max-width: 900px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 60px rgba(140, 95, 25, .16); font-family: var(--font); font-weight: 400; background: var(--bg); color: var(--ink); line-height: 1.7; }
+body { font-synthesis: none; max-width: 900px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 60px rgba(140, 95, 25, .16); font-family: var(--font); font-weight: 400; background: var(--bg); color: var(--ink); line-height: 1.7; }
 body.locked { overflow: hidden; }
 .script { font-family: var(--font); font-weight: 700; color: var(--accent); }
 .small { text-transform: uppercase; letter-spacing: .25em; font-size: .75rem; color: var(--muted); }
-.title { font-family: var(--font); font-weight: 700; font-size: 1.65rem; text-align: center; margin-bottom: 2rem; }
+.title { font-family: var(--font); font-weight: 700; font-size: 1.9rem; text-align: center; margin-bottom: 2rem; }
 .title::after { content: ""; display: block; width: 60px; height: 1px; background: var(--gold); margin: .8rem auto 0; }
 .btn { background: var(--accent); color: #fff; border: 0; padding: .8rem 2rem; border-radius: 999px; font: inherit; font-weight: 500; cursor: pointer; transition: transform .2s, opacity .2s; }
 .btn:hover { transform: translateY(-2px); opacity: .9; }
@@ -35,11 +35,11 @@ body.locked { overflow: hidden; }
 .env-letter { left: 5%; right: 5%; top: 6%; height: 86%; background: #fffdf7; border: 1px solid var(--line); border-radius: 12px;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 6%; text-align: center; z-index: 1;
   transition: transform 1s cubic-bezier(.25, .8, .25, 1) .85s; }
-.letter-names { font-size: clamp(1.1rem, calc(var(--w) * .058), 1.8rem); line-height: 1.2; margin-top: .3rem; max-width: 90%; }
+.letter-names { font-size: clamp(1.3rem, calc(var(--w) * .068), 2.1rem); line-height: 1.2; margin-top: .3rem; max-width: 90%; }
 .env-front { inset: 0; width: 100%; height: 100%; z-index: 2; display: block; border-radius: 18px; }
 .env-text { left: 0; right: 0; top: calc(42% + 32px); bottom: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: .1rem; text-align: center; padding: 0 12px 6px; transition: opacity .35s ease; }
-.env-names { font-size: clamp(1rem, calc(var(--w) * .06), 1.9rem); line-height: 1.15; }
+.env-names { font-size: clamp(1.15rem, calc(var(--w) * .07), 2.2rem); line-height: 1.15; }
 .env-date { font-family: var(--font); font-weight: 600; letter-spacing: .08em; font-size: clamp(.78rem, calc(var(--w) * .029), 1rem); color: var(--ink); }
 .env-guest { font-size: clamp(.78rem, calc(var(--w) * .028), .95rem); color: var(--muted); }
 .env-flap { left: 0; top: 0; width: 100%; height: 42%; z-index: 4; display: block; border-radius: 18px 18px 0 0; transform-origin: top center; transform: perspective(1400px) rotateX(0deg);
@@ -61,13 +61,13 @@ body.locked { overflow: hidden; }
 
 /* Hero */
 .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px;
-  background: linear-gradient(rgba(253,246,229,.45), rgba(253,246,229,.55) 55%, rgba(253,246,229,.82)), url("images/cover.jpg") center/cover, #f1e3c1; }
+  background: url("images/cover.jpg") center/cover, #f1e3c1; }
 /* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
 .hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8vh; }
 .hero[data-align="top"] { justify-content: flex-start; padding-top: 14vh; }
 .hero .small { color: var(--ink); font-weight: 500; position: relative; top: 5px; }
-.hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1.2; margin: .4rem 0; position: relative; top: 5px; color: var(--accent-dark); text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
-.hero-date { font-family: var(--font); font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; color: var(--ink); }
+.hero h1 { font-size: clamp(2.3rem, 6vw, 3.3rem); line-height: 1.2; margin: .4rem 0; position: relative; top: 5px; color: var(--accent-dark); text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
+.hero-date { font-family: var(--font); font-weight: 700; font-size: 1.25rem; letter-spacing: .08em; color: var(--ink); }
 .countdown { display: flex; gap: .7rem; justify-content: center; margin-top: 1.1rem; flex-wrap: wrap; }
 .countdown div { background: rgba(255, 255, 255, .93); border: 1px solid var(--line); border-radius: 16px; width: 60px; padding: .55rem 0; box-shadow: 0 6px 18px rgba(150, 100, 30, .12); }
 .countdown span { display: block; font-family: var(--font); font-weight: 700; font-size: 1.4rem; color: var(--accent-dark); }
@@ -78,7 +78,7 @@ body.locked { overflow: hidden; }
 
 /* Couple */
 .couple { text-align: center; }
-.quote { font-family: var(--font); font-style: normal; font-size: 1.02rem; max-width: 600px; margin: 0 auto 3rem; color: var(--muted); }
+.quote { font-family: var(--font); font-style: normal; font-size: 1.15rem; max-width: 600px; margin: 0 auto 3rem; color: var(--muted); }
 /* Lưới 3 cột: chú rể | & | cô dâu. Mỗi hàng căn ngang nhau: nhãn, bố mẹ, tên (có dấu &), mèo */
 .couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: .6rem; align-items: center; justify-items: center; }
 .person { display: contents; }
@@ -88,7 +88,7 @@ body.locked { overflow: hidden; }
 .person .parents { grid-row: 2; }
 .person h2 { grid-row: 3; }
 .person .cat { grid-row: 4; }
-.person h2 { font-size: clamp(1.1rem, 4.2vw, 1.5rem); line-height: 1.2; margin-top: .6rem; text-wrap: balance; }
+.person h2 { font-size: clamp(1.3rem, 5vw, 1.85rem); line-height: 1.2; margin-top: .6rem; text-wrap: balance; }
 .parents { font-size: .88rem; font-weight: 600; color: var(--ink); line-height: 1.55; }
 .parents span { display: block; }
 .parents .hon { font-style: normal; font-weight: 400; color: var(--muted); }
@@ -96,7 +96,7 @@ body.locked { overflow: hidden; }
 .cat { display: block; height: auto; margin-top: 1.1rem; }
 .cat-groom { width: min(100%, 200px); }
 .cat-bride { width: min(100%, 190px); }
-.amp { grid-column: 2; grid-row: 3; font-size: 1.5rem; line-height: 1; position: relative; top: 5px; }
+.amp { grid-column: 2; grid-row: 3; font-size: 1.8rem; line-height: 1; position: relative; top: 5px; }
 
 /* Events */
 .events { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
@@ -138,7 +138,7 @@ body.locked { overflow: hidden; }
 .gift button { margin-top: .8rem; background: none; border: 1px solid var(--accent); color: var(--accent); padding: .4rem 1.2rem; border-radius: 999px; font: inherit; font-size: .85rem; cursor: pointer; }
 
 .footer { text-align: center; padding: 4rem 16px; border-top: 1px solid var(--line); }
-.footer .script { font-size: 1.7rem; }
+.footer .script { font-size: 2rem; }
 
 .music { position: fixed; right: calc(max(0px, (100vw - 900px) / 2) + 16px); bottom: 16px; z-index: 40; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--accent); color: #fff; font: inherit; font-size: .75rem; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.15); }
 .music.playing { animation: spin 4s linear infinite; }
@@ -177,13 +177,16 @@ body {
 }
 .event, .gift { background-color: #fffdf6; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
 .hero { position: relative; }
-.hero::before { content: ""; position: absolute; inset: 0; background-image: var(--paper); background-size: 256px; mix-blend-mode: multiply; opacity: .75; pointer-events: none; }
-.hero-inner { position: relative; }
+/* Lớp phủ kem mờ trên ảnh bìa: độ đậm ảnh 100% thì --veil = 0 (không phủ), chỉnh trong editor */
+.hero::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: var(--veil, 0);
+  background: linear-gradient(rgba(253, 246, 229, .45), rgba(253, 246, 229, .55) 55%, rgba(253, 246, 229, .82)); }
+.hero-inner { position: relative; z-index: 1; }
+.hero .small, .hero-date, .countdown small { text-shadow: 0 0 10px rgba(255, 255, 255, .85), 0 0 3px rgba(255, 255, 255, .7); }
 
 /* Vị trí ảnh nền: điện thoại dùng --pos, máy tính (từ 760px) dùng --pos-d nếu có */
-.hero { background-position: 0% 0%, var(--pos, 50% 50%); }
+.hero { background-position: var(--pos, 50% 50%); }
 .envelope { background-position: var(--pos, center); }
 @media (min-width: 760px) {
-  .hero { background-position: 0% 0%, var(--pos-d, var(--pos, 50% 50%)); }
+  .hero { background-position: var(--pos-d, var(--pos, 50% 50%)); }
   .envelope { background-position: var(--pos-d, var(--pos, center)); }
 }

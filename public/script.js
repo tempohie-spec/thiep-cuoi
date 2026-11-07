@@ -28,7 +28,7 @@
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
   if (W.cover) {
-    $(".hero").style.backgroundImage = `linear-gradient(rgba(253,246,229,.45), rgba(253,246,229,.55) 55%, rgba(253,246,229,.82)), url('${String(W.cover).replace(/'/g, "%27")}')`;
+    $(".hero").style.backgroundImage = `url('${String(W.cover).replace(/'/g, "%27")}')`;
     $(".hero").style.setProperty("--pos", posOf(W.cover));
     $(".hero").style.setProperty("--pos-d", posOfD(W.cover));
   }
@@ -43,6 +43,9 @@
   $("#groomParents").innerHTML = parentsHtml(W.groom.parents);
   $("#brideParents").innerHTML = parentsHtml(W.bride.parents);
   $(".hero").dataset.align = W.heroAlign || "bottom";
+  // Độ đậm ảnh bìa 0 đến 100 (mặc định 100 = không phủ lớp kem mờ)
+  const strength = Math.min(100, Math.max(0, Number(W.coverStrength ?? 100) || 0));
+  $(".hero").style.setProperty("--veil", String(1 - strength / 100));
 
   $("#events").innerHTML = W.events.map((e) => `
     <div class="event">

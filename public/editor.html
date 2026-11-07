@@ -95,6 +95,8 @@
     <input data-k="cover" placeholder="images/cover.jpg">
     <label>Tải ảnh bìa lên</label><input type="file" accept="image/*" id="coverUp">
     <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button></div>
+    <label>Độ đậm ảnh bìa: <b id="coverStrengthVal">100%</b> (100% là ảnh rõ nhất, giảm dần sẽ phủ lớp kem mờ)</label>
+    <input type="range" min="0" max="100" step="5" data-k="coverStrength" value="100">
     <label>Vị trí chữ (tên, ngày, đồng hồ) trên ảnh bìa</label>
     <select data-k="heroAlign"><option value="bottom">Phía dưới</option><option value="center">Ở giữa</option><option value="top">Phía trên</option></select>
 
@@ -205,6 +207,7 @@
   function fill() {
     document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
     $("#date").value = (cfg.date || "").slice(0, 16);
+    $("#coverStrengthVal").textContent = (cfg.coverStrength === undefined || cfg.coverStrength === "" ? 100 : cfg.coverStrength) + "%";
     $("#gallery").value = (cfg.gallery || []).join("\n");
     syncMusic();
     renderThumbs();
@@ -214,7 +217,7 @@
   document.addEventListener("input", (e) => {
     const el = e.target;
     touched = true;
-    if (el.dataset.k) { set(cfg, el.dataset.k, el.value); if (el.dataset.k === "music") syncMusic(); }
+    if (el.dataset.k) { set(cfg, el.dataset.k, el.value); if (el.dataset.k === "music") syncMusic(); if (el.dataset.k === "coverStrength") $("#coverStrengthVal").textContent = el.value + "%"; }
     else if (el.dataset.list) cfg[el.dataset.list][el.dataset.i][el.dataset.f] = el.value;
     else if (el.id === "date") { if (el.value) cfg.date = el.value + ":00+07:00"; }
     else if (el.id === "gallery") { cfg.gallery = el.value.split("\n").map((l) => l.trim()).filter(Boolean); renderThumbs(); }
