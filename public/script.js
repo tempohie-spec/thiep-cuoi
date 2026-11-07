@@ -14,6 +14,8 @@
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const names = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+  // Vị trí ảnh (do editor lưu): "x% y%", không hợp lệ thì căn giữa
+  const posOf = (u) => { const v = (W.imgPos && W.imgPos[u]) || ""; return /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(v) ? v : "50% 50%"; };
 
   document.title = `Thiệp Cưới ${W.groom.name} & ${W.bride.name}`;
   document.querySelectorAll("[data-names]").forEach((el) => (el.innerHTML = names));
@@ -23,6 +25,7 @@
   $("#quote").textContent = W.quote;
   if (W.cover) {
     $(".hero").style.backgroundImage = `linear-gradient(rgba(251,247,242,.7), rgba(251,247,242,.9)), url('${String(W.cover).replace(/'/g, "%27")}')`;
+    $(".hero").style.backgroundPosition = `0% 0%, ${posOf(W.cover)}`;
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
@@ -46,7 +49,7 @@
       <p>${esc(s.text)}</p>
     </div>`).join("");
 
-  $("#gallery").innerHTML = W.gallery.map((src) => `<img src="${esc(src)}" alt="Ảnh cưới" loading="lazy">`).join("");
+  $("#gallery").innerHTML = W.gallery.map((src) => `<img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}">`).join("");
   const lb = $("#lightbox");
   $("#gallery").addEventListener("click", (e) => {
     if (e.target.tagName === "IMG") { lb.querySelector("img").src = e.target.src; lb.hidden = false; }
@@ -96,6 +99,7 @@
   } else {
     if (W.introBg) {
       env.style.backgroundImage = `linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), url('${String(W.introBg).replace(/'/g, "%27")}')`;
+      env.style.backgroundPosition = posOf(W.introBg);
     }
     const guest = params.get("to");
     if (guest) $("#envLabel").textContent = `Thân mời ${guest}`;
