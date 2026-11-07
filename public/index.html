@@ -19,13 +19,21 @@
           <p class="small">Trân trọng kính mời:</p>
           <p class="letter-names script" id="letterNames"></p>
         </div>
-        <div class="env-front"></div>
+        <svg class="env-front" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8ede4"/><stop offset="1" stop-color="#f1dfd2"/></linearGradient>
+            <linearGradient id="gFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cfc0"/><stop offset="1" stop-color="#efdacd"/></linearGradient>
+          </defs>
+          <polygon points="0,0 50,42 100,0 100,100 0,100" fill="url(#gFront)"/>
+        </svg>
         <div class="env-text">
           <p class="env-names script" id="envNames"></p>
           <p class="env-date" id="envDate"></p>
           <p class="env-guest" id="envGuest"></p>
         </div>
-        <div class="env-flap"></div>
+        <svg class="env-flap" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polygon points="0,0 100,0 50,100" fill="url(#gFlap)"/>
+        </svg>
         <div class="env-seal" id="envSeal" aria-label="Mở thiệp">&#22221;</div>
       </div>
     </div>
