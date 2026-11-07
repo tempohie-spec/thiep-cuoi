@@ -57,12 +57,12 @@ body.locked { overflow: hidden; }
 
 /* Hero */
 .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px;
-  background: linear-gradient(rgba(251,247,242,.7), rgba(251,247,242,.9)), url("images/cover.jpg") center/cover, #efe3d8; }
+  background: linear-gradient(rgba(251,247,242,.45), rgba(251,247,242,.55) 55%, rgba(251,247,242,.82)), url("images/cover.jpg") center/cover, #efe3d8; }
 /* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
 .hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8vh; }
 .hero[data-align="top"] { justify-content: flex-start; padding-top: 14vh; }
-.hero .small { color: var(--ink); font-weight: 500; }
-.hero h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); line-height: 1.15; margin: .4rem 0; color: #a2606f; -webkit-text-stroke: .7px #a2606f; text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
+.hero .small { color: var(--ink); font-weight: 500; position: relative; top: 5px; }
+.hero h1 { font-size: clamp(2.8rem, 6vw, 3.8rem); line-height: 1.15; margin: .4rem 0; position: relative; top: 5px; color: #a2606f; -webkit-text-stroke: .7px #a2606f; text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
 .hero-date { font-family: "Playfair Display", serif; font-weight: 600; font-size: 1.2rem; letter-spacing: .1em; color: var(--ink); }
 .countdown { display: flex; gap: .7rem; justify-content: center; margin-top: 1.1rem; flex-wrap: wrap; }
 .countdown div { background: rgba(255, 255, 255, .93); border: 1px solid var(--line); border-radius: 10px; width: 60px; padding: .55rem 0; }
@@ -75,10 +75,16 @@ body.locked { overflow: hidden; }
 /* Couple */
 .couple { text-align: center; }
 .quote { font-family: "Playfair Display", serif; font-style: italic; font-size: 1.15rem; max-width: 600px; margin: 0 auto 3rem; color: var(--muted); }
-.couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: .6rem; }
+.couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; gap: .6rem; }
+.person { display: flex; flex-direction: column; align-items: center; }
 .person h2 { font-size: clamp(1.6rem, 5.5vw, 2.2rem); line-height: 1.2; margin-top: .6rem; text-wrap: balance; }
 .parents { font-size: .88rem; font-weight: 600; color: var(--ink); line-height: 1.55; }
 .parents span { display: block; }
+.parents .hon { font-style: normal; font-weight: 400; color: var(--muted); }
+/* Hai chú mèo nằm dưới tên, cùng đáy với nhau */
+.cat { display: block; height: auto; margin-top: auto; padding-top: 1rem; }
+.cat-groom { width: min(100%, 170px); }
+.cat-bride { width: min(100%, 190px); }
 .amp { font-size: 1.9rem; align-self: center; padding-top: 1.5rem; }
 
 /* Events */

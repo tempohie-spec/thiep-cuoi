@@ -25,13 +25,17 @@
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
   if (W.cover) {
-    $(".hero").style.backgroundImage = `linear-gradient(rgba(251,247,242,.7), rgba(251,247,242,.9)), url('${String(W.cover).replace(/'/g, "%27")}')`;
+    $(".hero").style.backgroundImage = `linear-gradient(rgba(251,247,242,.45), rgba(251,247,242,.55) 55%, rgba(251,247,242,.82)), url('${String(W.cover).replace(/'/g, "%27")}')`;
     $(".hero").style.backgroundPosition = `0% 0%, ${posOf(W.cover)}`;
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
   // "Ông A & Bà B" được tách thành hai dòng riêng
-  const parentsHtml = (t) => String(t || "").split(/\s*&\s*/).filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("");
+  // Chữ "Ông", "Bà" được làm nhạt hơn phần tên
+  const parentsHtml = (t) => String(t || "").split(/\s*&\s*/).filter(Boolean).map((l) => {
+    const m = /^(Ông|Bà|ông|bà)\s+(.+)$/.exec(l.trim());
+    return m ? `<span><em class="hon">${esc(m[1])}</em> ${esc(m[2])}</span>` : `<span>${esc(l)}</span>`;
+  }).join("");
   $("#groomParents").innerHTML = parentsHtml(W.groom.parents);
   $("#brideParents").innerHTML = parentsHtml(W.bride.parents);
   $(".hero").dataset.align = W.heroAlign || "bottom";
