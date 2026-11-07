@@ -14,6 +14,7 @@
     .preview { background: #ddd; display: flex; flex-direction: column; min-width: 0; }
     .preview .bar { padding: 8px 12px; font-size: .85rem; background: #fff; border-bottom: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
     .preview iframe { flex: 1; border: 0; width: 100%; background: #fff; }
+    .preview iframe.phone { width: 390px; align-self: center; box-shadow: 0 0 0 1px #aaa; }
     h1 { font-size: 1.2rem; margin: 0 0 4px; }
     h2 { font-size: 1rem; margin: 24px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--accent); }
     .hint { font-size: .8rem; color: #8a7f77; margin: 0 0 8px; }
@@ -85,16 +86,24 @@
     <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
 
     <h2>Ảnh nền trang Mở thiệp</h2>
-    <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Để trống thì dùng nền màu mặc định.</p>
+    <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính. Để trống thì dùng nền màu mặc định.</p>
+    <label>Ảnh cho điện thoại (nên là ảnh dọc)</label>
     <input data-k="introBg" placeholder="Dán đường dẫn hoặc tải ảnh lên">
-    <label>Tải ảnh nền lên</label><input type="file" accept="image/*" id="introUp">
-    <div class="row"><button type="button" id="posIntro">Chỉnh vị trí ảnh</button><button type="button" id="clearIntro">Xóa ảnh nền</button></div>
+    <input type="file" accept="image/*" id="introUp" style="margin-top:6px">
+    <label>Ảnh cho máy tính (nên là ảnh ngang, để trống thì dùng ảnh điện thoại)</label>
+    <input data-k="introBgD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <input type="file" accept="image/*" id="introDUp" style="margin-top:6px">
+    <div class="row"><button type="button" id="posIntro">Chỉnh vị trí ảnh</button><button type="button" id="clearIntro">Xóa ảnh điện thoại</button><button type="button" id="clearIntroD">Xóa ảnh máy tính</button></div>
 
     <h2>Ảnh bìa</h2>
-    <p class="hint">Ảnh nền đầu trang. Dán đường dẫn hoặc tải ảnh lên.</p>
-    <input data-k="cover" placeholder="images/cover.jpg">
-    <label>Tải ảnh bìa lên</label><input type="file" accept="image/*" id="coverUp">
-    <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button></div>
+    <p class="hint">Ảnh nền đầu trang. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính.</p>
+    <label>Ảnh cho điện thoại (nên là ảnh dọc)</label>
+    <input data-k="cover" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <input type="file" accept="image/*" id="coverUp" style="margin-top:6px">
+    <label>Ảnh cho máy tính (nên là ảnh vuông hoặc ngang, để trống thì dùng ảnh điện thoại)</label>
+    <input data-k="coverD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <input type="file" accept="image/*" id="coverDUp" style="margin-top:6px">
+    <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button><button type="button" id="clearCover">Xóa ảnh điện thoại</button><button type="button" id="clearCoverD">Xóa ảnh máy tính</button></div>
     <label>Độ đậm ảnh bìa: <b id="coverStrengthVal">100%</b> (100% là ảnh rõ nhất, giảm dần sẽ phủ lớp kem mờ)</label>
     <input type="range" min="0" max="100" step="5" data-k="coverStrength" value="100">
     <label>Vị trí chữ (tên, ngày, đồng hồ) trên ảnh bìa</label>
@@ -136,7 +145,7 @@
   </div>
 
   <div class="preview">
-    <div class="bar"><strong>Xem trước</strong><button type="button" id="modeBtn">Xem trang Mở thiệp</button><a href="index.html?fresh=1" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính (bản mới nhất)</a></div>
+    <div class="bar"><strong>Xem trước</strong><button type="button" id="modeBtn">Xem trang Mở thiệp</button><button type="button" id="phoneBtn">Khung điện thoại</button><a href="index.html?fresh=1" target="_blank" rel="noopener" style="margin-left:auto">Mở thiệp chính (bản mới nhất)</a></div>
     <iframe id="frame" title="Xem trước thiệp"></iframe>
   </div>
 </div>
@@ -248,19 +257,27 @@
     posFrame.style.aspectRatio = String(a);
     posFrame.style.width = frameSize(a);
     posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
+    if (posImg.dataset.u !== ps.urls[dev]) { posImg.dataset.u = ps.urls[dev]; posImg.src = ps.urls[dev]; }
     posDev.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.dev === dev));
   }
-  // aspect: tỉ lệ khung trên điện thoại; desktopAspect: tỉ lệ khung trên máy tính (nếu ảnh hiển thị khác nhau giữa hai loại)
-  function openPos(url, aspect, desktopAspect) {
+  // url, aspect: ảnh và tỉ lệ khung trên điện thoại. desktop = {url, aspect}: ảnh và tỉ lệ khung trên máy tính (nếu có)
+  function openPos(url, aspect, desktop, startDev) {
+    if (!url && desktop) url = desktop.url;
     if (!url) return toastErr("Chưa có ảnh để chỉnh");
+    const dUrl = desktop ? desktop.url || url : url;
     const m = parsePos((cfg.imgPos || {})[url]);
-    const d = parsePos((cfg.imgPosD || {})[url] || (cfg.imgPos || {})[url]);
-    ps = { url, aspects: { m: aspect, d: desktopAspect || aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktopAspect };
+    const d = parsePos((cfg.imgPosD || {})[dUrl] || (cfg.imgPos || {})[dUrl]);
+    ps = { urls: { m: url, d: dUrl }, aspects: { m: aspect, d: desktop ? desktop.aspect : aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktop };
     posDev.hidden = !ps.hasD;
     $("#posDevHint").hidden = !ps.hasD;
-    posImg.src = url;
-    showDev("m");
+    posImg.dataset.u = "";
+    showDev(startDev || "m");
     posModal.hidden = false;
+  }
+  // Mở hộp chỉnh vị trí cho ảnh bìa hoặc ảnh nền Mở thiệp (dùng ảnh điện thoại, ảnh máy tính, hoặc một ảnh chung)
+  function openImgPos(kind, dev) {
+    const [kM, kD, asp] = kind === "intro" ? ["introBg", "introBgD", 1.6] : ["cover", "coverD", 1];
+    openPos(cfg[kM] || cfg[kD], 9 / 16, { url: cfg[kD] || cfg[kM], aspect: asp }, dev);
   }
   posDev.addEventListener("click", (e) => { const b = e.target.closest("button[data-dev]"); if (b && ps) showDev(b.dataset.dev); });
   posFrame.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; posFrame.setPointerCapture(e.pointerId); });
@@ -282,8 +299,8 @@
   $("#posSave").addEventListener("click", () => {
     if (!ps) return;
     cfg.imgPos = cfg.imgPos || {};
-    cfg.imgPos[ps.url] = fmtPos(ps.pos.m);
-    if (ps.hasD && (ps.dTouched || (cfg.imgPosD || {})[ps.url])) { cfg.imgPosD = cfg.imgPosD || {}; cfg.imgPosD[ps.url] = fmtPos(ps.pos.d); }
+    cfg.imgPos[ps.urls.m] = fmtPos(ps.pos.m);
+    if (ps.hasD && (ps.dTouched || (cfg.imgPosD || {})[ps.urls.d])) { cfg.imgPosD = cfg.imgPosD || {}; cfg.imgPosD[ps.urls.d] = fmtPos(ps.pos.d); }
     posModal.hidden = true; ps = null;
     renderThumbs(); changed(); toast("Đã lưu vị trí ảnh");
   });
@@ -295,7 +312,7 @@
     const th = e.target.closest && e.target.closest("[data-pos]");
     if (th) openPos(cfg.gallery[+th.dataset.pos], 3 / 4);
   });
-  $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16, 1.6));
+  $("#posIntro").addEventListener("click", () => openImgPos("intro"));
 
   // ---- Tải file nhạc nền: tải thẳng lên kho lưu trữ (file nhạc thường lớn hơn giới hạn của hàm API)
   $("#musicUp").addEventListener("change", async (e) => {
@@ -339,7 +356,7 @@
     if (!v) return toastErr("Chưa có link, hãy bấm Tạo link");
     try { await navigator.clipboard.writeText(v); toast("Đã sao chép"); } catch { $("#guestLinks").select(); toastErr("Hãy sao chép thủ công"); }
   });
-  $("#posCover").addEventListener("click", () => openPos(cfg.cover, 9 / 16, 1));
+  $("#posCover").addEventListener("click", () => openImgPos("cover"));
   // Đọc lỗi từ máy chủ: ưu tiên thông báo JSON, không có thì hiện mã HTTP và đoạn đầu nội dung
   async function apiError(r, fallback) {
     const t = await r.text().catch(() => "");
@@ -374,21 +391,35 @@
     return (await r.json()).url;
   }
 
-  $("#introUp").addEventListener("change", async (e) => {
-    const f = e.target.files[0]; if (!f) return;
-    try { toast("Đang tải ảnh..."); cfg.introBg = await uploadImage(f); fill(); introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; changed(); toast("Đã tải ảnh nền"); openPos(cfg.introBg, 9 / 16, 1.6); } catch (err) { toastErr(err.message); }
-    e.target.value = "";
+  // Tải ảnh lên cho một ô (điện thoại hoặc máy tính) rồi mở hộp chỉnh vị trí đúng tab
+  function bindImgUpload(sel, key, kind, dev, label) {
+    $(sel).addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      try {
+        toast("Đang tải ảnh...");
+        cfg[key] = await uploadImage(f);
+        fill();
+        if (kind === "intro") { introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; }
+        changed(); toast("Đã tải " + label);
+        openImgPos(kind, dev);
+      } catch (err) { toastErr(err.message); }
+    });
+  }
+  bindImgUpload("#introUp", "introBg", "intro", "m", "ảnh nền điện thoại");
+  bindImgUpload("#introDUp", "introBgD", "intro", "d", "ảnh nền máy tính");
+  bindImgUpload("#coverUp", "cover", "cover", "m", "ảnh bìa điện thoại");
+  bindImgUpload("#coverDUp", "coverD", "cover", "d", "ảnh bìa máy tính");
+  [["#clearIntro", "introBg"], ["#clearIntroD", "introBgD"], ["#clearCover", "cover"], ["#clearCoverD", "coverD"]].forEach(([sel, key]) => $(sel).addEventListener("click", () => { cfg[key] = ""; fill(); changed(); }));
+  $("#phoneBtn").addEventListener("click", () => {
+    const on = $("#frame").classList.toggle("phone");
+    $("#phoneBtn").textContent = on ? "Khung máy tính" : "Khung điện thoại";
   });
-  $("#clearIntro").addEventListener("click", () => { cfg.introBg = ""; fill(); changed(); });
   $("#modeBtn").addEventListener("click", () => {
     introMode = !introMode;
     $("#modeBtn").textContent = introMode ? "Xem toàn bộ thiệp" : "Xem trang Mở thiệp";
     loadFrame();
-  });
-  $("#coverUp").addEventListener("change", async (e) => {
-    const f = e.target.files[0]; if (!f) return;
-    try { toast("Đang tải ảnh..."); cfg.cover = await uploadImage(f); fill(); changed(); toast("Đã tải ảnh bìa"); openPos(cfg.cover, 9 / 16, 1); } catch (err) { toastErr(err.message); }
-    e.target.value = "";
   });
   $("#galUp").addEventListener("change", async (e) => {
     const files = [...e.target.files]; if (!files.length) return;

@@ -27,10 +27,15 @@
   const date = new Date(W.date);
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
-  if (W.cover) {
-    $(".hero").style.backgroundImage = `url('${String(W.cover).replace(/'/g, "%27")}')`;
-    $(".hero").style.setProperty("--pos", posOf(W.cover));
-    $(".hero").style.setProperty("--pos-d", posOfD(W.cover));
+  const cssUrl = (u) => `url('${String(u).replace(/'/g, "%27")}')`;
+  // Ảnh riêng cho điện thoại (cover) và máy tính (coverD); thiếu một trong hai thì dùng ảnh còn lại
+  const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;
+  if (coverM) {
+    const h = $(".hero");
+    h.style.setProperty("--img", cssUrl(coverM));
+    h.style.setProperty("--img-d", cssUrl(coverD));
+    h.style.setProperty("--pos", posOf(coverM));
+    h.style.setProperty("--pos-d", posOfD(coverD));
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
@@ -116,10 +121,13 @@
   if (preview && !params.get("intro")) {
     env.remove();
   } else {
-    if (W.introBg) {
-      env.style.backgroundImage = `linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), url('${String(W.introBg).replace(/'/g, "%27")}')`;
-      env.style.setProperty("--pos", posOf(W.introBg));
-      env.style.setProperty("--pos-d", posOfD(W.introBg));
+    const bgM = W.introBg || W.introBgD, bgD = W.introBgD || W.introBg;
+    if (bgM) {
+      const wash = "linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), ";
+      env.style.setProperty("--img", wash + cssUrl(bgM));
+      env.style.setProperty("--img-d", wash + cssUrl(bgD));
+      env.style.setProperty("--pos", posOf(bgM));
+      env.style.setProperty("--pos-d", posOfD(bgD));
     }
     const guest = (params.get("to") || "").trim().slice(0, 60);
     document.body.classList.add("locked");

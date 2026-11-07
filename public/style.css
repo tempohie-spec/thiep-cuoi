@@ -190,3 +190,12 @@ body {
   .hero { background-position: var(--pos-d, var(--pos, 50% 50%)); }
   .envelope { background-position: var(--pos-d, var(--pos, center)); }
 }
+
+/* Ảnh bìa và ảnh nền Mở thiệp: điện thoại dùng --img, máy tính (từ 760px) dùng --img-d nếu có */
+:root { --env-default: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); }
+.hero { background-image: var(--img, url("images/cover.jpg")); }
+.envelope { background-image: var(--img, var(--env-default)); }
+@media (min-width: 760px) {
+  .hero { background-image: var(--img-d, var(--img, url("images/cover.jpg"))); }
+  .envelope { background-image: var(--img-d, var(--img, var(--env-default))); }
+}
