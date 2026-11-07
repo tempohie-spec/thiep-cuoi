@@ -27,7 +27,7 @@
             <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf0d8"/><stop offset="1" stop-color="#f3dfb6"/></linearGradient>
             <linearGradient id="gFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9cf9a"/><stop offset="1" stop-color="#f0dba8"/></linearGradient>
           </defs>
-          <polygon points="0,0 50,42 100,0 100,100 0,100" fill="url(#gFront)"/>
+          <polygon points="0,0 50,42 100,0 100,100 0,100" fill="url(#gFront)" stroke="url(#gFront)" stroke-width="10" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
         </svg>
         <div class="env-text">
           <p class="env-names script" id="envNames"></p>
@@ -35,7 +35,7 @@
           <p class="env-guest" id="envGuest"></p>
         </div>
         <svg class="env-flap" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polygon points="0,0 100,0 50,100" fill="url(#gFlap)"/>
+          <polygon points="0,0 100,0 50,100" fill="url(#gFlap)" stroke="url(#gFlap)" stroke-width="10" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
         </svg>
         <div class="env-seal" id="envSeal" aria-label="Mở thiệp">&#22221;</div>
       </div>
