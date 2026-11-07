@@ -1,9 +1,15 @@
-(function () {
+(async function () {
   const params = new URLSearchParams(location.search);
   const preview = params.get("preview");
   let W = window.WEDDING;
   if (preview) {
-    try { const d = localStorage.getItem("wedding_draft"); if (d) W = JSON.parse(d); } catch {}
+    try { const d = localStorage.getItem("wedding_draft"); if (d) W = { ...window.WEDDING, ...JSON.parse(d) }; } catch {}
+  } else {
+    // Lấy nội dung đã đăng từ editor (nếu có), không có thì dùng config.js
+    try {
+      const r = await fetch("/api/config", { cache: "no-store" });
+      if (r.ok) { const d = await r.json(); if (d && d.groom && d.bride) W = { ...window.WEDDING, ...d }; }
+    } catch {}
   }
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -15,6 +21,9 @@
   const date = new Date(W.date);
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
+  if (W.cover) {
+    $(".hero").style.backgroundImage = `linear-gradient(rgba(251,247,242,.7), rgba(251,247,242,.9)), url('${String(W.cover).replace(/'/g, "%27")}')`;
+  }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
   $("#groomParents").textContent = W.groom.parents;
