@@ -163,6 +163,12 @@
   });
 
   const toastErr = (m) => { toast(m, true); };
+  // Đọc lỗi từ máy chủ: ưu tiên thông báo JSON, không có thì hiện mã HTTP và đoạn đầu nội dung
+  async function apiError(r, fallback) {
+    const t = await r.text().catch(() => "");
+    try { const d = JSON.parse(t); if (d.error) return d.error; } catch {}
+    return `${fallback} (HTTP ${r.status}${t ? ": " + t.replace(/<[^>]+>/g, " ").trim().slice(0, 120) : ""})`;
+  }
   const pwEl = $("#pw");
   try { pwEl.value = sessionStorage.getItem("wedding_pw") || ""; } catch {}
   pwEl.addEventListener("input", () => { try { sessionStorage.setItem("wedding_pw", pwEl.value); } catch {} });
@@ -187,9 +193,8 @@
     if (!pwEl.value) throw new Error("Hãy nhập mật khẩu quản trị trước");
     const blob = await compress(file);
     const r = await fetch("/api/img", { method: "POST", headers: { "content-type": "image/jpeg", "x-admin-password": pwEl.value }, body: blob });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(d.error || "Tải ảnh thất bại");
-    return d.url;
+    if (!r.ok) throw new Error(await apiError(r, "Tải ảnh thất bại"));
+    return (await r.json()).url;
   }
 
   $("#coverUp").addEventListener("change", async (e) => {
@@ -220,8 +225,7 @@
     try {
       toast("Đang đăng...");
       const r = await fetch("/api/config", { method: "POST", headers: { "content-type": "application/json", "x-admin-password": pwEl.value }, body: JSON.stringify(cfg) });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.error || "Đăng thất bại");
+      if (!r.ok) throw new Error(await apiError(r, "Đăng thất bại"));
       toast("Đã đăng thiệp. Mở thiệp chính để xem.");
     } catch (err) { toastErr(err.message); }
   });
