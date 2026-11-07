@@ -111,12 +111,11 @@
       opened = true;
       env.classList.add("open");
       if (W.music) audio.play().catch(() => {});
-      const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
       setTimeout(() => {
         env.classList.add("leaving");
         document.body.classList.remove("locked");
         setTimeout(() => env.remove(), 1300);
-      }, quick ? 100 : 4300);
+      }, 4300);
     };
     $("#openBtn").addEventListener("click", openIt);
     $("#envSeal").addEventListener("click", openIt);

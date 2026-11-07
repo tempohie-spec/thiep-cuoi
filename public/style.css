@@ -124,7 +124,6 @@ body.locked { overflow: hidden; }
   .countdown div { width: 66px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .envelope, .env-letter, .env-flap, .env-seal { transition-duration: .01s !important; transition-delay: 0s !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .music.playing { animation: none; }
 }
