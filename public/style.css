@@ -166,14 +166,14 @@ body.locked { overflow: hidden; }
 
 /* Nền vân giấy thiệp cưới: giấy vẽ màu nước có hạt nổi, ô lặp liền mạch lấy từ ảnh giấy thật (images/paper.webp, nhân với màu nền kem) */
 :root { --paper: url("images/paper.webp"); }
-html { background-color: #e9dcbf; background-image: var(--paper); background-size: 512px; background-blend-mode: multiply; }
+html { background-color: #e9dcbf; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
 body {
   background-color: #fff7e6;
   background-image: var(--paper), linear-gradient(180deg, #fffaf0, #fbf2de);
-  background-size: 512px, 100% 100%;
+  background-size: 256px, 100% 100%;
   background-blend-mode: multiply, normal;
 }
-.event, .gift { background-color: #fffdf6; background-image: var(--paper); background-size: 512px; background-blend-mode: multiply; }
+.event, .gift { background-color: #fffdf6; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
 .hero { position: relative; }
-.hero::before { content: ""; position: absolute; inset: 0; background-image: var(--paper); background-size: 512px; mix-blend-mode: multiply; opacity: .75; pointer-events: none; }
+.hero::before { content: ""; position: absolute; inset: 0; background-image: var(--paper); background-size: 256px; mix-blend-mode: multiply; opacity: .75; pointer-events: none; }
 .hero-inner { position: relative; }
