@@ -11,10 +11,23 @@
 </head>
 <body>
   <div id="envelope" class="envelope">
-    <div class="envelope-card">
-      <p class="small">Thiệp mời cưới</p>
-      <h1 class="script" data-names></h1>
-      <button id="openBtn" class="btn">Mở thiệp</button>
+    <div class="env-wrap">
+      <div class="env">
+        <div class="env-back"></div>
+        <div class="env-letter">
+          <p class="small">Trân trọng kính mời</p>
+          <p class="letter-names script" id="letterNames"></p>
+        </div>
+        <div class="env-front">
+          <div class="env-text">
+            <p class="small" id="envLabel">Thiệp mời cưới</p>
+            <div class="env-names script" id="envNames"></div>
+            <button id="openBtn" class="btn" type="button">Mở thiệp</button>
+          </div>
+        </div>
+        <div class="env-flap"></div>
+        <div class="env-seal script" id="envSeal"></div>
+      </div>
     </div>
   </div>
 

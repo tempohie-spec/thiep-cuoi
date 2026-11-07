@@ -13,7 +13,7 @@
   }
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const names = `${W.groom.name} &amp; ${W.bride.name}`;
+  const names = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
 
   document.title = `Thiệp Cưới ${W.groom.name} & ${W.bride.name}`;
   document.querySelectorAll("[data-names]").forEach((el) => (el.innerHTML = names));
@@ -90,15 +90,34 @@
   }
 
   // Envelope
-  const guest = params.get("to");
-  if (guest) document.querySelector(".envelope-card .small").textContent = `Thân mời ${guest}`;
-  if (preview) $("#envelope").remove();
-  else document.body.classList.add("locked");
-  $("#openBtn") && $("#openBtn").addEventListener("click", () => {
-    $("#envelope").classList.add("open");
-    document.body.classList.remove("locked");
-    if (W.music) audio.play().catch(() => {});
-  });
+  const env = $("#envelope");
+  if (preview) {
+    env.remove();
+  } else {
+    const guest = params.get("to");
+    if (guest) $("#envLabel").textContent = `Thân mời ${guest}`;
+    document.body.classList.add("locked");
+    const gi = (W.groom.name || "").trim().charAt(0).toUpperCase();
+    const bi = (W.bride.name || "").trim().charAt(0).toUpperCase();
+    $("#envSeal").textContent = gi + bi;
+    $("#envNames").innerHTML = `<span class="n">${esc(W.groom.name)}</span><span class="amp">&amp;</span><span class="n">${esc(W.bride.name)}</span>`;
+    $("#letterNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+    let opened = false;
+    const openIt = () => {
+      if (opened) return;
+      opened = true;
+      env.classList.add("open");
+      if (W.music) audio.play().catch(() => {});
+      const quick = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setTimeout(() => {
+        env.classList.add("leaving");
+        document.body.classList.remove("locked");
+        setTimeout(() => env.remove(), 1000);
+      }, quick ? 100 : 2100);
+    };
+    $("#openBtn").addEventListener("click", openIt);
+    $("#envSeal").addEventListener("click", openIt);
+  }
 
   // Reveal on scroll
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
