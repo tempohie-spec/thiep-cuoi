@@ -77,6 +77,10 @@
     <div id="list-story"></div>
     <button type="button" data-add="story">Thêm mốc</button>
 
+    <h2>Chữ trên phong bì</h2>
+    <p class="hint">Phong bì hiện tên cô dâu chú rể (lấy từ "Tên hiển thị" ở trên), một dòng ngày tháng năm và một dòng "Thân mời: tên khách".</p>
+    <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
+
     <h2>Ảnh nền trang Mở thiệp</h2>
     <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Để trống thì dùng nền màu mặc định.</p>
     <input data-k="introBg" placeholder="Dán đường dẫn hoặc tải ảnh lên">
@@ -99,6 +103,12 @@
     <h2>Hộp mừng cưới</h2>
     <div id="list-gifts"></div>
     <button type="button" data-add="gifts">Thêm tài khoản</button>
+
+    <h2>Tạo link mời riêng cho khách</h2>
+    <p class="hint">Nhập mỗi dòng một tên khách. Bấm Tạo link, mỗi khách sẽ có một link riêng, phong bì hiện "Thân mời: tên khách đó".</p>
+    <textarea rows="4" id="guestNames" placeholder="Anh Nam&#10;Chị Lan&#10;Gia đình cô Hoa"></textarea>
+    <div class="row"><button type="button" id="makeLinks">Tạo link</button><button type="button" id="copyLinks">Sao chép tất cả</button></div>
+    <textarea rows="6" id="guestLinks" readonly style="margin-top:8px"></textarea>
 
     <h2>Khác</h2>
     <label>Link nhận RSVP (Google Apps Script hoặc Formspree, có thể để trống)</label><input data-k="rsvpEndpoint">
@@ -242,6 +252,19 @@
     if (th) openPos(cfg.gallery[+th.dataset.pos], 3 / 4);
   });
   $("#posIntro").addEventListener("click", () => openPos(cfg.introBg, 9 / 16));
+
+  // ---- Tạo link riêng cho từng khách
+  const siteBase = () => location.origin + location.pathname.replace(/[^/]*$/, "");
+  $("#makeLinks").addEventListener("click", () => {
+    const names = $("#guestNames").value.split("\n").map((l) => l.trim()).filter(Boolean);
+    $("#guestLinks").value = names.map((n) => `${n}: ${siteBase()}?to=${encodeURIComponent(n)}`).join("\n");
+    if (!names.length) toastErr("Hãy nhập ít nhất một tên khách");
+  });
+  $("#copyLinks").addEventListener("click", async () => {
+    const v = $("#guestLinks").value;
+    if (!v) return toastErr("Chưa có link, hãy bấm Tạo link");
+    try { await navigator.clipboard.writeText(v); toast("Đã sao chép"); } catch { $("#guestLinks").select(); toastErr("Hãy sao chép thủ công"); }
+  });
   $("#posCover").addEventListener("click", () => openPos(cfg.cover, 9 / 16));
   // Đọc lỗi từ máy chủ: ưu tiên thông báo JSON, không có thì hiện mã HTTP và đoạn đầu nội dung
   async function apiError(r, fallback) {

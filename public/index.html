@@ -7,15 +7,12 @@
   <meta name="description" content="Trân trọng kính mời bạn đến dự lễ cưới của chúng mình">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=%E5%9B%8D&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="envelope" class="envelope">
     <div class="env-stage">
-      <div class="env-head">
-        <p class="small" id="envLabel">Thiệp mời cưới</p>
-        <div class="env-names script" id="envNames"></div>
-      </div>
       <div class="env">
         <div class="env-back"></div>
         <div class="env-letter">
@@ -23,8 +20,13 @@
           <p class="letter-names script" id="letterNames"></p>
         </div>
         <div class="env-front"></div>
+        <div class="env-text">
+          <p class="env-names script" id="envNames"></p>
+          <p class="env-date" id="envDate"></p>
+          <p class="env-guest" id="envGuest"></p>
+        </div>
         <div class="env-flap"></div>
-        <div class="env-seal script" id="envSeal"></div>
+        <div class="env-seal" id="envSeal" aria-label="Mở thiệp">&#22221;</div>
       </div>
       <button id="openBtn" class="btn" type="button">Mở thiệp</button>
     </div>

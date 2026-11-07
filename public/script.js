@@ -101,13 +101,11 @@
       env.style.backgroundImage = `linear-gradient(rgba(255,255,255,.12), rgba(60,40,30,.18)), url('${String(W.introBg).replace(/'/g, "%27")}')`;
       env.style.backgroundPosition = posOf(W.introBg);
     }
-    const guest = params.get("to");
-    if (guest) $("#envLabel").textContent = `Thân mời ${guest}`;
-    if (!preview) document.body.classList.add("locked");
-    const gi = (W.groom.name || "").trim().charAt(0).toUpperCase();
-    const bi = (W.bride.name || "").trim().charAt(0).toUpperCase();
-    $("#envSeal").textContent = gi + bi;
-    $("#envNames").innerHTML = `<span class="n">${esc(W.groom.name)}</span><span class="amp">&amp;</span><span class="n">${esc(W.bride.name)}</span>`;
+    const guest = (params.get("to") || "").trim().slice(0, 60);
+    document.body.classList.add("locked");
+    $("#envNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+    $("#envDate").textContent = (W.introDate || "").trim() || $("#heroDate").textContent;
+    $("#envGuest").textContent = `Thân mời: ${guest || "Quý khách"}`;
     $("#letterNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
     let opened = false;
     const openIt = () => {
