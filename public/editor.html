@@ -29,6 +29,14 @@
     .actions { position: sticky; bottom: 0; background: #fff; padding: 10px 0; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
     .toast { font-size: .85rem; color: #2e7d32; align-self: center; }
     .toast.err { color: #c0392b; }
+    .sz { color: #7a4a10; font-weight: 700; }
+    .size { font-size: .82rem; background: #fff6e0; border: 1px dashed #d6a24a; color: #7a4a10; border-radius: 8px; padding: 5px 10px; margin: 4px 0 6px; }
+    details.sizes { background: #fff6e0; border: 1px solid #ead7a8; border-radius: 10px; padding: 8px 12px; margin: 16px 0 4px; }
+    details.sizes summary { cursor: pointer; font-weight: 700; color: #7a4a10; font-size: .9rem; }
+    details.sizes table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: .8rem; }
+    details.sizes th, details.sizes td { border: 1px solid #ead7a8; padding: 5px 7px; text-align: left; vertical-align: top; background: #fff; }
+    details.sizes th { background: #f7e7bf; }
+    details.sizes p { font-size: .78rem; color: #6b615a; margin: 4px 0 2px; }
     .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
     .thumbs { display: flex; flex-wrap: wrap; gap: 6px; }
     .thumb { padding: 0; width: 64px; height: 85px; overflow: hidden; border-radius: 6px; background: #eee; }
@@ -85,22 +93,34 @@
     <p class="hint">Phong bì hiện tên cô dâu chú rể (lấy từ "Tên hiển thị" ở trên), một dòng ngày tháng năm và một dòng "Thân mời: tên khách".</p>
     <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
 
+    <details class="sizes" open>
+      <summary>Bảng kích thước ảnh nên dùng (rộng x cao, tính bằng pixel)</summary>
+      <table>
+        <tr><th>Ảnh</th><th>Điện thoại</th><th>Máy tính</th></tr>
+        <tr><td>Ảnh nền trang Mở thiệp</td><td><b>1000 x 1800</b><br>ảnh dọc, tỉ lệ 9:16</td><td><b>1800 x 1000</b><br>ảnh ngang, tỉ lệ 16:9</td></tr>
+        <tr><td>Ảnh bìa (đầu trang)</td><td><b>1000 x 1800</b><br>ảnh dọc, tỉ lệ 9:16</td><td><b>1800 x 1800</b><br>ảnh vuông, tỉ lệ 1:1</td></tr>
+        <tr><td>Ảnh album</td><td colspan="2"><b>900 x 1200</b> (ảnh đứng, tỉ lệ 3:4), dùng chung cho cả hai</td></tr>
+        <tr><td>Ảnh QR chuyển khoản</td><td colspan="2"><b>600 x 600</b> (vuông), dùng chung cho cả hai</td></tr>
+      </table>
+      <p>Ảnh lớn hơn 1800px ở cạnh dài sẽ tự được thu nhỏ khi tải lên. Ảnh nhỏ hơn kích thước trên vẫn dùng được nhưng có thể bị mờ. Mỗi ảnh nên dưới khoảng 500KB để tải nhanh. Thiệp tự cắt phần thừa theo màn hình, dùng nút "Chỉnh vị trí ảnh" để chọn phần cần giữ.</p>
+    </details>
+
     <h2>Ảnh nền trang Mở thiệp</h2>
     <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính. Để trống thì dùng nền màu mặc định.</p>
-    <label>Ảnh cho điện thoại (nên là ảnh dọc)</label>
+    <label>Ảnh cho ĐIỆN THOẠI: <span class="sz">1000 x 1800px (ảnh dọc, 9:16)</span></label>
     <input data-k="introBg" placeholder="Dán đường dẫn hoặc tải ảnh lên">
     <input type="file" accept="image/*" id="introUp" style="margin-top:6px">
-    <label>Ảnh cho máy tính (nên là ảnh ngang, để trống thì dùng ảnh điện thoại)</label>
+    <label>Ảnh cho MÁY TÍNH: <span class="sz">1800 x 1000px (ảnh ngang, 16:9)</span> (để trống thì dùng ảnh điện thoại)</label>
     <input data-k="introBgD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
     <input type="file" accept="image/*" id="introDUp" style="margin-top:6px">
     <div class="row"><button type="button" id="posIntro">Chỉnh vị trí ảnh</button><button type="button" id="clearIntro">Xóa ảnh điện thoại</button><button type="button" id="clearIntroD">Xóa ảnh máy tính</button></div>
 
     <h2>Ảnh bìa</h2>
     <p class="hint">Ảnh nền đầu trang. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính.</p>
-    <label>Ảnh cho điện thoại (nên là ảnh dọc)</label>
+    <label>Ảnh cho ĐIỆN THOẠI: <span class="sz">1000 x 1800px (ảnh dọc, 9:16)</span></label>
     <input data-k="cover" placeholder="Dán đường dẫn hoặc tải ảnh lên">
     <input type="file" accept="image/*" id="coverUp" style="margin-top:6px">
-    <label>Ảnh cho máy tính (nên là ảnh vuông hoặc ngang, để trống thì dùng ảnh điện thoại)</label>
+    <label>Ảnh cho MÁY TÍNH: <span class="sz">1800 x 1800px (ảnh vuông, 1:1)</span> (để trống thì dùng ảnh điện thoại)</label>
     <input data-k="coverD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
     <input type="file" accept="image/*" id="coverDUp" style="margin-top:6px">
     <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button><button type="button" id="clearCover">Xóa ảnh điện thoại</button><button type="button" id="clearCoverD">Xóa ảnh máy tính</button></div>
@@ -110,7 +130,7 @@
     <select data-k="heroAlign"><option value="bottom">Phía dưới</option><option value="center">Ở giữa</option><option value="top">Phía trên</option></select>
 
     <h2>Album ảnh</h2>
-    <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link). Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách.</p>
+    <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link). Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
     <textarea rows="6" id="gallery"></textarea>
     <label>Tải ảnh lên (chọn được nhiều ảnh)</label><input type="file" accept="image/*" multiple id="galUp">
     <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ bên dưới để kéo chỉnh vị trí.</p>
@@ -155,6 +175,7 @@
     <h3>Kéo ảnh để chọn vị trí</h3>
     <p class="hint">Nhấn giữ và kéo ảnh trong khung. Khung có tỉ lệ gần giống cách ảnh hiện trên thiệp. Bấm Lưu vị trí khi ưng ý.</p>
     <div class="seg" id="posDev" hidden><button type="button" data-dev="m" class="on">Điện thoại</button><button type="button" data-dev="d">Máy tính</button></div>
+    <p class="size" id="posSize" hidden></p>
     <p class="hint" id="posDevHint" hidden>Ảnh này hiện khác nhau trên điện thoại và máy tính. Chọn từng tab rồi kéo để đặt vị trí cho mỗi loại.</p>
     <div class="pos-frame" id="posFrame"><img id="posImg" alt="" draggable="false"></div>
     <div class="modal-actions"><button type="button" id="posCancel">Hủy</button><button type="button" class="primary" id="posSave">Lưu vị trí</button></div>
@@ -177,7 +198,7 @@
   const schema = {
     events: { label: "Sự kiện", fields: [["title", "Tên sự kiện"], ["time", "Thời gian"], ["lunar", "Ngày âm lịch"], ["place", "Địa điểm"], ["address", "Địa chỉ"], ["map", "Link Google Maps"]], blank: { title: "", time: "", lunar: "", place: "", address: "", map: "" } },
     story: { label: "Mốc", fields: [["year", "Năm"], ["title", "Tiêu đề"], ["text", "Nội dung", true]], blank: { year: "", title: "", text: "" } },
-    gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR (đường dẫn, có thể để trống)", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
+    gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
 
   const get = (o, p) => p.split(".").reduce((a, k) => (a == null ? "" : a[k]), o);
@@ -257,17 +278,20 @@
     posFrame.style.aspectRatio = String(a);
     posFrame.style.width = frameSize(a);
     posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
+    const sz = $("#posSize");
+    sz.hidden = !(ps.sizes && ps.sizes[dev]);
+    sz.textContent = ps.sizes && ps.sizes[dev] ? "Kích thước ảnh nên dùng cho " + (dev === "m" ? "điện thoại" : "máy tính") + ": " + ps.sizes[dev] : "";
     if (posImg.dataset.u !== ps.urls[dev]) { posImg.dataset.u = ps.urls[dev]; posImg.src = ps.urls[dev]; }
     posDev.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.dev === dev));
   }
   // url, aspect: ảnh và tỉ lệ khung trên điện thoại. desktop = {url, aspect}: ảnh và tỉ lệ khung trên máy tính (nếu có)
-  function openPos(url, aspect, desktop, startDev) {
+  function openPos(url, aspect, desktop, startDev, sizes) {
     if (!url && desktop) url = desktop.url;
     if (!url) return toastErr("Chưa có ảnh để chỉnh");
     const dUrl = desktop ? desktop.url || url : url;
     const m = parsePos((cfg.imgPos || {})[url]);
     const d = parsePos((cfg.imgPosD || {})[dUrl] || (cfg.imgPos || {})[dUrl]);
-    ps = { urls: { m: url, d: dUrl }, aspects: { m: aspect, d: desktop ? desktop.aspect : aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktop };
+    ps = { sizes, urls: { m: url, d: dUrl }, aspects: { m: aspect, d: desktop ? desktop.aspect : aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktop };
     posDev.hidden = !ps.hasD;
     $("#posDevHint").hidden = !ps.hasD;
     posImg.dataset.u = "";
@@ -276,8 +300,10 @@
   }
   // Mở hộp chỉnh vị trí cho ảnh bìa hoặc ảnh nền Mở thiệp (dùng ảnh điện thoại, ảnh máy tính, hoặc một ảnh chung)
   function openImgPos(kind, dev) {
-    const [kM, kD, asp] = kind === "intro" ? ["introBg", "introBgD", 1.6] : ["cover", "coverD", 1];
-    openPos(cfg[kM] || cfg[kD], 9 / 16, { url: cfg[kD] || cfg[kM], aspect: asp }, dev);
+    const [kM, kD, asp, sizes] = kind === "intro"
+      ? ["introBg", "introBgD", 1.6, { m: "1000 x 1800px (ảnh dọc, 9:16)", d: "1800 x 1000px (ảnh ngang, 16:9)" }]
+      : ["cover", "coverD", 1, { m: "1000 x 1800px (ảnh dọc, 9:16)", d: "1800 x 1800px (ảnh vuông, 1:1)" }];
+    openPos(cfg[kM] || cfg[kD], 9 / 16, { url: cfg[kD] || cfg[kM], aspect: asp }, dev, sizes);
   }
   posDev.addEventListener("click", (e) => { const b = e.target.closest("button[data-dev]"); if (b && ps) showDev(b.dataset.dev); });
   posFrame.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; posFrame.setPointerCapture(e.pointerId); });
