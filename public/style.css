@@ -230,8 +230,8 @@ body {
 .front .pg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(100, 60, 15, .32), rgba(100, 60, 15, 0) 13%); }
 .back .pg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(270deg, rgba(100, 60, 15, .32), rgba(100, 60, 15, 0) 13%); }
 /* ảnh dán vào album: khung trắng kiểu ảnh cũ, hơi nghiêng, bốn góc kẹp ảnh */
-.ph { position: absolute; left: 9%; top: 8%; width: 82%; height: 80%; padding: 3.5% 3.5% 11%; display: flex; background: #fffaf0; transform: rotate(var(--r, 0deg)); box-shadow: 0 5px 14px rgba(70, 40, 10, .38), 0 0 0 1px rgba(120, 80, 30, .15); }
-.ph img { width: 100%; height: 100%; object-fit: cover; background: #e8d9b5; filter: sepia(.22) saturate(.92) contrast(.96); }
+.ph { z-index: 2; position: absolute; left: 9%; top: 8%; width: 82%; height: 80%; padding: 3.5% 3.5% 11%; display: flex; background: #fffaf0; transform: rotate(var(--r, 0deg)); box-shadow: 0 5px 14px rgba(70, 40, 10, .38), 0 0 0 1px rgba(120, 80, 30, .15); }
+.ph img { width: 100%; height: 100%; object-fit: cover; background: #e8d9b5; }
 .ph .c { position: absolute; width: 0; height: 0; border-style: solid; }
 .ph .tl { left: -2px; top: -2px; border-width: 17px 17px 0 0; border-color: #5a3d22 transparent transparent transparent; }
 .ph .tr { right: -2px; top: -2px; border-width: 0 17px 17px 0; border-color: transparent #5a3d22 transparent transparent; }
@@ -240,16 +240,15 @@ body {
 .zoom { position: absolute; z-index: 3; right: 12%; bottom: 11%; width: 30px; height: 30px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255, 250, 235, .9); box-shadow: 0 2px 8px rgba(0, 0, 0, .3); }
 .zoom::before, .zoom::after { content: ""; position: absolute; left: 50%; top: 50%; background: var(--accent-dark); transform: translate(-50%, -50%); }
 .zoom::before { width: 12px; height: 2px; } .zoom::after { width: 2px; height: 12px; }
-/* bìa và trang cuối giống nhau: bìa da màu hổ phách, viền nổi và chỉ khâu */
-.pg.cover { color: #fff1cf; background-color: #b9772a;
-  background-image: radial-gradient(ellipse at 38% 32%, rgba(255, 225, 160, .38), rgba(255, 225, 160, 0) 60%), linear-gradient(135deg, #c98a35, #8f5515), var(--paper);
-  background-size: auto, auto, 256px; background-blend-mode: normal, normal, multiply; box-shadow: inset 0 0 42px rgba(60, 30, 5, .6); }
-.pg.cover::before { content: ""; position: absolute; inset: 6.5%; border: 2px solid rgba(255, 238, 190, .78); border-radius: 18px 10px 16px 10px; }
-.cover-in { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .55rem; padding: 14%; text-align: center; }
-.cover-in::before { content: ""; position: absolute; inset: 9.5%; border: 1.5px dashed rgba(255, 238, 190, .5); border-radius: 14px 8px 13px 8px; pointer-events: none; }
-.cover-in .small { color: #fff1cf; opacity: .92; }
-.cover-names { color: #fff4d6 !important; font-size: 1.6rem; line-height: 1.3; text-shadow: 0 1px 0 rgba(90, 50, 10, .6), 0 0 12px rgba(255, 220, 140, .45); }
-.cover-date { font-size: .95rem; letter-spacing: .06em; }
+/* bìa và trang cuối giống nhau: bìa da nâu, viền và chữ vàng dập nổi như sổ tay cổ điển */
+:root { --leather-grain: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27200%27%20height%3D%27200%27%3E%3Cfilter%20id%3D%27l%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%27.7%27%20numOctaves%3D%273%27%20seed%3D%277%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20values%3D%270%200%200%200%20.08%20%200%200%200%200%20.03%20%200%200%200%200%20.01%20%20.9%200%200%200%20-.28%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23l%29%27%2F%3E%3C%2Fsvg%3E"); }
+.pg.cover { background-color: #5a2812;
+  background-image: var(--leather-grain), radial-gradient(circle at 0 0, rgba(215, 150, 90, .28), rgba(215, 150, 90, 0) 28%), radial-gradient(circle at 100% 100%, rgba(215, 150, 90, .2), rgba(215, 150, 90, 0) 26%), radial-gradient(ellipse at 50% 40%, #ab5c32 0%, #7e3c1b 50%, #3a170b 100%);
+  background-size: 200px, auto, auto, auto; box-shadow: inset 0 0 42px rgba(18, 6, 1, .62), inset 0 0 3px rgba(255, 200, 140, .3); }
+.cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* rãnh gáy sách trên bìa */
+.front .pg.cover::before { content: ""; position: absolute; top: 0; bottom: 0; left: 5.5%; width: 3px; background: linear-gradient(90deg, rgba(0, 0, 0, .5), rgba(255, 200, 140, .16)); }
+.back .pg.cover::before { content: ""; position: absolute; top: 0; bottom: 0; right: 5.5%; width: 3px; background: linear-gradient(270deg, rgba(0, 0, 0, .5), rgba(255, 200, 140, .16)); }
 .flip-ctrl { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 1.5rem; }
 .flip-count { min-width: 9rem; font-size: .9rem; color: var(--muted); }
 .flip-btn { position: relative; width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--accent); cursor: pointer; box-shadow: 0 4px 12px rgba(150, 100, 30, .25); transition: opacity .2s, transform .2s; }
