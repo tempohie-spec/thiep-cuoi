@@ -3,30 +3,45 @@ import { requireAuth, readBody } from "./_auth.js";
 
 const PATH = "wedding-config.json";
 
-// Địa chỉ file cấu hình là cố định, nên chỉ cần tra cứu (list) một lần cho mỗi lần hàm khởi động.
-// Làm vậy để lượt xem của khách không tốn "advanced operations" của Vercel Blob.
-let cachedUrl = null;
+// File cấu hình luôn có tên cố định (không đuôi ngẫu nhiên) nên địa chỉ công khai của nó đoán được:
+//   https://<mã kho>.public.blob.vercel-storage.com/wedding-config.json
+// Mã kho nằm trong khóa BLOB_READ_WRITE_TOKEN (dạng vercel_blob_rw_<mã kho>_<bí mật>). Tải thẳng địa chỉ này không cần list(),
+// nên lượt xem thiệp và mở editor không tốn "advanced operations" của Vercel Blob.
+function publicBase() {
+  if (process.env.BLOB_PUBLIC_BASE) return process.env.BLOB_PUBLIC_BASE.replace(/\/+$/, "");
+  const m = /^vercel_blob_rw_([A-Za-z0-9]+)_/.exec(process.env.BLOB_READ_WRITE_TOKEN || "");
+  return m ? `https://${m[1].toLowerCase()}.public.blob.vercel-storage.com` : null;
+}
+
+// Dự phòng: nếu tải thẳng không được thì tra cứu bằng list() (tốn 1 thao tác nâng cao) rồi nhớ địa chỉ tìm được
+let listedUrl = null;
+async function readViaList(bust) {
+  if (!listedUrl || bust) {
+    const { blobs } = await list({ prefix: PATH, limit: 1 });
+    if (!blobs.length) return null;
+    listedUrl = blobs[0].url + `?v=${new Date(blobs[0].uploadedAt).getTime()}`;
+  }
+  const r = await fetch(listedUrl);
+  if (!r.ok) throw new Error("blob " + r.status);
+  return r.json();
+}
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
-      // Trang editor gọi kèm ?t= nên luôn lấy bản mới nhất; khách xem thiệp dùng bản cache ngắn
+      // Trang editor gọi kèm ?t= nên luôn lấy bản mới nhất; khách xem thiệp dùng bản lưu tạm ngắn
       const exact = new URL(req.url, "http://x").searchParams.has("t");
-      let url = cachedUrl, v = "";
-      if (exact || !url) {
-        const { blobs } = await list({ prefix: PATH, limit: 1 });
-        if (!blobs.length) {
-          res.setHeader("cache-control", "no-store");
-          return res.status(200).json({});
-        }
-        url = cachedUrl = blobs[0].url;
-        v = `?v=${new Date(blobs[0].uploadedAt).getTime()}`;
+      let data = null, got = false;
+      const base = publicBase();
+      if (base) {
+        try {
+          const r = await fetch(`${base}/${PATH}` + (exact ? `?t=${Date.now()}` : ""));
+          if (r.ok) { data = await r.json(); got = true; }
+        } catch {}
       }
-      const r = await fetch(url + v);
-      if (!r.ok) throw new Error("blob " + r.status);
-      const data = await r.json();
-      res.setHeader("cache-control", exact ? "no-store" : "public, s-maxage=30, stale-while-revalidate=60");
-      return res.status(200).json(data);
+      if (!got) data = await readViaList(exact);
+      res.setHeader("cache-control", data ? (exact ? "no-store" : "public, s-maxage=30, stale-while-revalidate=60") : "no-store");
+      return res.status(200).json(data || {});
     } catch (e) {
       res.setHeader("cache-control", "no-store");
       return res.status(500).json({ error: "Không đọc được dữ liệu đã đăng" });
@@ -52,7 +67,7 @@ export default async function handler(req, res) {
       allowOverwrite: true,
       cacheControlMaxAge: 60,
     });
-    cachedUrl = blob.url;
+    listedUrl = null;
     res.setHeader("cache-control", "no-store");
     return res.status(200).json({ ok: true });
   }
