@@ -79,13 +79,6 @@
     });
   })();
 
-  $("#story").innerHTML = W.story.map((s) => `
-    <div class="tl-item">
-      <p class="year">${esc(s.year)}</p>
-      <h3>${esc(s.title)}</h3>
-      <p>${esc(s.text)}</p>
-    </div>`).join("");
-
   const lb = $("#lightbox");
   // Phóng to ảnh: ảnh nở dần từ vị trí ảnh nhỏ tới kích thước đầy đủ, đóng lại thì thu về chỗ cũ
   let lbFrom = null, lbBusy = false;

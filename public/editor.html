@@ -86,10 +86,6 @@
     <div id="list-eventCards"></div>
     <button type="button" data-add="eventCards">Thêm thẻ sự kiện</button>
 
-    <h2>Chuyện tình yêu</h2>
-    <div id="list-story"></div>
-    <button type="button" data-add="story">Thêm mốc</button>
-
     <h2>Chữ trên phong bì</h2>
     <p class="hint">Phong bì hiện tên cô dâu chú rể (lấy từ "Tên hiển thị" ở trên), một dòng ngày tháng năm và một dòng "Thân mời: tên khách".</p>
     <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
@@ -199,7 +195,6 @@
   try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...migrate(JSON.parse(d)) }; hasDraft = true; } } catch {}
 
   const schema = {
-    story: { label: "Mốc", fields: [["year", "Năm"], ["title", "Tiêu đề"], ["text", "Nội dung", true]], blank: { year: "", title: "", text: "" } },
     eventCards: { label: "Thẻ sự kiện", fields: [["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { front: "", back: "", map: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };

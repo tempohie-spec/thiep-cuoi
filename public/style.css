@@ -109,12 +109,6 @@ body.locked { overflow: hidden; }
 .event a { color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: .4rem 1.2rem; border-radius: 999px; font-size: .85rem; }
 
 /* Timeline */
-.timeline { position: relative; max-width: 640px; margin: 0 auto; }
-.timeline::before { content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 1px; background: var(--gold); }
-.tl-item { position: relative; padding: 0 0 2rem 56px; }
-.tl-item::before { content: ""; position: absolute; left: 14px; top: 8px; width: 13px; height: 13px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); }
-.tl-item .year { color: var(--gold); font-weight: 500; letter-spacing: .1em; }
-.tl-item h3 { font-family: var(--font); font-weight: 600; font-size: 1.05rem; }
 
 /* Gallery */
 .gallery { display: grid; grid-template-columns: 1fr; gap: .8rem; }

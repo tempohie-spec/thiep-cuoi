@@ -9,11 +9,6 @@ window.WEDDING = {
   eventCards: [
     { front: "images/event-front.webp", back: "images/event-back.webp", map: "https://maps.google.com/?q=Đền+thánh+Giuse+Sa+Châu+Giao+Hưng+Ninh+Bình" }
   ],
-  story: [
-    { year: "2020", title: "Lần đầu gặp gỡ", text: "Chúng mình gặp nhau trong một buổi chiều mưa ở quán cà phê nhỏ." },
-    { year: "2022", title: "Chính thức hẹn hò", text: "Từ những tin nhắn chúc ngủ ngon, chúng mình bắt đầu một hành trình mới." },
-    { year: "2026", title: "Lời cầu hôn", text: "Dưới bầu trời Đà Lạt, anh hỏi và em đã gật đầu." }
-  ],
   // Đặt ảnh vào thư mục images/ rồi khai báo tên file ở đây
   gallery: ["images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg", "images/5.jpg", "images/6.jpg"],
   gifts: [
