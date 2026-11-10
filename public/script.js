@@ -36,6 +36,10 @@
     h.style.setProperty("--img-d", cssUrl(coverD));
     h.style.setProperty("--pos", posOf(coverM));
     h.style.setProperty("--pos-d", posOfD(coverD));
+    // Khung trang đầu có đúng tỉ lệ của ảnh nên ảnh luôn hiện trọn vẹn, không bị cắt dù trình duyệt tính chiều cao màn hình thế nào
+    const ratio = (u, name) => { const im = new Image(); im.onload = () => { if (im.naturalWidth && im.naturalHeight) { h.style.setProperty(name, (im.naturalWidth / im.naturalHeight).toFixed(4)); h.classList.add("fit"); } }; im.src = u; };
+    ratio(coverM, "--ar");
+    ratio(coverD, "--ar-d");
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
