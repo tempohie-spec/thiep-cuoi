@@ -82,15 +82,9 @@
     <label>Lời mời</label><textarea rows="3" data-k="quote"></textarea>
 
     <h2>Thiệp sự kiện (thẻ lật)</h2>
-    <p class="hint">Mặt trước hiện ảnh nhà thờ, khách chạm vào thì thẻ lật sang mặt sau (ngày giờ, địa chỉ). Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span> cho cả hai mặt.</p>
-    <label>Ảnh mặt trước</label>
-    <input data-k="eventFront" placeholder="Dán đường dẫn hoặc tải ảnh lên">
-    <input type="file" accept="image/*" id="evFrontUp" style="margin-top:6px">
-    <label>Ảnh mặt sau (ngày giờ, địa chỉ)</label>
-    <input data-k="eventBack" placeholder="Dán đường dẫn hoặc tải ảnh lên">
-    <input type="file" accept="image/*" id="evBackUp" style="margin-top:6px">
-    <label>Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)</label>
-    <input data-k="eventMap" placeholder="https://maps.google.com/...">
+    <p class="hint">Mỗi thẻ có hai mặt: mặt trước (ví dụ ảnh nhà thờ), chạm vào thì lật sang mặt sau (ngày giờ, địa chỉ). Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span>, ảnh PNG nền trong suốt vẫn giữ nền trong suốt.</p>
+    <div id="list-eventCards"></div>
+    <button type="button" data-add="eventCards">Thêm thẻ sự kiện</button>
 
     <h2>Chuyện tình yêu</h2>
     <div id="list-story"></div>
@@ -195,15 +189,18 @@
   const KEY = "wedding_draft";
   const $ = (s) => document.querySelector(s);
   const clone = (o) => JSON.parse(JSON.stringify(o));
+  // Dữ liệu cũ có một thẻ (eventFront, eventBack, eventMap) thì chuyển thành danh sách thẻ
+  const migrate = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
   let base = clone(window.WEDDING);
   let cfg = base;
   let hasDraft = false, touched = false;
   const stable = (o) => JSON.stringify(o, (k, v) => (v && typeof v === "object" && !Array.isArray(v) ? Object.keys(v).sort().reduce((a, key) => ((a[key] = v[key]), a), {}) : v));
   const SEEN = "wedding_pub_seen";
-  try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...JSON.parse(d) }; hasDraft = true; } } catch {}
+  try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...migrate(JSON.parse(d)) }; hasDraft = true; } } catch {}
 
   const schema = {
     story: { label: "Mốc", fields: [["year", "Năm"], ["title", "Tiêu đề"], ["text", "Nội dung", true]], blank: { year: "", title: "", text: "" } },
+    eventCards: { label: "Thẻ sự kiện", fields: [["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { front: "", back: "", map: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
 
@@ -458,8 +455,6 @@
       } catch (err) { toastErr(err.message); }
     });
   }
-  bindImgUpload("#evFrontUp", "eventFront", null, "m", "ảnh mặt trước");
-  bindImgUpload("#evBackUp", "eventBack", null, "m", "ảnh mặt sau");
   bindImgUpload("#introUp", "introBg", "intro", "m", "ảnh nền điện thoại");
   bindImgUpload("#introDUp", "introBgD", "intro", "d", "ảnh nền máy tính");
   bindImgUpload("#coverUp", "cover", "cover", "m", "ảnh bìa điện thoại");
@@ -529,7 +524,7 @@
 
   fetch("/api/config?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {
     if (d && d.groom && d.bride) {
-      base = { ...clone(window.WEDDING), ...clone(d) };
+      base = { ...clone(window.WEDDING), ...migrate(clone(d)) };
       const pubKey = stable(d);
       let seen = null; try { seen = localStorage.getItem(SEEN); } catch {}
       if (touched) return; // bạn đã gõ trong lúc chờ, không ghi đè

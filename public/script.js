@@ -2,14 +2,16 @@
   const params = new URLSearchParams(location.search);
   const preview = params.get("preview");
   let W = window.WEDDING;
+  // Dữ liệu cũ có một thẻ (eventFront, eventBack, eventMap) thì chuyển thành danh sách thẻ
+  const migrate = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
   if (preview) {
-    try { const d = localStorage.getItem("wedding_draft"); if (d) W = { ...window.WEDDING, ...JSON.parse(d) }; } catch {}
+    try { const d = localStorage.getItem("wedding_draft"); if (d) W = { ...window.WEDDING, ...migrate(JSON.parse(d)) }; } catch {}
   } else {
     // Lấy nội dung đã đăng từ editor (nếu có), không có thì dùng config.js
     try {
       // ?fresh=1 bỏ qua bộ nhớ đệm để chủ thiệp xem ngay bản vừa đăng
       const r = await fetch(params.get("fresh") ? "/api/config?t=" + Date.now() : "/api/config", { cache: "no-store" });
-      if (r.ok) { const d = await r.json(); if (d && d.groom && d.bride) W = { ...window.WEDDING, ...d }; }
+      if (r.ok) { const d = await r.json(); if (d && d.groom && d.bride) W = { ...window.WEDDING, ...migrate(d) }; }
     } catch {}
   }
   const $ = (s) => document.querySelector(s);
@@ -56,17 +58,25 @@
   const strength = Math.min(100, Math.max(0, Number(W.coverStrength ?? 100) || 0));
   $(".hero").style.setProperty("--veil", String(1 - strength / 100));
 
-  // Thẻ sự kiện lật: mặt trước là ảnh nhà thờ (động đậy nhẹ), chạm vào thì lật sang mặt sau (ngày giờ, địa chỉ)
+  // Các thẻ sự kiện lật: mặt trước động đậy nhẹ, chạm vào thì lật sang mặt sau (ngày giờ, địa chỉ)
   (() => {
-    const card = $("#evCard"), hint = $("#evHint");
-    $("#evFront").src = W.eventFront || "images/event-front.webp";
-    $("#evBack").src = W.eventBack || "images/event-back.webp";
-    const map = $("#evMap");
-    if (W.eventMap) map.href = W.eventMap; else map.remove();
-    let flipped = false;
-    const flip = () => { flipped = !flipped; card.classList.toggle("flipped", flipped); $("#evflip").classList.toggle("is-flipped", flipped); hint.textContent = flipped ? "Chạm vào thiệp để lật lại" : "Chạm vào thiệp để lật"; };
-    card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; flip(); });
-    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    const list = $("#evlist");
+    const cards = (W.eventCards || []).filter((c) => c && (c.front || c.back));
+    $(".ev-hint").hidden = !cards.length;
+    list.innerHTML = cards.map((c, i) => `
+      <div class="evflip" style="--d:${(i * 0.9).toFixed(1)}s">
+        <div class="ev-float">
+          <div class="ev-card" role="button" tabindex="0" aria-label="Thiệp sự kiện, chạm để lật xem ngày giờ và địa chỉ">
+            <div class="ev-face ev-front"><img src="${esc(c.front || c.back)}" alt="Thiệp sự kiện mặt trước" width="1400" height="930"></div>
+            <div class="ev-face ev-back"><img src="${esc(c.back || c.front)}" alt="Ngày giờ và địa chỉ" width="1400" height="930">${c.map ? `<a class="ev-map" href="${esc(c.map)}" target="_blank" rel="noopener" aria-label="Xem bản đồ Google Maps"></a>` : ""}</div>
+          </div>
+        </div>
+      </div>`).join("");
+    list.querySelectorAll(".ev-card").forEach((card) => {
+      const flip = () => { const f = card.classList.toggle("flipped"); card.closest(".evflip").classList.toggle("is-flipped", f); };
+      card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; flip(); });
+      card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+    });
   })();
 
   $("#story").innerHTML = W.story.map((s) => `

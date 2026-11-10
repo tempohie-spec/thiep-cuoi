@@ -5,10 +5,10 @@ window.WEDDING = {
   // Thời điểm dùng cho đồng hồ đếm ngược (giờ Việt Nam)
   date: "2026-12-20T11:00:00+07:00",
   quote: "Hai trái tim, một hành trình. Trân trọng kính mời bạn đến chung vui cùng chúng mình.",
-  // Thẻ sự kiện lật: ảnh mặt trước, ảnh mặt sau và link Google Maps (bấm vào hình bản đồ ở mặt sau)
-  eventFront: "images/event-front.webp",
-  eventBack: "images/event-back.webp",
-  eventMap: "https://maps.google.com/?q=Đền+thánh+Giuse+Sa+Châu+Giao+Hưng+Ninh+Bình",
+  // Các thẻ sự kiện lật: mỗi thẻ có ảnh mặt trước, ảnh mặt sau và link Google Maps (bấm vào hình bản đồ ở mặt sau)
+  eventCards: [
+    { front: "images/event-front.webp", back: "images/event-back.webp", map: "https://maps.google.com/?q=Đền+thánh+Giuse+Sa+Châu+Giao+Hưng+Ninh+Bình" }
+  ],
   story: [
     { year: "2020", title: "Lần đầu gặp gỡ", text: "Chúng mình gặp nhau trong một buổi chiều mưa ở quán cà phê nhỏ." },
     { year: "2022", title: "Chính thức hẹn hò", text: "Từ những tin nhắn chúc ngủ ngon, chúng mình bắt đầu một hành trình mới." },
