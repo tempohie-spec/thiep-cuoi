@@ -143,7 +143,7 @@
       const defs = [];
       if (spread) for (let k = 0; k < pages.length; k += 2) defs.push([pages[k], pages[k + 1]]);
       else pages.forEach((p) => defs.push([p, blankP]));
-      book.innerHTML = defs.map((d, k) => `<div class="leaf" data-k="${k}"><div class="face front">${d[0]}</div><div class="face back">${d[1]}</div></div>`).join("");
+      book.innerHTML = defs.map((d, k) => `<div class="fleaf" data-k="${k}"><div class="face front">${d[0]}</div><div class="face back">${d[1]}</div></div>`).join("");
       leaves = [...book.children];
       idx = Math.min(idx, maxIdx());
       update();

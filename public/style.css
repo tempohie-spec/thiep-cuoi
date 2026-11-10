@@ -205,12 +205,17 @@ body {
 .flip-wrap { position: relative; margin: 0 auto; width: var(--pw); height: var(--ph); outline: none; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 /* phối cảnh đặt trên sách, các trang xếp lớp bằng z-index nên Safari và Chrome hiển thị giống nhau */
 .book { position: absolute; top: 0; left: 0; width: var(--pw); height: var(--ph); perspective: 2400px; -webkit-perspective: 2400px; transition: transform .9s cubic-bezier(.5, .1, .25, 1); }
-.leaf { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+.fleaf { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
   transition: transform 1s cubic-bezier(.5, .1, .25, 1), z-index 0s .5s, visibility 0s; }
-.leaf.flipped { transform: rotateY(-180deg); }
-.leaf.far { visibility: hidden; }
+.fleaf.flipped { transform: rotateY(-180deg); }
+.fleaf.far { visibility: hidden; }
 /* điện thoại: mỗi lần một trang, trang đã lật thì ẩn đi sau khi lật xong */
-@media (max-width: 759px) { .leaf.flipped { visibility: hidden; transition: transform 1s cubic-bezier(.5, .1, .25, 1), z-index 0s .5s, visibility 0s 1s; } }
+/* điện thoại: không có chỗ cho trang lật sang trái, nên trang xoay đến vị trí đứng thẳng (mỏng như một đường) rồi ẩn đi, không để lại dải trang ở mép màn hình.
+   Trang đang lật luôn nằm trên trang sau cho đến khi lật xong (z-index đổi sau cùng); lật ngược lại thì hiện ngay trên cùng. */
+@media (max-width: 759px) {
+  .fleaf { transition: transform .9s cubic-bezier(.55, .05, .45, 1), z-index 0s, visibility 0s; }
+  .fleaf.flipped { transform: rotateY(-90deg); visibility: hidden; transition: transform .9s cubic-bezier(.55, .05, .45, 1), z-index 0s .9s, visibility 0s .9s; }
+}
 @media (min-width: 760px) {
   .flip { --pw: 330px; }
   .flip-wrap { width: calc(var(--pw) * 2); }
