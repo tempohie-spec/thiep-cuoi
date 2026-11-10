@@ -195,7 +195,15 @@
     wrap.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
     book.addEventListener("click", (e) => {
       const z = e.target.closest(".zoom");
-      if (z) { lb.querySelector("img").src = z.dataset.zoom; lb.hidden = false; }
+      if (z) {
+        // giải mã ảnh xong rồi mới hiện khung phóng to, để ảnh hiện đủ kích thước ngay, không phóng dần
+        const url = z.dataset.zoom, li = lb.querySelector("img");
+        const show = () => { li.src = url; lb.hidden = false; };
+        const pre = new Image();
+        pre.decoding = "sync";
+        pre.src = url;
+        (pre.decode ? pre.decode() : Promise.resolve()).then(show, show);
+      }
     });
     book.addEventListener("error", (e) => { if (e.target.tagName === "IMG") e.target.style.visibility = "hidden"; }, true);
     mq.addEventListener("change", build);
