@@ -400,25 +400,44 @@
   pwEl.addEventListener("input", () => { try { sessionStorage.setItem("wedding_pw", pwEl.value); } catch {} });
 
   // Nén ảnh về tối đa 1800px, định dạng jpeg, để tải lên nhanh
-  function compress(file) {
+  // Nén ảnh: ảnh thường thành JPEG; ảnh có vùng trong suốt (PNG, WebP) giữ nguyên độ trong suốt (WebP, hoặc PNG nếu trình duyệt không hỗ trợ WebP)
+  const toBlob = (c, type, q) => new Promise((res) => c.toBlob(res, type, q));
+  const hasAlpha = (ctx, w, h) => {
+    const d = ctx.getImageData(0, 0, w, h).data;
+    for (let i = 3; i < d.length; i += 4 * 7) if (d[i] < 250) return true;
+    return false;
+  };
+  function loadImg(file) {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => {
-        const r = Math.min(1, 1800 / Math.max(img.width, img.height));
-        const c = document.createElement("canvas");
-        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
-        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-        c.toBlob((b) => (b ? resolve(b) : reject(new Error("Không đọc được ảnh"))), "image/jpeg", 0.85);
-        URL.revokeObjectURL(img.src);
-      };
+      img.onload = () => resolve(img);
       img.onerror = () => reject(new Error("Không đọc được ảnh"));
       img.src = URL.createObjectURL(file);
     });
   }
+  async function compress(file) {
+    const img = await loadImg(file);
+    URL.revokeObjectURL(img.src);
+    let max = 1800;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const r = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const alpha = /png|webp|gif/i.test(file.type) && hasAlpha(ctx, c.width, c.height);
+      let blob = alpha ? (await toBlob(c, "image/webp", 0.9)) : await toBlob(c, "image/jpeg", 0.85);
+      if (alpha && blob && blob.type !== "image/webp") blob = await toBlob(c, "image/png");
+      if (!blob) throw new Error("Không đọc được ảnh");
+      if (blob.size <= 3.9 * 1024 * 1024) return blob;
+      max = Math.round(max * 0.75); // ảnh còn quá nặng thì thu nhỏ rồi thử lại
+    }
+    throw new Error("Ảnh quá nặng, hãy dùng ảnh nhỏ hơn");
+  }
   async function uploadImage(file) {
     if (!pwEl.value) throw new Error("Hãy nhập mật khẩu quản trị trước");
     const blob = await compress(file);
-    const r = await fetch("/api/img", { method: "POST", headers: { "content-type": "application/octet-stream", "x-image-type": "image/jpeg", "x-admin-password": pwEl.value }, body: blob });
+    const r = await fetch("/api/img", { method: "POST", headers: { "content-type": "application/octet-stream", "x-image-type": blob.type || "image/jpeg", "x-admin-password": pwEl.value }, body: blob });
     if (!r.ok) throw new Error(await apiError(r, "Tải ảnh thất bại"));
     return (await r.json()).url;
   }
