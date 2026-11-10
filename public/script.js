@@ -69,11 +69,90 @@
       <p>${esc(s.text)}</p>
     </div>`).join("");
 
-  $("#gallery").innerHTML = W.gallery.map((src) => `<img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}">`).join("");
   const lb = $("#lightbox");
-  $("#gallery").addEventListener("click", (e) => {
-    if (e.target.tagName === "IMG") { lb.querySelector("img").src = e.target.src; lb.hidden = false; }
-  });
+
+  // ---- Album ảnh dạng sách lật (flipbook)
+  (() => {
+    const book = $("#book"), wrap = $("#flipWrap"), prevBtn = $("#flipPrev"), nextBtn = $("#flipNext"), countEl = $("#flipCount");
+    if (!book) return;
+    const photos = (W.gallery || []).filter(Boolean);
+    const mq = matchMedia("(min-width: 760px)");
+    let spread = mq.matches; // máy tính: sách mở hai trang; điện thoại: mỗi lần một trang
+    let leaves = [], idx = 0;
+    const coverP = `<div class="pg cover"><div class="cover-in"><p class="small">Album ảnh</p><p class="cover-names script">${names}</p><p class="cover-date">${esc($("#heroDate").textContent)}</p></div></div>`;
+    const photoP = (src) => `<div class="pg photo"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
+    const endP = `<div class="pg end"><p class="script">Cảm ơn bạn</p><p class="small">đã xem album của chúng mình</p></div>`;
+    const blankP = `<div class="pg blank"></div>`;
+
+    function build() {
+      spread = mq.matches;
+      const pages = [coverP, ...photos.map(photoP)];
+      if (spread ? pages.length % 2 === 1 : true) pages.push(endP);
+      const defs = [];
+      if (spread) for (let k = 0; k < pages.length; k += 2) defs.push([pages[k], pages[k + 1]]);
+      else pages.forEach((p) => defs.push([p, blankP]));
+      book.innerHTML = defs.map((d, k) => `<div class="leaf" data-k="${k}"><div class="face front">${d[0]}</div><div class="face back">${d[1]}</div></div>`).join("");
+      leaves = [...book.children];
+      idx = Math.min(idx, maxIdx());
+      update();
+    }
+    const maxIdx = () => (spread ? leaves.length : Math.max(0, leaves.length - 1));
+
+    function update() {
+      const n = leaves.length;
+      leaves.forEach((el, k) => {
+        const f = k < idx;
+        el.classList.toggle("flipped", f);
+        // tờ ở trên cùng nằm gần người xem hơn một chút để không bị chồng nhòe
+        el.style.setProperty("--z", ((f ? k : n - k) * 0.6).toFixed(1) + "px");
+      });
+      book.dataset.state = !spread ? "single" : idx === 0 ? "start" : idx === n ? "end" : "mid";
+      prevBtn.disabled = idx <= 0;
+      nextBtn.disabled = idx >= maxIdx();
+      const total = photos.length;
+      let label;
+      if (spread) {
+        // sách mở hai trang: trang trái là ảnh 2*idx-1, trang phải là ảnh 2*idx
+        const l = idx * 2 - 1, r = idx * 2;
+        label = idx === 0 ? `Bìa · ${total} ảnh` : l > total ? "Hết album" : r <= total ? `Ảnh ${l}–${r} / ${total}` : `Ảnh ${l} / ${total}`;
+      } else {
+        label = idx === 0 ? `Bìa · ${total} ảnh` : idx > total ? "Hết album" : `Ảnh ${idx} / ${total}`;
+      }
+      countEl.textContent = label;
+    }
+    const go = (d) => { const t = Math.max(0, Math.min(maxIdx(), idx + d)); if (t !== idx) { idx = t; update(); } };
+    prevBtn.addEventListener("click", () => go(-1));
+    nextBtn.addEventListener("click", () => go(1));
+
+    // bấm hai nửa trang để lật, vuốt ngang để lật, phím mũi tên
+    let down = null;
+    wrap.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY }; });
+    wrap.addEventListener("pointerup", (e) => {
+      if (!down) return;
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      down = null;
+      if (e.target.closest(".zoom")) return;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) return go(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+        const r = wrap.getBoundingClientRect();
+        go(e.clientX - r.left > r.width * (spread ? 0.5 : 0.4) ? 1 : -1);
+      }
+    });
+    wrap.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
+    book.addEventListener("click", (e) => {
+      const z = e.target.closest(".zoom");
+      if (z) { lb.querySelector("img").src = z.dataset.zoom; lb.hidden = false; }
+    });
+    book.addEventListener("error", (e) => { if (e.target.tagName === "IMG") e.target.style.visibility = "hidden"; }, true);
+    mq.addEventListener("change", build);
+    build();
+
+    // lần đầu cuộn tới album thì tự lật một trang để gợi ý đây là sách lật
+    const io2 = new IntersectionObserver((en) => {
+      if (en.some((x) => x.isIntersecting)) { io2.disconnect(); setTimeout(() => { if (idx === 0) go(1); }, 900); }
+    }, { threshold: 0.6 });
+    io2.observe(wrap);
+  })();
   lb.addEventListener("click", () => (lb.hidden = true));
 
   $("#gifts").innerHTML = W.gifts.map((g) => `

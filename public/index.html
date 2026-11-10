@@ -88,7 +88,16 @@
 
     <section class="section wide reveal">
       <h2 class="title">Album ảnh</h2>
-      <div class="gallery" id="gallery"></div>
+      <div class="flip" id="flip">
+        <div class="flip-wrap" id="flipWrap" tabindex="0" aria-label="Album ảnh dạng sách, vuốt hoặc bấm mũi tên để lật trang">
+          <div class="book" id="book"></div>
+        </div>
+        <div class="flip-ctrl">
+          <button type="button" id="flipPrev" class="flip-btn prev" aria-label="Trang trước"></button>
+          <span id="flipCount" class="flip-count"></span>
+          <button type="button" id="flipNext" class="flip-btn next" aria-label="Trang sau"></button>
+        </div>
+      </div>
     </section>
 
     <section class="section reveal">
