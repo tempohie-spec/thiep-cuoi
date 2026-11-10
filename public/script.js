@@ -80,13 +80,15 @@
     let spread = mq.matches; // máy tính: sách mở hai trang; điện thoại: mỗi lần một trang
     let leaves = [], idx = 0;
     const coverP = `<div class="pg cover"><div class="cover-in"><p class="small">Album ảnh</p><p class="cover-names script">${names}</p><p class="cover-date">${esc($("#heroDate").textContent)}</p></div></div>`;
-    const photoP = (src) => `<div class="pg photo"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
-    const endP = `<div class="pg end"><p class="script">Cảm ơn bạn</p><p class="small">đã xem album của chúng mình</p></div>`;
+    const tilts = [-1.4, 1.1, -0.8, 1.6, -1.1, 0.9];
+    const photoP = (src, i) => `<div class="pg photo"><div class="ph" style="--r:${tilts[i % tilts.length]}deg"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
+    // trang cuối giống hệt bìa
+    const endP = `<div class="pg cover end"><div class="cover-in"><p class="small">Cảm ơn bạn đã xem album</p><p class="cover-names script">${names}</p><p class="cover-date">Hẹn gặp bạn ngày<br>${esc($("#heroDate").textContent)}</p></div></div>`;
     const blankP = `<div class="pg blank"></div>`;
 
     function build() {
       spread = mq.matches;
-      const pages = [coverP, ...photos.map(photoP)];
+      const pages = [coverP, ...photos.map((s, i) => photoP(s, i))];
       if (spread ? pages.length % 2 === 1 : true) pages.push(endP);
       const defs = [];
       if (spread) for (let k = 0; k < pages.length; k += 2) defs.push([pages[k], pages[k + 1]]);
@@ -103,8 +105,10 @@
       leaves.forEach((el, k) => {
         const f = k < idx;
         el.classList.toggle("flipped", f);
-        // tờ ở trên cùng nằm gần người xem hơn một chút để không bị chồng nhòe
-        el.style.setProperty("--z", ((f ? k : n - k) * 0.6).toFixed(1) + "px");
+        // xếp lớp bằng z-index (an toàn trên Safari): trang chưa lật thì trang đầu nằm trên, trang đã lật thì trang lật sau nằm trên
+        el.style.zIndex = String(f ? k : n - k);
+        // điện thoại: chỉ cần trang hiện tại và trang kế tiếp, các trang xa hơn ẩn đi
+        el.classList.toggle("far", !spread && k > idx + 1);
       });
       book.dataset.state = !spread ? "single" : idx === 0 ? "start" : idx === n ? "end" : "mid";
       prevBtn.disabled = idx <= 0;
@@ -148,10 +152,18 @@
     build();
 
     // lần đầu cuộn tới album thì tự lật một trang để gợi ý đây là sách lật
-    const io2 = new IntersectionObserver((en) => {
-      if (en.some((x) => x.isIntersecting)) { io2.disconnect(); setTimeout(() => { if (idx === 0) go(1); }, 900); }
-    }, { threshold: 0.6 });
+    // chỉ lật khi toàn bộ bìa hiện đủ trên màn hình; cuộn đi giữa chừng thì hủy
+    let hintTimer = null, hinted = false;
+    const fullyVisible = () => { const r = wrap.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.width > 0; };
+    const io2 = new IntersectionObserver(() => {
+      if (hinted) return;
+      if (fullyVisible() && idx === 0) {
+        if (!hintTimer) hintTimer = setTimeout(() => { hintTimer = null; if (!hinted && fullyVisible() && idx === 0) { hinted = true; io2.disconnect(); go(1); } }, 900);
+      } else if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+    }, { threshold: [0, 0.25, 0.5, 0.75, 0.9, 0.98, 1] });
     io2.observe(wrap);
+    // người dùng tự lật thì không cần gợi ý nữa
+    [prevBtn, nextBtn, wrap].forEach((el) => el.addEventListener("pointerdown", () => { hinted = true; if (hintTimer) clearTimeout(hintTimer); }, { once: true }));
   })();
   lb.addEventListener("click", () => (lb.hidden = true));
 
