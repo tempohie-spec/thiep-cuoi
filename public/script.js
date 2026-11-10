@@ -73,9 +73,22 @@
         </div>
       </div>`).join("");
     list.querySelectorAll(".ev-card").forEach((card) => {
+      let touched = false, timer = null, done = false;
       const flip = () => { const f = card.classList.toggle("flipped"); card.closest(".evflip").classList.toggle("is-flipped", f); };
-      card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; flip(); });
-      card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+      // chạm vào thẻ thì lật qua lại tùy ý (và không tự lật nữa)
+      const manual = () => { touched = true; if (timer) { clearTimeout(timer); timer = null; } flip(); };
+      card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; manual(); });
+      card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); manual(); } });
+      // tự lật một lần, 2 giây sau khi cuộn tới và thấy trọn thẻ; cuộn đi giữa chừng thì hủy
+      const wrap = card.closest(".evflip");
+      const fully = () => { const r = card.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight; };
+      const io = new IntersectionObserver(() => {
+        if (done || touched) return;
+        if (fully()) {
+          if (!timer) timer = setTimeout(() => { timer = null; if (!done && !touched && fully()) { done = true; io.disconnect(); flip(); } }, 2000);
+        } else if (timer) { clearTimeout(timer); timer = null; }
+      }, { threshold: [0, .25, .5, .75, .9, .98, 1] });
+      io.observe(wrap);
     });
   })();
 
