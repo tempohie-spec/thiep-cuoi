@@ -81,9 +81,16 @@
     <label>Ngày giờ (dùng cho đồng hồ đếm ngược)</label><input type="datetime-local" id="date">
     <label>Lời mời</label><textarea rows="3" data-k="quote"></textarea>
 
-    <h2>Sự kiện</h2>
-    <div id="list-events"></div>
-    <button type="button" data-add="events">Thêm sự kiện</button>
+    <h2>Thiệp sự kiện (thẻ lật)</h2>
+    <p class="hint">Mặt trước hiện ảnh nhà thờ, khách chạm vào thì thẻ lật sang mặt sau (ngày giờ, địa chỉ). Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span> cho cả hai mặt.</p>
+    <label>Ảnh mặt trước</label>
+    <input data-k="eventFront" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <input type="file" accept="image/*" id="evFrontUp" style="margin-top:6px">
+    <label>Ảnh mặt sau (ngày giờ, địa chỉ)</label>
+    <input data-k="eventBack" placeholder="Dán đường dẫn hoặc tải ảnh lên">
+    <input type="file" accept="image/*" id="evBackUp" style="margin-top:6px">
+    <label>Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)</label>
+    <input data-k="eventMap" placeholder="https://maps.google.com/...">
 
     <h2>Chuyện tình yêu</h2>
     <div id="list-story"></div>
@@ -196,7 +203,6 @@
   try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...JSON.parse(d) }; hasDraft = true; } } catch {}
 
   const schema = {
-    events: { label: "Sự kiện", fields: [["title", "Tên sự kiện"], ["time", "Thời gian"], ["lunar", "Ngày âm lịch"], ["place", "Địa điểm"], ["address", "Địa chỉ"], ["map", "Link Google Maps"]], blank: { title: "", time: "", lunar: "", place: "", address: "", map: "" } },
     story: { label: "Mốc", fields: [["year", "Năm"], ["title", "Tiêu đề"], ["text", "Nội dung", true]], blank: { year: "", title: "", text: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
@@ -429,10 +435,12 @@
         fill();
         if (kind === "intro") { introMode = true; $("#modeBtn").textContent = "Xem toàn bộ thiệp"; }
         changed(); toast("Đã tải " + label);
-        openImgPos(kind, dev);
+        if (kind) openImgPos(kind, dev);
       } catch (err) { toastErr(err.message); }
     });
   }
+  bindImgUpload("#evFrontUp", "eventFront", null, "m", "ảnh mặt trước");
+  bindImgUpload("#evBackUp", "eventBack", null, "m", "ảnh mặt sau");
   bindImgUpload("#introUp", "introBg", "intro", "m", "ảnh nền điện thoại");
   bindImgUpload("#introDUp", "introBgD", "intro", "d", "ảnh nền máy tính");
   bindImgUpload("#coverUp", "cover", "cover", "m", "ảnh bìa điện thoại");

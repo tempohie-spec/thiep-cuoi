@@ -56,15 +56,18 @@
   const strength = Math.min(100, Math.max(0, Number(W.coverStrength ?? 100) || 0));
   $(".hero").style.setProperty("--veil", String(1 - strength / 100));
 
-  $("#events").innerHTML = W.events.map((e) => `
-    <div class="event">
-      <h3>${esc(e.title)}</h3>
-      <p class="time">${esc(e.time)}</p>
-      <p class="lunar">${esc(e.lunar || "")}</p>
-      <p class="place">${esc(e.place)}</p>
-      <p class="addr">${esc(e.address)}</p>
-      ${e.map ? `<a href="${esc(e.map)}" target="_blank" rel="noopener">Xem bản đồ</a>` : ""}
-    </div>`).join("");
+  // Thẻ sự kiện lật: mặt trước là ảnh nhà thờ (động đậy nhẹ), chạm vào thì lật sang mặt sau (ngày giờ, địa chỉ)
+  (() => {
+    const card = $("#evCard"), hint = $("#evHint");
+    $("#evFront").src = W.eventFront || "images/event-front.webp";
+    $("#evBack").src = W.eventBack || "images/event-back.webp";
+    const map = $("#evMap");
+    if (W.eventMap) map.href = W.eventMap; else map.remove();
+    let flipped = false;
+    const flip = () => { flipped = !flipped; card.classList.toggle("flipped", flipped); $("#evflip").classList.toggle("is-flipped", flipped); hint.textContent = flipped ? "Chạm vào thiệp để lật lại" : "Chạm vào thiệp để lật"; };
+    card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; flip(); });
+    card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+  })();
 
   $("#story").innerHTML = W.story.map((s) => `
     <div class="tl-item">
