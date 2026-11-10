@@ -70,6 +70,39 @@
     </div>`).join("");
 
   const lb = $("#lightbox");
+  // Phóng to ảnh: ảnh nở dần từ vị trí ảnh nhỏ tới kích thước đầy đủ, đóng lại thì thu về chỗ cũ
+  let lbFrom = null, lbBusy = false;
+  const lbMove = (from) => {
+    const li = lb.querySelector("img"), to = li.getBoundingClientRect();
+    if (!from || !to.width) return null;
+    const dx = from.left + from.width / 2 - (to.left + to.width / 2), dy = from.top + from.height / 2 - (to.top + to.height / 2);
+    return `translate(${dx}px, ${dy}px) scale(${Math.max(.05, from.width / to.width)})`;
+  };
+  function openLb(url, from) {
+    const li = lb.querySelector("img");
+    lbFrom = from;
+    const run = () => {
+      lb.hidden = false;
+      const t = lbMove(from);
+      if (!li.animate) return;
+      lb.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: "ease-out" });
+      li.animate([{ transform: t || "scale(.6)", opacity: t ? 1 : 0 }, { transform: "none", opacity: 1 }], { duration: 520, easing: "cubic-bezier(.22,.8,.25,1)" });
+    };
+    li.onload = null;
+    li.src = url;
+    // ảnh đã nạp sẵn trong sách nên hiện ngay; chưa nạp thì chờ nạp xong để biết kích thước
+    if (li.complete && li.naturalWidth) run(); else { li.onload = run; li.onerror = run; }
+  }
+  function closeLb() {
+    if (lb.hidden || lbBusy) return;
+    const li = lb.querySelector("img");
+    if (!li.animate) { lb.hidden = true; return; }
+    lbBusy = true;
+    const t = lbMove(lbFrom);
+    lb.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 360, easing: "ease-in", fill: "forwards" });
+    li.animate([{ transform: "none", opacity: 1 }, { transform: t || "scale(.6)", opacity: t ? 1 : 0 }], { duration: 400, easing: "cubic-bezier(.5,0,.75,.2)", fill: "forwards" })
+      .finished.then(() => { lb.hidden = true; lbBusy = false; lb.getAnimations().forEach((a) => a.cancel()); li.getAnimations().forEach((a) => a.cancel()); }, () => { lb.hidden = true; lbBusy = false; });
+  }
 
   // ---- Album ảnh dạng sách lật (flipbook)
   (() => {
@@ -142,7 +175,13 @@
       if (spread ? pages.length % 2 === 1 : true) pages.push(endP);
       const defs = [];
       if (spread) for (let k = 0; k < pages.length; k += 2) defs.push([pages[k], pages[k + 1]]);
-      else pages.forEach((p) => defs.push([p, blankP]));
+      else {
+        // điện thoại: sau ảnh cuối có một trang lót mặt trong bìa cuối (không chữ) lật từ phải sang trái, rồi mới hiện mặt ngoài là lời cảm ơn
+        pages.pop();
+        pages.forEach((p) => defs.push([p, blankP]));
+        defs.push([`<div class="pg endpaper"></div>`, blankP]);
+        defs.push([endP, blankP]);
+      }
       book.innerHTML = defs.map((d, k) => `<div class="fleaf" data-k="${k}"><div class="face front">${d[0]}</div><div class="face back">${d[1]}</div></div>`).join("");
       leaves = [...book.children];
       idx = Math.min(idx, maxIdx());
@@ -197,12 +236,8 @@
       const z = e.target.closest(".zoom");
       if (z) {
         // giải mã ảnh xong rồi mới hiện khung phóng to, để ảnh hiện đủ kích thước ngay, không phóng dần
-        const url = z.dataset.zoom, li = lb.querySelector("img");
-        const show = () => { li.src = url; lb.hidden = false; };
-        const pre = new Image();
-        pre.decoding = "sync";
-        pre.src = url;
-        (pre.decode ? pre.decode() : Promise.resolve()).then(show, show);
+        const src = z.closest(".pg").querySelector("img");
+        openLb(z.dataset.zoom, src ? src.getBoundingClientRect() : null);
       }
     });
     book.addEventListener("error", (e) => { if (e.target.tagName === "IMG") e.target.style.visibility = "hidden"; }, true);
@@ -223,7 +258,8 @@
     // người dùng tự lật thì không cần gợi ý nữa
     [prevBtn, nextBtn, wrap].forEach((el) => el.addEventListener("pointerdown", () => { hinted = true; if (hintTimer) clearTimeout(hintTimer); }, { once: true }));
   })();
-  lb.addEventListener("click", () => (lb.hidden = true));
+  lb.addEventListener("click", closeLb);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
   $("#gifts").innerHTML = W.gifts.map((g) => `
     <div class="gift">
