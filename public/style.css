@@ -314,3 +314,8 @@ body {
 .hero.fit .hero-inner { transform: scale(var(--k, 1)); transform-origin: 50% 0; }
 .hero.fit[data-align="bottom"] .hero-inner { transform-origin: 50% 100%; }
 .hero.fit[data-align="center"] .hero-inner { transform-origin: 50% 50%; }
+
+/* Xoay ngang màn hình thấp: đẩy khối chữ cao lên một chút (cách mép trên ảnh khoảng 10,5% thay vì 15%) để có thêm khoảng trống với hai người */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero.fit[data-align="top"] { padding-top: calc((var(--hh) - var(--ih)) / 2 + var(--ih) * .105); }
+}
