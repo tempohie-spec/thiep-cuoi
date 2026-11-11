@@ -7,7 +7,7 @@
   <meta name="description" content="Trân trọng kính mời bạn đến dự lễ cưới của chúng mình">
   <script>if ("scrollRestoration" in history) history.scrollRestoration = "manual";</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&family=Playfair+Display:wght@600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=%E5%9B%8D&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -57,8 +57,10 @@
   </header>
 
   <main>
-    <section class="section couple reveal">
-      <p class="quote" id="quote"></p>
+    <!-- PAGE 3: nền đỏ đô. Cô dâu chú rể + một khoảng trống để bạn bổ sung nội dung sau -->
+    <section class="page p-red" id="p3">
+      <div class="page-in couple reveal">
+        <p class="quote" id="quote"></p>
       <div class="couple-grid">
         <div class="person">
           <p class="small">Nhà trai</p>
@@ -74,16 +76,23 @@
           <img class="cat cat-bride" src="images/cat-bride.webp" alt="" width="560" height="197" loading="lazy">
         </div>
       </div>
+      </div>
+      <div class="p3-blank" aria-hidden="true"></div>
     </section>
 
-    <section class="section wide reveal">
-      <h2 class="title">Sự kiện cưới</h2>
-      <p class="ev-hint">Chạm vào thiệp để lật</p>
-      <div class="evlist" id="evlist"></div>
+    <!-- PAGE 4: nền trắng be. Sự kiện cưới -->
+    <section class="page p-be" id="p4">
+      <div class="page-in wide reveal">
+        <h2 class="title">Sự kiện cưới</h2>
+        <p class="ev-hint">Chạm vào thiệp để lật</p>
+        <div class="evlist" id="evlist"></div>
+      </div>
     </section>
 
-    <section class="section wide reveal">
-      <h2 class="title">Album ảnh</h2>
+    <!-- PAGE 5: nền đỏ đô. Album ảnh -->
+    <section class="page p-red" id="p5">
+      <div class="page-in wide reveal">
+        <h2 class="title">Album ảnh</h2>
       <div class="flip" id="flip">
         <div class="flip-wrap" id="flipWrap" tabindex="0" aria-label="Album ảnh dạng sách, vuốt hoặc bấm mũi tên để lật trang">
           <div class="book" id="book"></div>
@@ -94,10 +103,13 @@
           <button type="button" id="flipNext" class="flip-btn next" aria-label="Trang sau"></button>
         </div>
       </div>
+      </div>
     </section>
 
-    <section class="section reveal">
-      <h2 class="title">Xác nhận tham dự</h2>
+    <!-- PAGE 6: nền trắng be. Xác nhận tham dự + lời chúc của khách mời -->
+    <section class="page p-be" id="p6">
+      <div class="page-in reveal">
+        <h2 class="title">Xác nhận tham dự</h2>
       <form id="rsvp" class="rsvp">
         <input name="name" placeholder="Tên của bạn" required>
         <input name="phone" placeholder="Số điện thoại">
@@ -114,18 +126,25 @@
         <button class="btn" type="submit">Gửi xác nhận</button>
         <p class="rsvp-msg" id="rsvpMsg"></p>
       </form>
+        <div class="wishes-wrap" id="wishesWrap" hidden>
+          <h3 class="title sub">Lời chúc từ khách mời</h3>
+          <div class="wishes" id="wishes"></div>
+        </div>
+      </div>
     </section>
 
-    <section class="section reveal">
-      <h2 class="title">Hộp mừng cưới</h2>
-      <div class="gifts" id="gifts"></div>
+    <!-- PAGE 7: nền đỏ đô. Hộp mừng cưới + lời cảm ơn -->
+    <section class="page p-red" id="p7">
+      <div class="page-in reveal">
+        <h2 class="title">Hộp mừng cưới</h2>
+        <div class="gifts" id="gifts"></div>
+        <div class="thanks">
+          <p class="script" data-names></p>
+          <p class="small">Cảm ơn bạn đã là một phần trong ngày vui của chúng mình</p>
+        </div>
+      </div>
     </section>
   </main>
-
-  <footer class="footer">
-    <p class="script" data-names></p>
-    <p class="small">Cảm ơn bạn đã là một phần trong ngày vui của chúng mình</p>
-  </footer>
 
   <button id="musicBtn" class="music" aria-label="Bật/tắt nhạc" hidden>Nhạc</button>
   <audio id="bgm" loop></audio>

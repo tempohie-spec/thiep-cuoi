@@ -150,61 +150,47 @@
     const mq = matchMedia("(min-width: 760px)");
     let spread = mq.matches; // máy tính: sách mở hai trang; điện thoại: mỗi lần một trang
     let leaves = [], idx = 0;
-    // Bìa da nâu với viền, hoa văn và chữ vàng dập nổi (vẽ bằng SVG, rõ nét ở mọi kích thước)
-    const gold = "url(#GOLD)";
-    const sawtooth = (x0, y0, x1, y1, amp) => {
-      // đường răng cưa chạy quanh khung chữ nhật, răng hướng vào trong
-      const pts = [];
-      const side = (ax, ay, bx, by, nx, ny) => {
-        const len = Math.hypot(bx - ax, by - ay), n = 2 * Math.round(len / 28);
-        for (let i = 0; i < n; i++) { const t = i / n, o = i % 2 ? amp : 0; pts.push([ax + (bx - ax) * t + nx * o, ay + (by - ay) * t + ny * o]); }
-      };
-      side(x0, y0, x1, y0, 0, 1); side(x1, y0, x1, y1, -1, 0); side(x1, y1, x0, y1, 0, -1); side(x0, y1, x0, y0, 1, 0);
-      return "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + " Z";
+    // Bìa album mềm mại dễ thương: bìa vàng bơ, nhãn kem viền sóng vẽ tay, hình dán (sao, tim, dấu chân mèo); vẽ bằng SVG nên nét luôn rõ
+    const scallop = (x0, y0, x1, y1, r) => {
+      const nx = Math.max(2, Math.round((x1 - x0) / (2 * r))), ny = Math.max(2, Math.round((y1 - y0) / (2 * r)));
+      const dx = (x1 - x0) / nx, dy = (y1 - y0) / ny, f = (n) => n.toFixed(2);
+      let d = `M${x0} ${y0}`;
+      for (let i = 0; i < nx; i++) d += ` a${f(dx / 2)} ${f(dx / 2)} 0 0 1 ${f(dx)} 0`;
+      for (let i = 0; i < ny; i++) d += ` a${f(dy / 2)} ${f(dy / 2)} 0 0 1 0 ${f(dy)}`;
+      for (let i = 0; i < nx; i++) d += ` a${f(dx / 2)} ${f(dx / 2)} 0 0 1 ${f(-dx)} 0`;
+      for (let i = 0; i < ny; i++) d += ` a${f(dy / 2)} ${f(dy / 2)} 0 0 1 0 ${f(-dy)}`;
+      return d + " Z";
     };
-    const flourish = `<g fill="none" stroke="${gold}" stroke-width="2.1" stroke-linecap="round">
-        <path d="M6 72 C6 42 24 22 52 20 C70 19 82 30 78 44 C75 56 60 58 54 49 C50 42 56 35 63 38"/>
-        <path d="M6 72 C10 58 20 50 34 48 C44 47 50 54 46 61 C43 66 36 65 35 60"/>
-        <path d="M6 72 C4 80 8 88 14 92"/>
-        <path d="M54 20 C64 8 80 6 92 12" stroke-width="1.6"/>
-      </g>
-      <g fill="${gold}"><path d="M30 26 C36 15 49 13 58 17 C50 23 39 28 30 26Z"/><path d="M12 48 C4 41 3 29 8 21 C16 27 18 39 12 48Z"/><path d="M60 8 C66 2 76 2 82 6 C76 10 68 11 60 8Z"/><circle cx="92" cy="12" r="2.6"/><circle cx="14" cy="92" r="2.4"/><circle cx="63" cy="38" r="2"/></g>`;
-    const leather = (title, sub, script, foot) => {
-      const id = "g" + Math.random().toString(36).slice(2, 8);
-      const nm = String(script).replace(/&amp;/g, "&").length;
-      const fs = Math.max(17, Math.min(31, 560 / Math.max(nm, 8)));
-      // dòng chữ nhỏ dài thì thu nhỏ và giảm giãn chữ để không chạm viền
-      const subLong = sub.length > 16, subFs = subLong ? 7 : 8.6, subLs = subLong ? 1.4 : 2.6;
+    const sparkle = (x, y, s, c) => `<path d="M${x} ${y - s}L${x + s * .28} ${y - s * .28}L${x + s} ${y}L${x + s * .28} ${y + s * .28}L${x} ${y + s}L${x - s * .28} ${y + s * .28}L${x - s} ${y}L${x - s * .28} ${y - s * .28}Z" fill="${c}" stroke="#6b3f1d" stroke-width="1.6" stroke-linejoin="round"/>`;
+    const heart = (x, y, s, c) => `<path transform="translate(${x} ${y}) scale(${s / 12})" d="M0 9C-9 3 -9 -6 -4.5 -7.2C-2 -7.8 0 -6 0 -4.2C0 -6 2 -7.8 4.5 -7.2C9 -6 9 3 0 9Z" fill="${c}" stroke="#6b3f1d" stroke-width="${(1.6 * 12 / s).toFixed(2)}" stroke-linejoin="round"/>`;
+    const paw = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s / 12})" fill="#e0a56c" stroke="#6b3f1d" stroke-width="1.5"><ellipse cx="0" cy="4" rx="5.4" ry="4.6"/><circle cx="-6" cy="-1.6" r="2.3"/><circle cx="-2.2" cy="-6" r="2.3"/><circle cx="2.4" cy="-6" r="2.3"/><circle cx="6.2" cy="-1.6" r="2.3"/></g>`;
+    const cloud = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M-14 6C-20 6 -20 -2 -14 -2C-14 -9 -4 -10 -1 -4C3 -9 12 -6 11 0C17 0 17 6 11 6Z" fill="#fffdf6" stroke="#6b3f1d" stroke-width="${(1.6 / s).toFixed(2)}" stroke-linejoin="round"/>`;
+    const cuteCover = (title, line2, names, foot) => {
+      const nm = String(names).replace(/&amp;/g, "&").length;
+      const fs = Math.max(15, Math.min(24, 300 / Math.max(nm, 8)));
+      const id = "c" + Math.random().toString(36).slice(2, 7);
       return `<div class="pg cover"><svg class="cv" viewBox="0 0 300 400" aria-hidden="true">
-        <defs>
-          <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8e6a8"/><stop offset=".45" stop-color="#c9983c"/><stop offset=".75" stop-color="#e9c872"/><stop offset="1" stop-color="#b98428"/></linearGradient>
-          <filter id="${id}e" x="-5%" y="-5%" width="110%" height="110%"><feDropShadow dx=".7" dy=".9" stdDeviation=".45" flood-color="#1a0802" flood-opacity=".85"/></filter>
-        </defs>
-        <g filter="url(#${id}e)" fill="none" stroke="url(#${id})">
-          <rect x="14" y="14" width="272" height="372" rx="10" stroke-width="2.4"/>
-          <rect x="20" y="20" width="260" height="360" rx="7" stroke-width="1"/>
-          <rect x="27" y="27" width="246" height="346" rx="5" stroke-width="4.2" stroke-linecap="round" stroke-dasharray="0.1 9"/>
-          <path d="${sawtooth(38, 38, 262, 362, 7)}" stroke-width="1.3" stroke-linejoin="round"/>
-          <g transform="translate(18 18)">${flourish.replace(/GOLD/g, id)}</g>
-          <g transform="translate(282 18) scale(-1 1)">${flourish.replace(/GOLD/g, id)}</g>
-          <g transform="translate(18 382) scale(.62 -.62)">${flourish.replace(/GOLD/g, id)}</g>
-          <g transform="translate(282 382) scale(-.62 -.62)">${flourish.replace(/GOLD/g, id)}</g>
-          <path d="M96 205 H132 M168 205 H204" stroke-width="1.2"/><path d="M150 199 L156 205 L150 211 L144 205 Z" fill="url(#${id})" stroke-width=".6"/>
-        </g>
-        <g filter="url(#${id}e)" fill="url(#${id})" text-anchor="middle">
-          <text x="150" y="160" font-family="'Playfair Display', serif" font-weight="700" font-size="23" letter-spacing="4">${title}</text>
-          <text x="150" y="184" font-family="'Playfair Display', serif" font-weight="600" font-size="${subFs}" letter-spacing="${subLs}">${sub}</text>
-          <text x="150" y="248" font-family="'Great Vibes', cursive" font-size="${fs.toFixed(1)}">${script}</text>
-          <text x="150" y="338" font-family="'Playfair Display', serif" font-weight="700" font-size="11.5" letter-spacing="3">${foot}</text>
+        <defs><filter id="${id}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter>
+        <filter id="${id}s" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#7a4a10" flood-opacity=".28"/></filter></defs>
+        <g filter="url(#${id}s)"><path d="${scallop(50, 44, 274, 356, 9)}" fill="#fffaf0" stroke="#6b3f1d" stroke-width="2.4" stroke-linejoin="round" filter="url(#${id})"/></g>
+        <rect x="60" y="54" width="204" height="292" rx="10" fill="none" stroke="#e0b97a" stroke-width="1.6" stroke-dasharray="5 5"/>
+        <g filter="url(#${id})">${cloud(112, 92, 1.25)}${cloud(222, 78, .85)}${sparkle(76, 70, 9, "#f6c453")}${sparkle(246, 108, 7, "#f6c453")}${sparkle(238, 322, 8, "#f28b82")}${heart(84, 318, 11, "#f28b82")}${paw(200, 330, 12)}${paw(138, 338, 9)}</g>
+        <g text-anchor="middle" fill="#6b3f1d" font-family="'Fuzzy Bubbles', 'Patrick Hand', cursive">
+          <text x="162" y="176" font-size="31" font-weight="700">${title}</text>
+          <path d="M104 190 q14 -9 29 0 t29 0 t29 0 t29 0" fill="none" stroke="#e0a56c" stroke-width="3" stroke-linecap="round"/>
+          <text x="162" y="226" font-size="${fs.toFixed(1)}" font-weight="700" fill="#b5651d">${names}</text>
+          <text x="162" y="252" font-size="${Math.min(12.5, 190 / Math.max(String(line2).length, 1) * 1.7).toFixed(1)}">${line2}</text>
+          <text x="162" y="290" font-size="13" font-weight="700" letter-spacing="1.2">${foot}</text>
         </g>
       </svg></div>`;
     };
     const dateTxt = esc($("#heroDate").textContent);
-    const coverP = leather("ALBUM ẢNH", "NGÀY ĐẶC BIỆT", names, dateTxt);
-    const tilts = [-1.4, 1.1, -0.8, 1.6, -1.1, 0.9];
-    const photoP = (src, i) => `<div class="pg photo"><div class="ph" style="--r:${tilts[i % tilts.length]}deg"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
+    const coverP = cuteCover("Album ảnh", "kỷ niệm của chúng mình", names, dateTxt);
+    const tilts = [-1.8, 1.4, -1.0, 1.9, -1.4, 1.1];
+    const tapes = ["#f7c9a8", "#f7e08a", "#bfe0c0", "#f4b6c4", "#bcd7ee"];
+    const photoP = (src, i) => `<div class="pg photo"><div class="ph" style="--r:${tilts[i % tilts.length]}deg;--tape:${tapes[i % tapes.length]}"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><i class="st s${i % 3}"></i></div><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
     // trang cuối giống hệt bìa
-    const endP = leather("CẢM ƠN BẠN", "ĐÃ XEM ALBUM CỦA CHÚNG MÌNH", "Hẹn gặp bạn", dateTxt);
+    const endP = cuteCover("Cảm ơn bạn", "đã xem album của chúng mình", "Hẹn gặp bạn", dateTxt);
     const blankP = `<div class="pg blank"></div>`;
 
     function build() {
@@ -298,6 +284,16 @@
   })();
   lb.addEventListener("click", closeLb);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
+
+  // Lời chúc của khách mời: các tờ giấy note dán, nhập trong editor
+  (() => {
+    const wrap = $("#wishesWrap"), box = $("#wishes");
+    const list = (W.wishes || []).filter((w) => w && String(w.text || "").trim());
+    wrap.hidden = !list.length;
+    const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], tapes = ["rgba(246,196,160,.9)", "rgba(247,224,138,.9)", "rgba(191,224,192,.9)", "rgba(244,182,196,.9)", "rgba(188,215,238,.9)"];
+    const rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0];
+    box.innerHTML = list.map((w, i) => `<figure class="note" style="--nc:${colors[i % colors.length]};--nt:${tapes[(i + 2) % tapes.length]};--nr:${rots[i % rots.length]}deg"><p>${esc(w.text)}</p>${String(w.name || "").trim() ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`).join("");
+  })();
 
   $("#gifts").innerHTML = W.gifts.map((g) => `
     <div class="gift">

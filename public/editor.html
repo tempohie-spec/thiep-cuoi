@@ -133,6 +133,11 @@
     <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ bên dưới để kéo chỉnh vị trí.</p>
     <div class="thumbs" id="galThumbs"></div>
 
+    <h2>Lời chúc của khách mời</h2>
+    <p class="hint">Hiện ở page 6 dưới dạng các tờ giấy note dán. Dán lời chúc khách đã gửi cho bạn vào đây.</p>
+    <div id="list-wishes"></div>
+    <button type="button" data-add="wishes">Thêm lời chúc</button>
+
     <h2>Hộp mừng cưới</h2>
     <div id="list-gifts"></div>
     <button type="button" data-add="gifts">Thêm tài khoản</button>
@@ -196,6 +201,7 @@
 
   const schema = {
     eventCards: { label: "Thẻ sự kiện", fields: [["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { front: "", back: "", map: "" } },
+    wishes: { label: "Lời chúc", fields: [["name", "Tên khách"], ["text", "Lời chúc", true]], blank: { name: "", text: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
 

@@ -15,6 +15,8 @@ window.WEDDING = {
     { side: "Chú rể", bank: "Vietcombank", account: "0123456789", owner: "DOAN TRUNG HIEU", qr: "" },
     { side: "Cô dâu", bank: "Techcombank", account: "9876543210", owner: "VU THI DUYEN", qr: "" }
   ],
+  // Lời chúc của khách mời hiện ở page 6 dưới dạng các tờ giấy note: [{ name: "Tên khách", text: "Lời chúc" }]
+  wishes: [],
   // Dán URL Google Apps Script / Formspree để nhận phản hồi RSVP. Để trống thì lưu tạm và hiển thị cảm ơn.
   rsvpEndpoint: "",
   coverStrength: 100, // độ đậm ảnh bìa, 0 đến 100
