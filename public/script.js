@@ -39,9 +39,24 @@
     h.style.setProperty("--pos", posOf(coverM));
     h.style.setProperty("--pos-d", posOfD(coverD));
     // Khung trang đầu có đúng tỉ lệ của ảnh nên ảnh luôn hiện trọn vẹn, không bị cắt dù trình duyệt tính chiều cao màn hình thế nào
-    const ratio = (u, name) => { const im = new Image(); im.onload = () => { if (im.naturalWidth && im.naturalHeight) { h.style.setProperty(name, (im.naturalWidth / im.naturalHeight).toFixed(4)); h.classList.add("fit"); } }; im.src = u; };
+    const ratio = (u, name) => { const im = new Image(); im.onload = () => { if (im.naturalWidth && im.naturalHeight) { h.style.setProperty(name, (im.naturalWidth / im.naturalHeight).toFixed(4)); h.classList.add("fit"); refit(); } }; im.src = u; };
     ratio(coverM, "--ar");
     ratio(coverD, "--ar-d");
+    // Khối chữ và đồng hồ chỉ được chiếm khoảng 30% chiều cao ảnh đang hiển thị; ảnh co nhỏ (màn hình thấp, xoay ngang) thì chữ thu nhỏ theo để không che hai người
+    const inner = h.querySelector(".hero-inner");
+    const fitText = () => {
+      if (!h.classList.contains("fit") || !inner) return;
+      const wide = innerWidth >= 760;
+      const ar = parseFloat(getComputedStyle(h).getPropertyValue(wide ? "--ar-d" : "--ar")) || parseFloat(getComputedStyle(h).getPropertyValue("--ar")) || 0.5;
+      const ih = Math.min(h.getBoundingClientRect().height, Math.min(innerWidth, 900) / ar);
+      const th = inner.offsetHeight || 1;
+      h.style.setProperty("--k", String(Math.max(0.5, Math.min(1, (0.3 * ih) / th)).toFixed(3)));
+    };
+    const refit = () => requestAnimationFrame(fitText);
+    addEventListener("resize", refit);
+    addEventListener("orientationchange", () => setTimeout(refit, 250));
+    window.addEventListener("load", refit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
   }
   $("#groomName").textContent = W.groom.fullName;
   $("#brideName").textContent = W.bride.fullName;
