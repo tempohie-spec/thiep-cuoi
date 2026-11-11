@@ -264,8 +264,6 @@ body {
 .pg.endpaper::before { content: ""; position: absolute; inset: 6%; border: 1px solid rgba(130, 85, 30, .28); border-radius: 12px 6px 10px 6px; }
 
 /* Ảnh bìa hiện trọn vẹn: khung có tỉ lệ bằng tỉ lệ ảnh (điện thoại dùng --ar, máy tính dùng --ar-d) */
-.hero.fit { min-height: 0; aspect-ratio: var(--ar, auto); background-size: 100% 100%; background-repeat: no-repeat; background-color: #fff; }
-@media (min-width: 760px) { .hero.fit { aspect-ratio: var(--ar-d, var(--ar, auto)); } }
 
 /* Thẻ sự kiện lật: mặt trước động đậy nhẹ, chạm thì lật ngược sang mặt sau */
 .evlist { display: grid; gap: 2rem; }
@@ -295,9 +293,19 @@ body {
 @keyframes evShadow { 0%, 100% { transform: scaleX(1); opacity: .95; } 25% { transform: scaleX(.94); opacity: .75; } 50% { transform: scaleX(1); opacity: .95; } 75% { transform: scaleX(.95); opacity: .8; } }
 
 /* Chữ trên ảnh bìa: khoảng cách trên/dưới tính theo chiều cao của ảnh, nên xoay ngang màn hình cũng không đè lên viền ảnh */
-.hero.fit[data-align="top"] { padding-top: calc(min(100vw, 900px) / var(--ar, .5) * .15); }
-.hero.fit[data-align="bottom"] { padding-bottom: calc(min(100vw, 900px) / var(--ar, .5) * .07); }
 @media (min-width: 760px) {
-  .hero.fit[data-align="top"] { padding-top: calc(min(100vw, 900px) / var(--ar-d, var(--ar, .5)) * .15); }
-  .hero.fit[data-align="bottom"] { padding-bottom: calc(min(100vw, 900px) / var(--ar-d, var(--ar, .5)) * .07); }
+}
+
+/* Trang đầu cao đúng một màn hình, ảnh bìa co vừa khung (không cắt, không cuộn) và đặt giữa; phần trắng thừa liền với nền trắng của ảnh.
+   --ih là chiều cao ảnh thật sự hiển thị, dùng để đặt chữ nằm trong ảnh trên mọi kích thước màn hình. */
+.hero.fit {
+  --hh: max(100vh, 560px);
+  --hh: max(100dvh, 560px);
+  --ih: min(var(--hh), calc(min(100vw, 900px) / var(--ar, .5)));
+  min-height: var(--hh); background-size: contain; background-repeat: no-repeat; background-color: #fff;
+}
+.hero.fit[data-align="top"] { padding-top: calc((var(--hh) - var(--ih)) / 2 + var(--ih) * .15); }
+.hero.fit[data-align="bottom"] { padding-bottom: calc((var(--hh) - var(--ih)) / 2 + var(--ih) * .07); }
+@media (min-width: 760px) {
+  .hero.fit { --ih: min(var(--hh), calc(min(100vw, 900px) / var(--ar-d, var(--ar, .5)))); }
 }
