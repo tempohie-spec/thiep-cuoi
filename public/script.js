@@ -193,13 +193,17 @@
       () => `<svg viewBox="0 0 24 24"><g fill="#e0a56c" stroke="#6b3f1d" stroke-width="1.4"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><circle cx="5.5" cy="10" r="2.2"/><circle cx="9.5" cy="5.8" r="2.2"/><circle cx="14.5" cy="5.8" r="2.2"/><circle cx="18.5" cy="10" r="2.2"/></g></svg>`,
       (c) => `<svg viewBox="0 0 24 24"><path d="M3 14c3-6 6-6 9 0s6 6 9 0" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/></svg>`,
     ];
+    // các hình doodle xuất hiện quanh mép khung ảnh rồi bay ra phía ngoài
     const burst = () => {
-      const cols = ["#f6c453", "#f28b82", "#ffd9c9", "#bfe0c0", "#fff1b8"];
-      for (let k = 0; k < 9; k++) {
+      const cols = ["#f6c453", "#f28b82", "#ffd9c9", "#bfe0c0", "#fff1b8"], n = 12;
+      for (let k = 0; k < n; k++) {
         const el = document.createElement("i");
         el.className = "dd";
-        const a = (k / 9) * Math.PI * 2 + Math.random() * 0.5, dist = 46 + Math.random() * 22;
-        el.style.cssText = `--x:${(Math.cos(a) * dist).toFixed(0)}%;--y:${(Math.sin(a) * dist).toFixed(0)}%;--r:${(Math.random() * 240 - 120).toFixed(0)}deg;--s:${(16 + Math.random() * 14).toFixed(0)}px;animation-delay:${(Math.random() * 0.18).toFixed(2)}s`;
+        const a = (k / n) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+        const cx = Math.cos(a), cy = Math.sin(a), m = Math.max(Math.abs(cx) / 0.5, Math.abs(cy) / 0.5);
+        const ex = 50 + (cx / m) * 100, ey = 50 + (cy / m) * 100; // điểm trên mép khung ảnh (%)
+        const out = 18 + Math.random() * 22;
+        el.style.cssText = `left:${ex.toFixed(1)}%;top:${ey.toFixed(1)}%;--x:${(cx * out).toFixed(0)}px;--y:${(cy * out).toFixed(0)}px;--r:${(Math.random() * 240 - 120).toFixed(0)}deg;--s:${(16 + Math.random() * 12).toFixed(0)}px;animation-delay:${(Math.random() * 0.35).toFixed(2)}s`;
         el.innerHTML = doodles[k % doodles.length](cols[k % cols.length]);
         fx.appendChild(el);
         el.addEventListener("animationend", () => el.remove());
@@ -249,7 +253,7 @@
       if (!down) return;
       const dx = e.clientX - down.x, dy = e.clientY - down.y;
       down = null;
-      if (e.target.closest(".zoom")) return;
+      if (e.target.closest("button")) return;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) return go(dx < 0 ? 1 : -1);
       if (Math.abs(dx) < 8 && Math.abs(dy) < 8) { const r = wrap.getBoundingClientRect(); go(e.clientX - r.left > r.width * 0.4 ? 1 : -1); }
     });
@@ -390,16 +394,22 @@
   (() => {
     const box = $("#leaves");
     if (!box) return;
-    const colors = ["#e0a63a", "#d18f26", "#e9bd5c", "#c97b1d"];
-    const svg = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'><path d='M12 1C5 8 3 18 12 31C21 18 19 8 12 1Z' fill='${c}'/><path d='M12 4V29' stroke='rgba(120,70,10,.45)' stroke-width='1' fill='none'/></svg>`)}")`;
+    // lá kiểu doodle: viền nâu nét tay, gân lá, màu vàng cam ấm; ba hình dáng lá khác nhau
+    const colors = ["#f6c453", "#f1a65a", "#f7d98b", "#e8955a"];
+    const shapes = [
+      (c) => `<path d='M16 3C7 9 5 22 16 37C27 22 25 9 16 3Z' fill='${c}' stroke='#5a3216' stroke-width='2.2' stroke-linejoin='round'/><path d='M16 6V36M16 16l-5-4M16 22l6-5M16 28l-5-4' fill='none' stroke='#5a3216' stroke-width='1.6' stroke-linecap='round'/>`,
+      (c) => `<path d='M16 4C10 4 4 10 5 18C6 27 12 33 16 37C20 33 26 27 27 18C28 10 22 4 16 4Z' fill='${c}' stroke='#5a3216' stroke-width='2.2' stroke-linejoin='round'/><path d='M16 8V36M16 18c-3-2-6-2-8-1M16 18c3-2 6-2 8-1M16 27c-3-2-5-2-7-1M16 27c3-2 5-2 7-1' fill='none' stroke='#5a3216' stroke-width='1.5' stroke-linecap='round'/>`,
+      (c) => `<path d='M16 36L14 30C8 30 4 26 5 21C2 18 3 13 7 12C6 7 11 4 14 7C15 3 17 3 18 7C21 4 26 7 25 12C29 13 30 18 27 21C28 26 24 30 18 30Z' fill='${c}' stroke='#5a3216' stroke-width='2.1' stroke-linejoin='round'/><path d='M16 34V12M16 22l-5-5M16 22l5-5' fill='none' stroke='#5a3216' stroke-width='1.5' stroke-linecap='round'/>`,
+    ];
+    const svg = (c, k) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'>${shapes[k](c)}</svg>`)}")`;
     const n = innerWidth < 600 ? 9 : 14;
     for (let i = 0; i < n; i++) {
       const el = document.createElement("span");
       el.className = "leaf";
-      const size = 9 + Math.random() * 9;
+      const size = 12 + Math.random() * 10;
       el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${(0.3 + Math.random() * 0.3).toFixed(2)}`;
       const leaf = document.createElement("i");
-      leaf.style.backgroundImage = svg(colors[i % colors.length]);
+      leaf.style.backgroundImage = svg(colors[i % colors.length], i % shapes.length);
       el.appendChild(leaf);
       box.appendChild(el);
     }

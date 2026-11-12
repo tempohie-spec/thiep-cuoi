@@ -102,13 +102,13 @@
               <path class="b3" d="M5 7 Q150 5 295 9 Q293 200 294 392 Q150 396 8 393 Q4 200 5 7Z"/>
             </svg>
             <button type="button" class="zoom" id="reelZoom" aria-label="Phóng to ảnh"></button>
+            <div class="flip-ctrl">
+              <button type="button" id="flipPrev" class="flip-btn prev" aria-label="Ảnh trước"></button>
+              <span id="flipCount" class="flip-count"></span>
+              <button type="button" id="flipNext" class="flip-btn next" aria-label="Ảnh sau"></button>
+            </div>
           </div>
           <div class="reel-fx" id="reelFx" aria-hidden="true"></div>
-        </div>
-        <div class="flip-ctrl">
-          <button type="button" id="flipPrev" class="flip-btn prev" aria-label="Ảnh trước"></button>
-          <span id="flipCount" class="flip-count"></span>
-          <button type="button" id="flipNext" class="flip-btn next" aria-label="Ảnh sau"></button>
         </div>
       </div>
     </section>
@@ -118,26 +118,29 @@
       <div class="page-in rsvp-page reveal">
         <h2 class="title">Xác nhận tham dự</h2>
         <div class="rsvp-grid">
-          <form id="rsvp" class="rsvp">
-            <input name="name" placeholder="Tên của bạn" required>
-            <input name="phone" placeholder="Số điện thoại" inputmode="tel">
-            <div class="rsvp-row">
-              <select name="attend" aria-label="Tham dự">
-                <option value="yes">Mình sẽ đến</option>
-                <option value="no">Không đến được</option>
-              </select>
-              <select name="guests" aria-label="Số người">
-                <option value="1">1 người</option>
-                <option value="2">2 người</option>
-                <option value="3">3 người trở lên</option>
-              </select>
-            </div>
-            <textarea name="message" rows="2" placeholder="Lời chúc gửi đến cô dâu chú rể"></textarea>
-            <button class="btn" type="submit">Gửi xác nhận</button>
-            <p class="rsvp-msg" id="rsvpMsg"></p>
-          </form>
-          <div class="wishes-wrap" id="wishesWrap" hidden>
-            <h3 class="title sub">Lời chúc từ khách mời</h3>
+          <div class="dcard rsvp-card">
+            <p class="dcard-title">Bạn sẽ đến chung vui chứ?</p>
+            <form id="rsvp" class="rsvp">
+              <input name="name" placeholder="Tên của bạn" required>
+              <input name="phone" placeholder="Số điện thoại" inputmode="tel">
+              <div class="rsvp-row">
+                <select name="attend" aria-label="Tham dự">
+                  <option value="yes">Mình sẽ đến</option>
+                  <option value="no">Không đến được</option>
+                </select>
+                <select name="guests" aria-label="Số người">
+                  <option value="1">1 người</option>
+                  <option value="2">2 người</option>
+                  <option value="3">3 người trở lên</option>
+                </select>
+              </div>
+              <textarea name="message" rows="2" placeholder="Gửi lời chúc đến cô dâu chú rể"></textarea>
+              <button class="btn dbtn" type="submit">Gửi xác nhận</button>
+              <p class="rsvp-msg" id="rsvpMsg"></p>
+            </form>
+          </div>
+          <div class="dcard wish-card" id="wishesWrap" hidden>
+            <p class="dcard-title">Lời chúc từ khách mời</p>
             <div class="wishes" id="wishes" aria-live="polite"></div>
           </div>
         </div>
