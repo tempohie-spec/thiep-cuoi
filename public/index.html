@@ -134,7 +134,8 @@
                   <option value="3">3 người trở lên</option>
                 </select>
               </div>
-              <textarea name="message" rows="2" placeholder="Gửi lời chúc đến cô dâu chú rể"></textarea>
+              <textarea name="message" rows="2" maxlength="50" placeholder="Lời chúc gửi cô dâu chú rể"></textarea>
+              <p class="msg-count" id="msgCount" aria-live="polite">0 / 50 ký tự</p>
               <button class="btn dbtn" type="submit">Gửi xác nhận</button>
               <p class="rsvp-msg" id="rsvpMsg"></p>
             </form>

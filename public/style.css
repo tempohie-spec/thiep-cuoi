@@ -479,3 +479,12 @@ body {
   .rsvp-card .dbtn { padding: .55rem 1rem; }
   .rsvp-msg { min-height: .9em; }
 }
+
+/* đếm ký tự lời chúc */
+.msg-count { margin: -.25rem .3rem 0 0; text-align: right; font-size: .75rem; color: #9a8670; }
+.msg-count.full { color: #c0392b; font-weight: 700; }
+/* giấy note động đậy nhẹ, mỗi tờ lệch nhịp nhau */
+.wish-grid .note { animation: noteIn .55s cubic-bezier(.3, 1.5, .5, 1), noteWiggle 3.2s ease-in-out .55s infinite; }
+.wish-grid .note:nth-child(2n) { animation-duration: .55s, 3.8s; animation-delay: 0s, .9s; }
+.wish-grid .note:nth-child(3n) { animation-duration: .55s, 3.5s; animation-delay: 0s, 1.6s; }
+@keyframes noteWiggle { 0%, 100% { translate: 0 0; rotate: 0deg; } 30% { translate: 0 -3px; rotate: -1.2deg; } 65% { translate: 0 1px; rotate: 1deg; } }

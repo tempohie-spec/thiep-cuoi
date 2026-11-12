@@ -435,6 +435,14 @@
   }), { threshold: 0.15 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
+  // Đếm ký tự lời chúc (tối đa 50 để hiện trọn trên giấy note ở mọi màn hình)
+  (() => {
+    const ta = document.querySelector("#rsvp [name=message]"), cnt = $("#msgCount");
+    if (!ta || !cnt) return;
+    const upd = () => { cnt.textContent = `${ta.value.length} / 50 ký tự`; cnt.classList.toggle("full", ta.value.length >= 50); };
+    ta.addEventListener("input", upd); $("#rsvp").addEventListener("reset", () => setTimeout(upd));
+  })();
+
   // RSVP
   $("#rsvp").addEventListener("submit", async (e) => {
     e.preventDefault();
