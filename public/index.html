@@ -114,28 +114,32 @@
     </section>
 
     <!-- PAGE 6: nền trắng be. Xác nhận tham dự + lời chúc của khách mời -->
-    <section class="page p-be" id="p6">
-      <div class="page-in reveal">
+    <section class="page p-be p-fit" id="p6">
+      <div class="page-in rsvp-page reveal">
         <h2 class="title">Xác nhận tham dự</h2>
-      <form id="rsvp" class="rsvp">
-        <input name="name" placeholder="Tên của bạn" required>
-        <input name="phone" placeholder="Số điện thoại">
-        <select name="attend">
-          <option value="yes">Mình sẽ đến</option>
-          <option value="no">Rất tiếc, mình không đến được</option>
-        </select>
-        <select name="guests">
-          <option value="1">1 người</option>
-          <option value="2">2 người</option>
-          <option value="3">3 người trở lên</option>
-        </select>
-        <textarea name="message" rows="3" placeholder="Lời chúc gửi đến cô dâu chú rể"></textarea>
-        <button class="btn" type="submit">Gửi xác nhận</button>
-        <p class="rsvp-msg" id="rsvpMsg"></p>
-      </form>
-        <div class="wishes-wrap" id="wishesWrap" hidden>
-          <h3 class="title sub">Lời chúc từ khách mời</h3>
-          <div class="wishes" id="wishes"></div>
+        <div class="rsvp-grid">
+          <form id="rsvp" class="rsvp">
+            <input name="name" placeholder="Tên của bạn" required>
+            <input name="phone" placeholder="Số điện thoại" inputmode="tel">
+            <div class="rsvp-row">
+              <select name="attend" aria-label="Tham dự">
+                <option value="yes">Mình sẽ đến</option>
+                <option value="no">Không đến được</option>
+              </select>
+              <select name="guests" aria-label="Số người">
+                <option value="1">1 người</option>
+                <option value="2">2 người</option>
+                <option value="3">3 người trở lên</option>
+              </select>
+            </div>
+            <textarea name="message" rows="2" placeholder="Lời chúc gửi đến cô dâu chú rể"></textarea>
+            <button class="btn" type="submit">Gửi xác nhận</button>
+            <p class="rsvp-msg" id="rsvpMsg"></p>
+          </form>
+          <div class="wishes-wrap" id="wishesWrap" hidden>
+            <h3 class="title sub">Lời chúc từ khách mời</h3>
+            <div class="wishes" id="wishes" aria-live="polite"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -144,7 +148,31 @@
     <section class="page p-red" id="p7">
       <div class="page-in reveal">
         <h2 class="title">Hộp mừng cưới</h2>
-        <div class="gifts" id="gifts"></div>
+        <div class="giftbox" id="giftBox" role="button" tabindex="0" aria-expanded="false" aria-label="Bấm để mở hộp quà">
+          <svg viewBox="0 0 200 190" aria-hidden="true">
+            <g class="gb-body">
+              <path d="M34 82 Q100 78 166 83 L162 176 Q100 181 38 175 Z" fill="#f7d98b" stroke="#4a2a14" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M88 81 L86 177 M112 81 L114 177" stroke="#4a2a14" stroke-width="3" fill="none"/>
+              <path d="M88 81 L112 81 L114 177 L86 177 Z" fill="#f28b82" stroke="#4a2a14" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M48 120 l6 -6 m10 22 l6 -6 m66 -16 l6 -6 m-8 34 l6 -6" stroke="#4a2a14" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M128 152 l3 -8 3 8 8 3 -8 3 -3 8 -3 -8 -8 -3z" fill="#fffaf0" stroke="#4a2a14" stroke-width="1.8" stroke-linejoin="round"/>
+            </g>
+            <g class="gb-lid">
+              <path d="M24 60 Q100 55 176 61 L174 86 Q100 90 26 85 Z" fill="#f9e3a6" stroke="#4a2a14" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M87 58 L113 58 L113 88 L87 88 Z" fill="#f28b82" stroke="#4a2a14" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M100 58 C78 30 52 34 62 50 C68 60 90 60 100 58 Z" fill="#f28b82" stroke="#4a2a14" stroke-width="3.4" stroke-linejoin="round"/>
+              <path d="M100 58 C122 30 148 34 138 50 C132 60 110 60 100 58 Z" fill="#f28b82" stroke="#4a2a14" stroke-width="3.4" stroke-linejoin="round"/>
+              <circle cx="100" cy="57" r="7" fill="#e86f66" stroke="#4a2a14" stroke-width="3"/>
+            </g>
+            <g class="gb-spark" fill="none" stroke="#f2c46d" stroke-width="3" stroke-linecap="round">
+              <path d="M30 40 l-10 -8 M100 20 l0 -14 M170 40 l10 -8 M18 74 l-12 0 M182 74 l12 0"/>
+            </g>
+          </svg>
+          <p class="gb-hint">Chạm vào hộp quà để mở</p>
+        </div>
+        <div class="gift-area" id="giftArea" hidden>
+          <div class="gifts" id="gifts"></div>
+        </div>
         <div class="thanks">
           <p class="script" data-names></p>
           <p class="small">Cảm ơn bạn đã là một phần trong ngày vui của chúng mình</p>

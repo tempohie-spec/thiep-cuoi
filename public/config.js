@@ -18,6 +18,7 @@ window.WEDDING = {
   // Lời chúc của khách mời hiện ở page 6 dưới dạng các tờ giấy note: [{ name: "Tên khách", text: "Lời chúc" }]
   wishes: [],
   // Dán URL Google Apps Script / Formspree để nhận phản hồi RSVP. Để trống thì lưu tạm và hiển thị cảm ơn.
+  sheetLink: "", // link Google Sheet (chỉ để bạn mở nhanh trong editor)
   rsvpEndpoint: "",
   coverStrength: 100, // độ đậm ảnh bìa, 0 đến 100
   heroAlign: "bottom", // vị trí chữ trên ảnh bìa: top, center, bottom

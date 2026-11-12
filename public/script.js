@@ -78,7 +78,7 @@
     const list = $("#evlist");
     const cards = (W.eventCards || []).filter((c) => c && (c.front || c.back));
     $(".ev-hint").hidden = !cards.length;
-    list.innerHTML = cards.map((c, i) => `
+    const cardHtml = (c, i) => `
       <div class="evflip" style="--d:${(i * 0.9).toFixed(1)}s">
         <div class="ev-float">
           <div class="ev-card" role="button" tabindex="0" aria-label="Thiệp sự kiện, chạm để lật xem ngày giờ và địa chỉ">
@@ -86,7 +86,11 @@
             <div class="ev-face ev-back"><img src="${esc(c.back || c.front)}" alt="Ngày giờ và địa chỉ" width="1400" height="930">${c.map ? `<a class="ev-map" href="${esc(c.map)}" target="_blank" rel="noopener" aria-label="Xem bản đồ Google Maps"></a>` : ""}</div>
           </div>
         </div>
-      </div>`).join("");
+      </div>`;
+    // chia hai phần Nhà trai và Nhà gái (thẻ chưa chọn phần thì xếp vào Nhà gái)
+    const groups = [["groom", "Nhà trai"], ["bride", "Nhà gái"]].map(([k, t]) => [t, cards.filter((c) => (c.side === "groom" ? "groom" : "bride") === k)]).filter(([, l]) => l.length);
+    let n = 0;
+    list.innerHTML = groups.map(([t, l]) => `<div class="evgroup"><h3 class="evside"><span>${t}</span></h3>${l.map((c) => cardHtml(c, n++)).join("")}</div>`).join("");
     list.querySelectorAll(".ev-card").forEach((card) => {
       let touched = false, timer = null, done = false;
       const flip = () => { const f = card.classList.toggle("flipped"); card.closest(".evflip").classList.toggle("is-flipped", f); };
@@ -100,7 +104,7 @@
       const io = new IntersectionObserver(() => {
         if (done || touched) return;
         if (fully()) {
-          if (!timer) timer = setTimeout(() => { timer = null; if (!done && !touched && fully()) { done = true; io.disconnect(); flip(); } }, 2000);
+          if (!timer) timer = setTimeout(() => { timer = null; if (!done && !touched && fully()) { done = true; io.disconnect(); flip(); } }, 1000);
         } else if (timer) { clearTimeout(timer); timer = null; }
       }, { threshold: [0, .25, .5, .75, .9, .98, 1] });
       io.observe(wrap);
@@ -216,7 +220,7 @@
       const base = document.createElement("canvas");
       base.width = cw; base.height = ch;
       base.getContext("2d").drawImage(cv, 0, 0);
-      const { pts, width } = strokePath(), T = 950, t0 = performance.now();
+      const { pts, width } = strokePath(), T = 1500, t0 = performance.now();
       burst();
       const step = (now) => {
         if (id !== anim) return;
@@ -268,15 +272,44 @@
   lb.addEventListener("click", closeLb);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
-  // Lời chúc của khách mời: các tờ giấy note dán, nhập trong editor
+  // Lời chúc của khách mời: lời chúc nhập trong editor + lời chúc được tick "Hiển thị" trong Google Sheet.
+  // Hiện ngẫu nhiên trên giấy note doodle, tự đổi sau mỗi 5 giây.
   (() => {
     const wrap = $("#wishesWrap"), box = $("#wishes");
-    const list = (W.wishes || []).filter((w) => w && String(w.text || "").trim());
-    wrap.hidden = !list.length;
-    const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], tapes = ["rgba(246,196,160,.9)", "rgba(247,224,138,.9)", "rgba(191,224,192,.9)", "rgba(244,182,196,.9)", "rgba(188,215,238,.9)"];
-    const rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0];
-    const marks = ["♡", "✦", "☆", "✿"];
-    box.innerHTML = list.map((w, i) => `<figure class="note" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${String(w.name || "").trim() ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`).join("");
+    const clean = (l) => (l || []).filter((w) => w && String(w.text || "").trim()).map((w) => ({ name: String(w.name || "").trim(), text: String(w.text).trim() }));
+    let pool = clean(W.wishes), order = [], pos = 0, timer = null;
+    const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0], marks = ["♡", "✦", "☆", "✿"];
+    const per = () => (innerWidth >= 760 ? 2 : 1);
+    const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
+    const render = () => {
+      if (!pool.length) return;
+      const k = Math.min(per(), pool.length), html = [];
+      for (let t = 0; t < k; t++) {
+        if (pos >= order.length) shuffle();
+        const w = pool[order[pos++]], i = Math.floor(Math.random() * 20);
+        html.push(`<figure class="note in" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`);
+      }
+      box.innerHTML = html.join("");
+    };
+    const start = () => {
+      wrap.hidden = !pool.length;
+      if (!pool.length) return;
+      shuffle(); render();
+      clearInterval(timer);
+      if (pool.length > per()) timer = setInterval(() => { box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 450); }, 5000);
+    };
+    start();
+    if (W.rsvpEndpoint && /^https?:\/\//.test(W.rsvpEndpoint)) {
+      fetch(W.rsvpEndpoint).then((r) => r.json()).then((d) => { const extra = clean(d && d.wishes); if (extra.length) { pool = pool.concat(extra); start(); } }).catch(() => {});
+    }
+  })();
+
+  // Hộp mừng cưới: hộp quà doodle động đậy nhẹ, bấm vào thì nắp bật ra và hiện các tài khoản mừng cưới
+  (() => {
+    const gb = $("#giftBox"), area = $("#giftArea");
+    const open = () => { if (gb.classList.contains("open")) return; gb.classList.add("open"); gb.setAttribute("aria-expanded", "true"); setTimeout(() => { area.hidden = false; area.classList.add("show"); }, 420); };
+    gb.addEventListener("click", open);
+    gb.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
   })();
 
   $("#gifts").innerHTML = W.gifts.map((g) => `

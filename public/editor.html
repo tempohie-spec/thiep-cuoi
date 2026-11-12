@@ -37,6 +37,9 @@
     details.sizes th, details.sizes td { border: 1px solid #ead7a8; padding: 5px 7px; text-align: left; vertical-align: top; background: #fff; }
     details.sizes th { background: #f7e7bf; }
     details.sizes p { font-size: .78rem; color: #6b615a; margin: 4px 0 2px; }
+    .pghead { margin: 30px -20px 4px; padding: 8px 20px; background: #7a2433; color: #fbefd5; font-weight: 700; font-size: .95rem; position: sticky; top: 0; z-index: 5; }
+    .pghead span { display: inline-block; background: #f2c46d; color: #4a2a14; border-radius: 999px; padding: 1px 10px; margin-right: 6px; font-size: .8rem; }
+    .pghead + h2 { border-top: 0; padding-top: 4px; }
     .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
     .thumbs { display: flex; flex-wrap: wrap; gap: 6px; }
     .thumb { padding: 0; width: 64px; height: 85px; overflow: hidden; border-radius: 6px; background: #eee; }
@@ -67,29 +70,6 @@
     <p class="hint">Nội dung hiện ngay ở khung xem trước và tự lưu nháp trên trình duyệt này. Khi xong, nhập mật khẩu rồi bấm "Đăng thiệp" để cập nhật thiệp chính.</p>
     <label>Mật khẩu quản trị</label><input type="password" id="pw" autocomplete="current-password">
 
-    <h2>Chú rể</h2>
-    <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
-    <label>Họ và tên đầy đủ</label><input data-k="groom.fullName">
-    <label>Bố mẹ chú rể (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="groom.parents">
-
-    <h2>Cô dâu</h2>
-    <label>Tên hiển thị (ngắn)</label><input data-k="bride.name">
-    <label>Họ và tên đầy đủ</label><input data-k="bride.fullName">
-    <label>Bố mẹ cô dâu (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="bride.parents">
-
-    <h2>Ngày cưới và lời mời</h2>
-    <label>Ngày giờ (dùng cho đồng hồ đếm ngược)</label><input type="datetime-local" id="date">
-    <label>Lời mời</label><textarea rows="3" data-k="quote"></textarea>
-
-    <h2>Thiệp sự kiện (thẻ lật)</h2>
-    <p class="hint">Mỗi thẻ có hai mặt: mặt trước (ví dụ ảnh nhà thờ), chạm vào thì lật sang mặt sau (ngày giờ, địa chỉ). Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span>, ảnh PNG nền trong suốt vẫn giữ nền trong suốt.</p>
-    <div id="list-eventCards"></div>
-    <button type="button" data-add="eventCards">Thêm thẻ sự kiện</button>
-
-    <h2>Chữ trên phong bì</h2>
-    <p class="hint">Phong bì hiện tên cô dâu chú rể (lấy từ "Tên hiển thị" ở trên), một dòng ngày tháng năm và một dòng "Thân mời: tên khách".</p>
-    <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
-
     <details class="sizes" open>
       <summary>Bảng kích thước ảnh nên dùng (rộng x cao, tính bằng pixel)</summary>
       <table>
@@ -102,6 +82,12 @@
       <p>Ảnh lớn hơn 1800px ở cạnh dài sẽ tự được thu nhỏ khi tải lên. Ảnh nhỏ hơn kích thước trên vẫn dùng được nhưng có thể bị mờ. Mỗi ảnh nên dưới khoảng 500KB để tải nhanh. Thiệp tự cắt phần thừa theo màn hình, dùng nút "Chỉnh vị trí ảnh" để chọn phần cần giữ.</p>
     </details>
 
+    <div class="pghead"><span>Trang 1</span> Mở thiệp (phong bì)</div>
+
+    <h2>Chữ trên phong bì</h2>
+    <p class="hint">Phong bì hiện tên cô dâu chú rể (lấy từ "Tên hiển thị" ở trên), một dòng ngày tháng năm và một dòng "Thân mời: tên khách".</p>
+    <label>Dòng ngày tháng năm</label><input data-k="introDate" placeholder="Ví dụ: 20 . 12 . 2026 (để trống sẽ tự lấy theo ngày cưới)">
+
     <h2>Ảnh nền trang Mở thiệp</h2>
     <p class="hint">Ảnh nền phía sau phong bì ở màn hình đầu tiên. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính. Để trống thì dùng nền màu mặc định.</p>
     <label>Ảnh cho ĐIỆN THOẠI: <span class="sz">1000 x 1800px (ảnh dọc, 9:16)</span></label>
@@ -111,6 +97,25 @@
     <input data-k="introBgD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
     <input type="file" accept="image/*" id="introDUp" style="margin-top:6px">
     <div class="row"><button type="button" id="posIntro">Chỉnh vị trí ảnh</button><button type="button" id="clearIntro">Xóa ảnh điện thoại</button><button type="button" id="clearIntroD">Xóa ảnh máy tính</button></div>
+
+    <h2>Nhạc nền</h2>
+    <p class="hint">Nhạc tự phát sau khi khách bấm mở thiệp, khách có nút bật tắt ở góc màn hình. Nên dùng file mp3 khoảng 3 đến 5MB (128kbps, 3 đến 4 phút) để khách tải nhanh và đỡ tốn băng thông.</p>
+    <label>Tải file nhạc lên (mp3, m4a, wav, tối đa 25MB)</label><input type="file" accept="audio/*" id="musicUp">
+    <p class="hint" id="musicStatus" style="margin-top:6px"></p>
+    <audio id="musicPreview" controls preload="none" hidden style="width:100%"></audio>
+    <label>Hoặc dán link file nhạc</label><input data-k="music" placeholder="https://...mp3">
+    <div class="row"><button type="button" id="clearMusic">Xóa nhạc</button></div>
+
+    <h2>Tạo link mời riêng cho khách</h2>
+    <p class="hint">Nhập mỗi dòng một tên khách. Bấm Tạo link, mỗi khách sẽ có một link riêng, phong bì hiện "Thân mời: tên khách đó".</p>
+    <textarea rows="4" id="guestNames" placeholder="Anh Nam&#10;Chị Lan&#10;Gia đình cô Hoa"></textarea>
+    <div class="row"><button type="button" id="makeLinks">Tạo link</button><button type="button" id="copyLinks">Sao chép tất cả</button></div>
+    <textarea rows="6" id="guestLinks" readonly style="margin-top:8px"></textarea>
+
+    <div class="pghead"><span>Trang 2</span> Ảnh bìa</div>
+
+    <h2>Ngày cưới</h2>
+    <label>Ngày giờ (dùng cho đồng hồ đếm ngược và hiển thị trên thiệp)</label><input type="datetime-local" id="date">
 
     <h2>Ảnh bìa</h2>
     <p class="hint">Ảnh nền đầu trang. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính.</p>
@@ -126,6 +131,30 @@
     <label>Vị trí chữ (tên, ngày, đồng hồ) trên ảnh bìa</label>
     <select data-k="heroAlign"><option value="bottom">Phía dưới</option><option value="center">Ở giữa</option><option value="top">Phía trên</option></select>
 
+    <div class="pghead"><span>Trang 3</span> Cô dâu chú rể</div>
+
+    <h2>Lời mời</h2>
+    <label>Câu lời mời ở đầu trang</label><textarea rows="3" data-k="quote"></textarea>
+
+    <h2>Chú rể</h2>
+    <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
+    <label>Họ và tên đầy đủ</label><input data-k="groom.fullName">
+    <label>Bố mẹ chú rể (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="groom.parents">
+
+    <h2>Cô dâu</h2>
+    <label>Tên hiển thị (ngắn)</label><input data-k="bride.name">
+    <label>Họ và tên đầy đủ</label><input data-k="bride.fullName">
+    <label>Bố mẹ cô dâu (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="bride.parents">
+
+    <div class="pghead"><span>Trang 4</span> Sự kiện cưới</div>
+
+    <h2>Thiệp sự kiện (thẻ lật)</h2>
+    <p class="hint">Sự kiện được chia làm hai phần <b>Nhà trai</b> và <b>Nhà gái</b> (cùng một trang). Chọn phần cho từng thẻ ở ô "Thuộc phần". Mỗi thẻ có hai mặt: mặt trước (ví dụ ảnh nhà thờ), tự lật sang mặt sau (ngày giờ, địa chỉ) sau 1 giây khi khách thấy trọn thẻ, và khách bấm để lật qua lại. Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span>, ảnh PNG nền trong suốt vẫn giữ nền trong suốt.</p>
+    <div id="list-eventCards"></div>
+    <button type="button" data-add="eventCards">Thêm thẻ sự kiện</button>
+
+    <div class="pghead"><span>Trang 5</span> Album ảnh</div>
+
     <h2>Album ảnh</h2>
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link), album hiện từng ảnh một theo đúng thứ tự các dòng. Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
     <textarea rows="6" id="gallery"></textarea>
@@ -133,31 +162,26 @@
     <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ bên dưới để kéo chỉnh vị trí.</p>
     <div class="thumbs" id="galThumbs"></div>
 
+    <div class="pghead"><span>Trang 6</span> Xác nhận tham dự và lời chúc</div>
+
+    <h2>Xác nhận tham dự (Google Sheet)</h2>
+    <p class="hint">Khách điền form trên thiệp thì thông tin (tên, số điện thoại, có đến không, số người, lời chúc) được ghi vào Google Sheet của bạn. Trong Sheet có cột <b>"Hiển thị lời chúc"</b> dạng ô tick: tick vào lời chúc nào thì lời chúc đó mới hiện trên thiệp. Cách cài đặt (làm một lần) xem trong file <b>google-apps-script.gs</b> ở repo, hoặc nhờ Claude hướng dẫn.</p>
+    <label>Link Web App của Google Apps Script (dạng https://script.google.com/macros/s/.../exec)</label><input data-k="rsvpEndpoint" placeholder="https://script.google.com/macros/s/.../exec">
+    <label>Link Google Sheet (chỉ để bạn mở nhanh, khách không thấy)</label><input data-k="sheetLink" placeholder="https://docs.google.com/spreadsheets/d/...">
+    <div class="row"><button type="button" id="openSheet">Mở Google Sheet</button><button type="button" id="testSheet">Kiểm tra kết nối</button></div>
+    <p class="hint" id="sheetStatus" style="margin-top:6px"></p>
+
     <h2>Lời chúc của khách mời</h2>
-    <p class="hint">Hiện ở page 6 dưới dạng các tờ giấy note dán. Dán lời chúc khách đã gửi cho bạn vào đây.</p>
+    <p class="hint">Hiện ở trang 6 dưới dạng giấy note, mỗi 5 giây đổi ngẫu nhiên một lời chúc. Gồm lời chúc bạn nhập ở đây và lời chúc đã được tick "Hiển thị" trong Google Sheet.</p>
     <div id="list-wishes"></div>
     <button type="button" data-add="wishes">Thêm lời chúc</button>
+
+    <div class="pghead"><span>Trang 7</span> Hộp mừng cưới và lời cảm ơn</div>
 
     <h2>Hộp mừng cưới</h2>
     <div id="list-gifts"></div>
     <button type="button" data-add="gifts">Thêm tài khoản</button>
 
-    <h2>Tạo link mời riêng cho khách</h2>
-    <p class="hint">Nhập mỗi dòng một tên khách. Bấm Tạo link, mỗi khách sẽ có một link riêng, phong bì hiện "Thân mời: tên khách đó".</p>
-    <textarea rows="4" id="guestNames" placeholder="Anh Nam&#10;Chị Lan&#10;Gia đình cô Hoa"></textarea>
-    <div class="row"><button type="button" id="makeLinks">Tạo link</button><button type="button" id="copyLinks">Sao chép tất cả</button></div>
-    <textarea rows="6" id="guestLinks" readonly style="margin-top:8px"></textarea>
-
-    <h2>Nhạc nền</h2>
-    <p class="hint">Nhạc tự phát sau khi khách bấm mở thiệp, khách có nút bật tắt ở góc màn hình. Nên dùng file mp3 khoảng 3 đến 5MB (128kbps, 3 đến 4 phút) để khách tải nhanh và đỡ tốn băng thông.</p>
-    <label>Tải file nhạc lên (mp3, m4a, wav, tối đa 25MB)</label><input type="file" accept="audio/*" id="musicUp">
-    <p class="hint" id="musicStatus" style="margin-top:6px"></p>
-    <audio id="musicPreview" controls preload="none" hidden style="width:100%"></audio>
-    <label>Hoặc dán link file nhạc</label><input data-k="music" placeholder="https://...mp3">
-    <div class="row"><button type="button" id="clearMusic">Xóa nhạc</button></div>
-
-    <h2>Khác</h2>
-    <label>Link nhận RSVP (Google Apps Script hoặc Formspree, có thể để trống)</label><input data-k="rsvpEndpoint">
     <div class="actions">
       <button class="primary" id="publish" type="button">Đăng thiệp</button>
       <button id="download" type="button">Tải config.js</button>
@@ -200,7 +224,7 @@
   try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...migrate(JSON.parse(d)) }; hasDraft = true; } } catch {}
 
   const schema = {
-    eventCards: { label: "Thẻ sự kiện", fields: [["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { front: "", back: "", map: "" } },
+    eventCards: { label: "Thẻ sự kiện", fields: [["side", "Thuộc phần", false, false, [["groom", "Nhà trai"], ["bride", "Nhà gái"]]], ["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { side: "groom", front: "", back: "", map: "" } },
     wishes: { label: "Lời chúc", fields: [["name", "Tên khách"], ["text", "Lời chúc", true]], blank: { name: "", text: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
@@ -222,12 +246,14 @@
       $("#list-" + name).innerHTML = (cfg[name] || []).map((item, i) => `
         <div class="card">
           <div class="card-head"><span>${s.label} ${i + 1}</span><button type="button" class="danger" data-del="${name}" data-i="${i}">Xóa</button></div>
-          ${s.fields.map(([f, lab, area, img]) => `<label>${lab}</label>` + (area
+          ${s.fields.map(([f, lab, area, img, opts]) => `<label>${lab}</label>` + (opts
+            ? `<select data-list="${name}" data-i="${i}" data-f="${f}">${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`
+            : area
             ? `<textarea rows="3" data-list="${name}" data-i="${i}" data-f="${f}"></textarea>`
             : `<input data-list="${name}" data-i="${i}" data-f="${f}">`) + (img
             ? `<label>Tải ảnh lên</label><input type="file" accept="image/*" data-up-list="${name}" data-i="${i}" data-f="${f}">` : "")).join("")}
         </div>`).join("");
-      document.querySelectorAll(`[data-list="${name}"]`).forEach((el) => { el.value = cfg[name][el.dataset.i][el.dataset.f] || ""; });
+      document.querySelectorAll(`[data-list="${name}"]`).forEach((el) => { const v = cfg[name][el.dataset.i][el.dataset.f]; el.value = v || (el.tagName === "SELECT" ? (el.dataset.f === "side" ? "bride" : el.options[0].value) : ""); });
     });
   }
 
@@ -373,6 +399,19 @@
     }
   });
   $("#clearMusic").addEventListener("click", () => { cfg.music = ""; $("#musicStatus").textContent = ""; fill(); changed(); });
+
+  // ---- Google Sheet: mở nhanh và kiểm tra kết nối với Apps Script
+  $("#openSheet").addEventListener("click", () => { if (cfg.sheetLink) window.open(cfg.sheetLink, "_blank", "noopener"); else toastErr("Chưa có link Google Sheet"); });
+  $("#testSheet").addEventListener("click", async () => {
+    const st = $("#sheetStatus");
+    if (!cfg.rsvpEndpoint) return toastErr("Chưa có link Web App");
+    st.textContent = "Đang kiểm tra...";
+    try {
+      const r = await fetch(cfg.rsvpEndpoint + (cfg.rsvpEndpoint.includes("?") ? "&" : "?") + "t=" + Date.now());
+      const d = await r.json();
+      st.textContent = Array.isArray(d.wishes) ? `Kết nối tốt. Có ${d.wishes.length} lời chúc đang được tick hiển thị.` : "Đã kết nối nhưng dữ liệu trả về chưa đúng, hãy kiểm tra lại mã Apps Script.";
+    } catch { st.textContent = "Không kết nối được. Kiểm tra link Web App và quyền truy cập \"Bất kỳ ai\" (Anyone)."; }
+  });
 
   // ---- Tạo link riêng cho từng khách
   const siteBase = () => location.origin + location.pathname.replace(/[^/]*$/, "");
