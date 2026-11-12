@@ -93,16 +93,23 @@
     <section class="page p-red" id="p5">
       <div class="page-in wide reveal">
         <h2 class="title">Album ảnh</h2>
-      <div class="flip" id="flip">
-        <div class="flip-wrap" id="flipWrap" tabindex="0" aria-label="Album ảnh dạng sách, vuốt hoặc bấm mũi tên để lật trang">
-          <div class="book" id="book"></div>
+        <div class="reel" id="reel" tabindex="0" aria-label="Album ảnh, vuốt hoặc bấm mũi tên để xem ảnh kế tiếp">
+          <div class="reel-card">
+            <canvas id="reelCanvas"></canvas>
+            <svg class="reel-frame" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+              <path class="b1" d="M6 8 Q150 3 294 7 Q298 200 293 393 Q150 398 7 394 Q2 200 6 8Z"/>
+              <path class="b2" d="M8 6 Q150 9 292 5 Q296 200 295 395 Q150 392 5 396 Q5 200 8 6Z"/>
+              <path class="b3" d="M5 7 Q150 5 295 9 Q293 200 294 392 Q150 396 8 393 Q4 200 5 7Z"/>
+            </svg>
+            <button type="button" class="zoom" id="reelZoom" aria-label="Phóng to ảnh"></button>
+          </div>
+          <div class="reel-fx" id="reelFx" aria-hidden="true"></div>
         </div>
         <div class="flip-ctrl">
-          <button type="button" id="flipPrev" class="flip-btn prev" aria-label="Trang trước"></button>
+          <button type="button" id="flipPrev" class="flip-btn prev" aria-label="Ảnh trước"></button>
           <span id="flipCount" class="flip-count"></span>
-          <button type="button" id="flipNext" class="flip-btn next" aria-label="Trang sau"></button>
+          <button type="button" id="flipNext" class="flip-btn next" aria-label="Ảnh sau"></button>
         </div>
-      </div>
       </div>
     </section>
 

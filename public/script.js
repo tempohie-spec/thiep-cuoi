@@ -142,106 +142,103 @@
       .finished.then(() => { lb.hidden = true; lbBusy = false; lb.getAnimations().forEach((a) => a.cancel()); li.getAnimations().forEach((a) => a.cancel()); }, () => { lb.hidden = true; lbBusy = false; });
   }
 
-  // ---- Album ảnh dạng sách lật (flipbook)
+  // ---- Album ảnh kiểu doodle: mỗi lần một ảnh trong khung vẽ tay, ảnh mới được "tô" ra bằng nét cọ quét, kèm hình doodle bay ra.
+  // Chạy giống nhau trên điện thoại và máy tính.
   (() => {
-    const book = $("#book"), wrap = $("#flipWrap"), prevBtn = $("#flipPrev"), nextBtn = $("#flipNext"), countEl = $("#flipCount");
-    if (!book) return;
+    const wrap = $("#reel"), cv = $("#reelCanvas"), fx = $("#reelFx"), prevBtn = $("#flipPrev"), nextBtn = $("#flipNext"), countEl = $("#flipCount"), zoomBtn = $("#reelZoom");
+    if (!wrap || !cv) return;
     const photos = (W.gallery || []).filter(Boolean);
-    const mq = matchMedia("(min-width: 760px)");
-    let spread = mq.matches; // máy tính: sách mở hai trang; điện thoại: mỗi lần một trang
-    let leaves = [], idx = 0;
-    // Bìa album mềm mại dễ thương: bìa vàng bơ, nhãn kem viền sóng vẽ tay, hình dán (sao, tim, dấu chân mèo); vẽ bằng SVG nên nét luôn rõ
-    const scallop = (x0, y0, x1, y1, r) => {
-      const nx = Math.max(2, Math.round((x1 - x0) / (2 * r))), ny = Math.max(2, Math.round((y1 - y0) / (2 * r)));
-      const dx = (x1 - x0) / nx, dy = (y1 - y0) / ny, f = (n) => n.toFixed(2);
-      let d = `M${x0} ${y0}`;
-      for (let i = 0; i < nx; i++) d += ` a${f(dx / 2)} ${f(dx / 2)} 0 0 1 ${f(dx)} 0`;
-      for (let i = 0; i < ny; i++) d += ` a${f(dy / 2)} ${f(dy / 2)} 0 0 1 0 ${f(dy)}`;
-      for (let i = 0; i < nx; i++) d += ` a${f(dx / 2)} ${f(dx / 2)} 0 0 1 ${f(-dx)} 0`;
-      for (let i = 0; i < ny; i++) d += ` a${f(dy / 2)} ${f(dy / 2)} 0 0 1 0 ${f(-dy)}`;
-      return d + " Z";
-    };
-    const sparkle = (x, y, s, c) => `<path d="M${x} ${y - s}L${x + s * .28} ${y - s * .28}L${x + s} ${y}L${x + s * .28} ${y + s * .28}L${x} ${y + s}L${x - s * .28} ${y + s * .28}L${x - s} ${y}L${x - s * .28} ${y - s * .28}Z" fill="${c}" stroke="#6b3f1d" stroke-width="1.6" stroke-linejoin="round"/>`;
-    const heart = (x, y, s, c) => `<path transform="translate(${x} ${y}) scale(${s / 12})" d="M0 9C-9 3 -9 -6 -4.5 -7.2C-2 -7.8 0 -6 0 -4.2C0 -6 2 -7.8 4.5 -7.2C9 -6 9 3 0 9Z" fill="${c}" stroke="#6b3f1d" stroke-width="${(1.6 * 12 / s).toFixed(2)}" stroke-linejoin="round"/>`;
-    const paw = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s / 12})" fill="#e0a56c" stroke="#6b3f1d" stroke-width="1.5"><ellipse cx="0" cy="4" rx="5.4" ry="4.6"/><circle cx="-6" cy="-1.6" r="2.3"/><circle cx="-2.2" cy="-6" r="2.3"/><circle cx="2.4" cy="-6" r="2.3"/><circle cx="6.2" cy="-1.6" r="2.3"/></g>`;
-    const cloud = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M-14 6C-20 6 -20 -2 -14 -2C-14 -9 -4 -10 -1 -4C3 -9 12 -6 11 0C17 0 17 6 11 6Z" fill="#fffdf6" stroke="#6b3f1d" stroke-width="${(1.6 / s).toFixed(2)}" stroke-linejoin="round"/>`;
-    const cuteCover = (title, line2, names, foot) => {
-      const nm = String(names).replace(/&amp;/g, "&").length;
-      const fs = Math.max(15, Math.min(24, 300 / Math.max(nm, 8)));
-      const id = "c" + Math.random().toString(36).slice(2, 7);
-      return `<div class="pg cover"><svg class="cv" viewBox="0 0 300 400" aria-hidden="true">
-        <defs><filter id="${id}" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter>
-        <filter id="${id}s" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#7a4a10" flood-opacity=".28"/></filter></defs>
-        <g filter="url(#${id}s)"><path d="${scallop(50, 44, 274, 356, 9)}" fill="#fffaf0" stroke="#6b3f1d" stroke-width="2.4" stroke-linejoin="round" filter="url(#${id})"/></g>
-        <rect x="60" y="54" width="204" height="292" rx="10" fill="none" stroke="#e0b97a" stroke-width="1.6" stroke-dasharray="5 5"/>
-        <g filter="url(#${id})">${cloud(112, 92, 1.25)}${cloud(222, 78, .85)}${sparkle(76, 70, 9, "#f6c453")}${sparkle(246, 108, 7, "#f6c453")}${sparkle(238, 322, 8, "#f28b82")}${heart(84, 318, 11, "#f28b82")}${paw(200, 330, 12)}${paw(138, 338, 9)}</g>
-        <g text-anchor="middle" fill="#6b3f1d" font-family="'Fuzzy Bubbles', 'Patrick Hand', cursive">
-          <text x="162" y="176" font-size="31" font-weight="700">${title}</text>
-          <path d="M104 190 q14 -9 29 0 t29 0 t29 0 t29 0" fill="none" stroke="#e0a56c" stroke-width="3" stroke-linecap="round"/>
-          <text x="162" y="226" font-size="${fs.toFixed(1)}" font-weight="700" fill="#b5651d">${names}</text>
-          <text x="162" y="252" font-size="${Math.min(12.5, 190 / Math.max(String(line2).length, 1) * 1.7).toFixed(1)}">${line2}</text>
-          <text x="162" y="290" font-size="13" font-weight="700" letter-spacing="1.2">${foot}</text>
-        </g>
-      </svg></div>`;
-    };
-    const dateTxt = esc($("#heroDate").textContent);
-    const coverP = cuteCover("Album ảnh", "kỷ niệm của chúng mình", names, dateTxt);
-    const tilts = [-1.8, 1.4, -1.0, 1.9, -1.4, 1.1];
-    const tapes = ["#f7c9a8", "#f7e08a", "#bfe0c0", "#f4b6c4", "#bcd7ee"];
-    const photoP = (src, i) => `<div class="pg photo"><div class="ph" style="--r:${tilts[i % tilts.length]}deg;--tape:${tapes[i % tapes.length]}"><img src="${esc(src)}" alt="Ảnh cưới" loading="lazy" style="object-position:${posOf(src)}"><i class="st s${i % 3}"></i></div><button type="button" class="zoom" data-zoom="${esc(src)}" aria-label="Phóng to ảnh"></button></div>`;
-    // trang cuối giống hệt bìa
-    const endP = cuteCover("Cảm ơn bạn", "đã xem album của chúng mình", "Hẹn gặp bạn", dateTxt);
-    const blankP = `<div class="pg blank"></div>`;
+    const ctx = cv.getContext("2d");
+    const mask = document.createElement("canvas"), mctx = mask.getContext("2d");
+    const imgs = photos.map(() => null);
+    let idx = -1, anim = 0, started = false, cw = 0, ch = 0;
+    $("#p5").hidden = !photos.length;
+    if (!photos.length) return;
 
-    function build() {
-      spread = mq.matches;
-      const pages = [coverP, ...photos.map((s, i) => photoP(s, i))];
-      if (spread ? pages.length % 2 === 1 : true) pages.push(endP);
-      const defs = [];
-      if (spread) for (let k = 0; k < pages.length; k += 2) defs.push([pages[k], pages[k + 1]]);
-      else {
-        // điện thoại: sau ảnh cuối có một trang lót mặt trong bìa cuối (không chữ) lật từ phải sang trái, rồi mới hiện mặt ngoài là lời cảm ơn
-        pages.pop();
-        pages.forEach((p) => defs.push([p, blankP]));
-        defs.push([`<div class="pg endpaper"></div>`, blankP]);
-        defs.push([endP, blankP]);
+    const load = (i) => new Promise((res) => {
+      if (imgs[i]) return res(imgs[i]);
+      const im = new Image();
+      im.onload = () => { imgs[i] = im; res(im); };
+      im.onerror = () => res(null);
+      im.src = photos[i];
+    });
+    const size = () => {
+      const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+      cw = Math.max(2, Math.round(r.width * d)); ch = Math.max(2, Math.round(r.height * d));
+      if (cv.width !== cw || cv.height !== ch) { cv.width = mask.width = cw; cv.height = mask.height = ch; }
+    };
+    // vẽ ảnh phủ kín khung (như object-fit: cover) theo vị trí đã chỉnh trong editor
+    const paint = (c, im, i) => {
+      if (!im) { c.fillStyle = "#f1e3c1"; c.fillRect(0, 0, cw, ch); return; }
+      const [px, py] = posOf(photos[i]).split(" ").map((v) => parseFloat(v) / 100);
+      const sc = Math.max(cw / im.naturalWidth, ch / im.naturalHeight), w = im.naturalWidth * sc, h = im.naturalHeight * sc;
+      c.drawImage(im, (cw - w) * px, (ch - h) * py, w, h);
+    };
+    // đường cọ zíc zắc từ trên xuống, hơi run tay
+    const strokePath = () => {
+      const rows = 7, pts = [], per = 26;
+      for (let r = 0; r < rows; r++) for (let k = 0; k <= per; k++) {
+        const t = k / per, x = (r % 2 ? 1 - t : t) * 1.16 - 0.08, y = (r + 0.5) / rows + Math.sin(t * 9 + r * 2.1) * 0.012 + (Math.random() - 0.5) * 0.008;
+        pts.push([x * cw, y * ch]);
       }
-      book.innerHTML = defs.map((d, k) => `<div class="fleaf" data-k="${k}"><div class="face front">${d[0]}</div><div class="face back">${d[1]}</div></div>`).join("");
-      leaves = [...book.children];
-      idx = Math.min(idx, maxIdx());
-      update();
-    }
-    const maxIdx = () => (spread ? leaves.length : Math.max(0, leaves.length - 1));
+      return { pts, width: (ch / rows) * 1.55 };
+    };
+    const doodles = [
+      (c) => `<svg viewBox="0 0 24 24"><path d="M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6z" fill="${c}" stroke="#6b3f1d" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+      (c) => `<svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="${c}" stroke="#6b3f1d" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+      () => `<svg viewBox="0 0 24 24"><g fill="#e0a56c" stroke="#6b3f1d" stroke-width="1.4"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><circle cx="5.5" cy="10" r="2.2"/><circle cx="9.5" cy="5.8" r="2.2"/><circle cx="14.5" cy="5.8" r="2.2"/><circle cx="18.5" cy="10" r="2.2"/></g></svg>`,
+      (c) => `<svg viewBox="0 0 24 24"><path d="M3 14c3-6 6-6 9 0s6 6 9 0" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/></svg>`,
+    ];
+    const burst = () => {
+      const cols = ["#f6c453", "#f28b82", "#ffd9c9", "#bfe0c0", "#fff1b8"];
+      for (let k = 0; k < 9; k++) {
+        const el = document.createElement("i");
+        el.className = "dd";
+        const a = (k / 9) * Math.PI * 2 + Math.random() * 0.5, dist = 46 + Math.random() * 22;
+        el.style.cssText = `--x:${(Math.cos(a) * dist).toFixed(0)}%;--y:${(Math.sin(a) * dist).toFixed(0)}%;--r:${(Math.random() * 240 - 120).toFixed(0)}deg;--s:${(16 + Math.random() * 14).toFixed(0)}px;animation-delay:${(Math.random() * 0.18).toFixed(2)}s`;
+        el.innerHTML = doodles[k % doodles.length](cols[k % cols.length]);
+        fx.appendChild(el);
+        el.addEventListener("animationend", () => el.remove());
+      }
+    };
+    const label = () => { countEl.textContent = idx < 0 ? `${photos.length} ảnh` : `Ảnh ${idx + 1} / ${photos.length}`; };
 
-    function update() {
-      const n = leaves.length;
-      leaves.forEach((el, k) => {
-        const f = k < idx;
-        el.classList.toggle("flipped", f);
-        // xếp lớp bằng z-index (an toàn trên Safari): trang chưa lật thì trang đầu nằm trên, trang đã lật thì trang lật sau nằm trên
-        el.style.zIndex = String(f ? k : n - k);
-        // điện thoại: chỉ cần trang hiện tại và trang kế tiếp, các trang xa hơn ẩn đi
-        el.classList.toggle("far", !spread && k > idx + 1);
-      });
-      book.dataset.state = !spread ? "single" : idx === 0 ? "start" : idx === n ? "end" : "mid";
-      prevBtn.disabled = idx <= 0;
-      nextBtn.disabled = idx >= maxIdx();
-      const total = photos.length;
-      let label;
-      if (spread) {
-        // sách mở hai trang: trang trái là ảnh 2*idx-1, trang phải là ảnh 2*idx
-        const l = idx * 2 - 1, r = idx * 2;
-        label = idx === 0 ? `Bìa · ${total} ảnh` : l > total ? "Hết album" : r <= total ? `Ảnh ${l}–${r} / ${total}` : `Ảnh ${l} / ${total}`;
-      } else {
-        label = idx === 0 ? `Bìa · ${total} ảnh` : idx > total ? "Hết album" : `Ảnh ${idx} / ${total}`;
-      }
-      countEl.textContent = label;
+    async function show(i, instant) {
+      const n = photos.length;
+      i = ((i % n) + n) % n;
+      const id = ++anim;
+      const im = await load(i);
+      if (id !== anim) return;
+      idx = i; label();
+      load((i + 1) % n); // nạp sẵn ảnh kế tiếp
+      size();
+      if (instant) { paint(ctx, im, i); return; }
+      const base = document.createElement("canvas");
+      base.width = cw; base.height = ch;
+      base.getContext("2d").drawImage(cv, 0, 0);
+      const { pts, width } = strokePath(), T = 950, t0 = performance.now();
+      burst();
+      const step = (now) => {
+        if (id !== anim) return;
+        const t = Math.min(1, (now - t0) / T), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, upto = Math.max(2, Math.round(e * pts.length));
+        mctx.globalCompositeOperation = "source-over";
+        mctx.clearRect(0, 0, cw, ch);
+        mctx.lineWidth = width; mctx.lineCap = "round"; mctx.lineJoin = "round"; mctx.strokeStyle = "#000";
+        mctx.beginPath(); mctx.moveTo(pts[0][0], pts[0][1]);
+        for (let k = 1; k < upto; k++) mctx.lineTo(pts[k][0], pts[k][1]);
+        mctx.stroke();
+        mctx.globalCompositeOperation = "source-in";
+        paint(mctx, im, i);
+        ctx.clearRect(0, 0, cw, ch);
+        ctx.drawImage(base, 0, 0);
+        ctx.drawImage(mask, 0, 0);
+        if (t < 1) requestAnimationFrame(step); else paint(ctx, im, i);
+      };
+      requestAnimationFrame(step);
     }
-    const go = (d) => { const t = Math.max(0, Math.min(maxIdx(), idx + d)); if (t !== idx) { idx = t; update(); } };
+    const go = (d) => { started = true; show((idx < 0 ? (d > 0 ? -1 : 0) : idx) + d); };
     prevBtn.addEventListener("click", () => go(-1));
     nextBtn.addEventListener("click", () => go(1));
-
-    // bấm hai nửa trang để lật, vuốt ngang để lật, phím mũi tên
     let down = null;
     wrap.addEventListener("pointerdown", (e) => { down = { x: e.clientX, y: e.clientY }; });
     wrap.addEventListener("pointerup", (e) => {
@@ -250,37 +247,23 @@
       down = null;
       if (e.target.closest(".zoom")) return;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) return go(dx < 0 ? 1 : -1);
-      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
-        const r = wrap.getBoundingClientRect();
-        go(e.clientX - r.left > r.width * (spread ? 0.5 : 0.4) ? 1 : -1);
-      }
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) { const r = wrap.getBoundingClientRect(); go(e.clientX - r.left > r.width * 0.4 ? 1 : -1); }
     });
     wrap.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
-    book.addEventListener("click", (e) => {
-      const z = e.target.closest(".zoom");
-      if (z) {
-        // giải mã ảnh xong rồi mới hiện khung phóng to, để ảnh hiện đủ kích thước ngay, không phóng dần
-        const src = z.closest(".pg").querySelector("img");
-        openLb(z.dataset.zoom, src ? src.getBoundingClientRect() : null);
-      }
-    });
-    book.addEventListener("error", (e) => { if (e.target.tagName === "IMG") e.target.style.visibility = "hidden"; }, true);
-    mq.addEventListener("change", build);
-    build();
-
-    // lần đầu cuộn tới album thì tự lật một trang để gợi ý đây là sách lật
-    // chỉ lật khi toàn bộ bìa hiện đủ trên màn hình; cuộn đi giữa chừng thì hủy
-    let hintTimer = null, hinted = false;
-    const fullyVisible = () => { const r = wrap.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.width > 0; };
+    zoomBtn.addEventListener("click", () => { if (idx >= 0) openLb(photos[idx], cv.getBoundingClientRect()); });
+    let rt = null;
+    addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (idx >= 0) show(idx, true); }, 150); });
+    label();
+    load(0);
+    // khi thấy trọn khung ảnh lần đầu thì tự "tô" ảnh đầu tiên
+    const fully = () => { const r = wrap.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight; };
+    let timer = null;
     const io2 = new IntersectionObserver(() => {
-      if (hinted) return;
-      if (fullyVisible() && idx === 0) {
-        if (!hintTimer) hintTimer = setTimeout(() => { hintTimer = null; if (!hinted && fullyVisible() && idx === 0) { hinted = true; io2.disconnect(); go(1); } }, 900);
-      } else if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
-    }, { threshold: [0, 0.25, 0.5, 0.75, 0.9, 0.98, 1] });
+      if (started) return io2.disconnect();
+      if (fully()) { if (!timer) timer = setTimeout(() => { timer = null; if (!started && fully()) { started = true; io2.disconnect(); show(0); } }, 500); }
+      else if (timer) { clearTimeout(timer); timer = null; }
+    }, { threshold: [0, .5, .9, 1] });
     io2.observe(wrap);
-    // người dùng tự lật thì không cần gợi ý nữa
-    [prevBtn, nextBtn, wrap].forEach((el) => el.addEventListener("pointerdown", () => { hinted = true; if (hintTimer) clearTimeout(hintTimer); }, { once: true }));
   })();
   lb.addEventListener("click", closeLb);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
@@ -292,7 +275,8 @@
     wrap.hidden = !list.length;
     const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], tapes = ["rgba(246,196,160,.9)", "rgba(247,224,138,.9)", "rgba(191,224,192,.9)", "rgba(244,182,196,.9)", "rgba(188,215,238,.9)"];
     const rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0];
-    box.innerHTML = list.map((w, i) => `<figure class="note" style="--nc:${colors[i % colors.length]};--nt:${tapes[(i + 2) % tapes.length]};--nr:${rots[i % rots.length]}deg"><p>${esc(w.text)}</p>${String(w.name || "").trim() ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`).join("");
+    const marks = ["♡", "✦", "☆", "✿"];
+    box.innerHTML = list.map((w, i) => `<figure class="note" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${String(w.name || "").trim() ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`).join("");
   })();
 
   $("#gifts").innerHTML = W.gifts.map((g) => `
