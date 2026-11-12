@@ -87,8 +87,8 @@
           </div>
         </div>
       </div>`;
-    // chia hai phần Nhà trai và Nhà gái (thẻ chưa chọn phần thì xếp vào Nhà gái)
-    const groups = [["groom", "Nhà trai"], ["bride", "Nhà gái"]].map(([k, t]) => [t, cards.filter((c) => (c.side === "groom" ? "groom" : "bride") === k)]).filter(([, l]) => l.length);
+    // chia hai phần: Nhà gái ở trên, Nhà trai ở dưới (thẻ chưa chọn phần thì xếp vào Nhà gái)
+    const groups = [["bride", "Nhà gái"], ["groom", "Nhà trai"]].map(([k, t]) => [t, cards.filter((c) => (c.side === "groom" ? "groom" : "bride") === k)]).filter(([, l]) => l.length);
     let n = 0;
     list.innerHTML = groups.map(([t, l]) => `<div class="evgroup"><h3 class="evside"><span>${t}</span></h3>${l.map((c) => cardHtml(c, n++)).join("")}</div>`).join("");
     list.querySelectorAll(".ev-card").forEach((card) => {
