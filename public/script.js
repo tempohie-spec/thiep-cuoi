@@ -283,18 +283,32 @@
     const clean = (l) => (l || []).filter((w) => w && String(w.text || "").trim()).map((w) => ({ name: String(w.name || "").trim(), text: String(w.text).trim() }));
     let pool = clean(W.wishes), order = [], pos = 0, timer = null;
     const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0], marks = ["♡", "✦", "☆", "✿"];
-    const per = () => (innerWidth >= 760 ? 2 : 1);
+    // máy tính: 6 tờ (3 cột x 2 hàng); điện thoại: 2 cột, số hàng tùy chiều cao màn hình còn trống
+    const per = () => {
+      if (innerWidth >= 760) return 6;
+      const p6 = document.getElementById("p6"), form = p6.querySelector(".rsvp-card"), title = p6.querySelector(".title");
+      const free = innerHeight - 32 - (title ? title.offsetHeight + 16 : 0) - (form ? form.offsetHeight : 0) - 24;
+      const rows = Math.max(1, Math.min(3, Math.floor(free / 118)));
+      return rows * 2;
+    };
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     const render = () => {
       if (!pool.length) return;
       const k = Math.min(per(), pool.length), html = [];
+      const used = new Set();
       for (let t = 0; t < k; t++) {
         if (pos >= order.length) shuffle();
+        // không lặp lại cùng một lời chúc trong một lượt hiển thị
+        let tries = 0;
+        while (used.has(order[pos]) && tries++ < order.length) { if (++pos >= order.length) shuffle(); }
+        used.add(order[pos]);
         const w = pool[order[pos++]], i = Math.floor(Math.random() * 20);
         html.push(`<figure class="note in" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`);
       }
       box.innerHTML = html.join("");
     };
+    let lastPer = 0;
+    addEventListener("resize", () => { const k = per(); if (k !== lastPer) { lastPer = k; render(); } });
     const start = () => {
       wrap.hidden = !pool.length;
       if (!pool.length) return;
