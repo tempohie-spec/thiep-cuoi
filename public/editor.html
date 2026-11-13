@@ -146,6 +146,15 @@
     <input data-k="coverD" placeholder="Dán đường dẫn hoặc tải GIF/MP4 lên">
     <input type="file" accept="video/mp4,image/gif" id="coverDUp" style="margin-top:6px">
     <p class="hint" id="coverStatus" style="margin-top:6px"></p>
+    <div class="theme-box" id="fitBox">
+      <b>Chỉnh vị trí và kích thước file trong khung</b>
+      <div class="seg" id="fitDev"><button type="button" data-dev="m" class="on">Điện thoại</button><button type="button" data-dev="d">Máy tính</button></div>
+      <label>Kích thước <b id="fitSv"></b></label><input type="range" min="30" max="300" step="1" id="fitS" class="rail">
+      <label>Vị trí ngang <b id="fitXv"></b> (kéo sang phải thì file dịch sang phải)</label><input type="range" min="-100" max="100" step="1" id="fitX" class="rail">
+      <label>Vị trí dọc <b id="fitYv"></b> (kéo xuống thì file dịch xuống)</label><input type="range" min="-100" max="100" step="1" id="fitY" class="rail">
+      <div class="row"><button type="button" id="fitReset">Đặt lại thiết bị này</button></div>
+      <p class="hint" style="margin:6px 0 0">Mỗi thiết bị chỉnh riêng. Chọn tab nào thì khung xem trước chuyển sang đúng kiểu đó (điện thoại hoặc máy tính). 100% là vừa kín khung; nhỏ hơn 100% sẽ lộ nền giấy quanh file.</p>
+    </div>
     <div class="row"><button type="button" id="clearCover">Xóa file điện thoại</button><button type="button" id="clearCoverD">Xóa ảnh máy tính</button></div>
     <label>Độ đậm ảnh bìa: <b id="coverStrengthVal">100%</b> (100% là ảnh rõ nhất, giảm dần sẽ phủ lớp kem mờ)</label>
     <input type="range" min="0" max="100" step="5" data-k="coverStrength" value="100">
@@ -263,6 +272,38 @@
     timer = setTimeout(loadFrame, 400);
   }
 
+  // ---- Vị trí và kích thước file bìa: kéo thanh, khung xem trước đổi ngay
+  let fitDev = "m";
+  const fitDef = () => ({ s: 100, x: 0, y: 0 });
+  function showFit() {
+    const f = ((cfg.coverFit || {})[fitDev]) || fitDef();
+    $("#fitS").value = f.s; $("#fitX").value = f.x; $("#fitY").value = f.y;
+    $("#fitSv").textContent = Math.round(f.s) + "%"; $("#fitXv").textContent = Math.round(f.x); $("#fitYv").textContent = Math.round(f.y);
+    $("#fitDev").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.dev === fitDev));
+  }
+  // khung xem trước chuyển sang đúng kiểu của tab đang chỉnh (điện thoại hoặc máy tính)
+  function syncFitPreview() {
+    const on = fitDev === "m";
+    $("#frame").classList.toggle("phone", on);
+    $("#phoneBtn").textContent = on ? "Khung máy tính" : "Khung điện thoại";
+  }
+  $("#fitBox").addEventListener("pointerdown", syncFitPreview);
+  function setFit(f) {
+    syncFitPreview();
+    cfg.coverFit = { m: fitDef(), d: fitDef(), ...(cfg.coverFit || {}) };
+    cfg.coverFit[fitDev] = { s: +f.s, x: +f.x, y: +f.y };
+    showFit();
+    const fr = $("#frame");
+    if (fr && fr.contentWindow) fr.contentWindow.postMessage({ type: "coverfit", fit: cfg.coverFit }, location.origin);
+    changed(true);
+  }
+  ["#fitS", "#fitX", "#fitY"].forEach((id) => $(id).addEventListener("input", () => setFit({ s: $("#fitS").value, x: $("#fitX").value, y: $("#fitY").value })));
+  $("#fitReset").addEventListener("click", () => setFit(fitDef()));
+  $("#fitDev").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-dev]"); if (!b) return;
+    fitDev = b.dataset.dev; showFit(); syncFitPreview();
+  });
+
   // ---- Màu chủ đề: kéo thanh để chọn, khung xem trước đổi ngay (không cần tải lại)
   const thDef = () => ({ ...window.THEME_DEFAULT });
   function showTheme() {
@@ -313,7 +354,7 @@
   function fill() {
     document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
     $("#date").value = (cfg.date || "").slice(0, 16);
-    showTheme();
+    showTheme(); showFit();
     $("#coverStrengthVal").textContent = (cfg.coverStrength === undefined || cfg.coverStrength === "" ? 100 : cfg.coverStrength) + "%";
     $("#gallery").value = (cfg.gallery || []).join("\n");
     syncMusic();

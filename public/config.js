@@ -22,6 +22,8 @@ window.WEDDING = {
   // Dán URL Google Apps Script / Formspree để nhận phản hồi RSVP. Để trống thì lưu tạm và hiển thị cảm ơn.
   sheetLink: "", // link Google Sheet (chỉ để bạn mở nhanh trong editor)
   rsvpEndpoint: "",
+  // Vị trí và kích thước file bìa trong khung: s = kích thước % (100 là vừa kín khung), x và y = dịch ngang và dọc theo % của khung
+  coverFit: { m: { s: 100, x: 0, y: 0 }, d: { s: 100, x: 0, y: 0 } },
   coverStrength: 100, // độ đậm ảnh bìa, 0 đến 100
   heroAlign: "bottom", // vị trí chữ trên ảnh bìa: top, center, bottom
   music: "" // ví dụ: "music.mp3"

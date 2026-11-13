@@ -31,7 +31,11 @@
   $("#quote").textContent = W.quote;
   // màu chủ đề cho các trang nền màu (chọn trong editor); xem trước trong editor cập nhật tức thì qua tin nhắn
   applyTheme(W.theme);
-  if (preview) addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.type === "theme") applyTheme(e.data.theme); });
+  if (preview) addEventListener("message", (e) => {
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === "theme") applyTheme(e.data.theme);
+    if (e.data.type === "coverfit" && window.__applyCoverFit) { W.coverFit = e.data.fit; window.__applyCoverFit(); }
+  });
   // Phần bên trong khung bìa: GIF hoặc MP4 động (có thể là ảnh tĩnh). Có hai nguồn riêng cho điện thoại (cover) và máy tính (coverD), thiếu một thì dùng cái kia.
   const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;
   {
@@ -49,8 +53,18 @@
         : `<img src="${esc(u)}" alt="" style="object-position:${pos}">`;
       const v = media.querySelector("video"); if (v) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
     };
+    // Vị trí và kích thước file bìa trong khung: riêng cho điện thoại (m) và máy tính (d)
+    const applyFit = () => {
+      const f = (W.coverFit && (innerWidth >= 760 ? W.coverFit.d : W.coverFit.m)) || {};
+      const num = (v, d, a, b) => { v = Number(v); return Number.isFinite(v) ? Math.min(b, Math.max(a, v)) : d; };
+      media.style.setProperty("--cs", (num(f.s, 100, 30, 400) / 100).toFixed(3));
+      media.style.setProperty("--cx", String(num(f.x, 0, -100, 100)));
+      media.style.setProperty("--cy", String(num(f.y, 0, -100, 100)));
+    };
+    window.__applyCoverFit = applyFit;
+    applyFit();
     renderCover();
-    addEventListener("resize", renderCover);
+    addEventListener("resize", () => { renderCover(); applyFit(); });
     // Khối chữ và đồng hồ chỉ được chiếm khoảng 30% chiều cao ảnh đang hiển thị; ảnh co nhỏ (màn hình thấp, xoay ngang) thì chữ thu nhỏ theo để không che hai người
     const inner = h.querySelector(".hero-inner");
     const fitText = () => {
