@@ -18,9 +18,13 @@ export default async function handler(req, res) {
           await new Promise((r) => setTimeout(r, 800));
           throw new Error("Sai mật khẩu");
         }
-        if (!/^music\/[A-Za-z0-9._-]{1,100}$/.test(pathname)) throw new Error("Tên file không hợp lệ");
+        if (!/^(music|cover)\/[A-Za-z0-9._-]{1,100}$/.test(pathname)) throw new Error("Tên file không hợp lệ");
+        // nhạc nền (thư mục music/) hoặc hình động của ảnh bìa (thư mục cover/: MP4, WebM, GIF)
+        const kinds = pathname.startsWith("cover/")
+          ? ["video/mp4", "video/webm", "image/gif"]
+          : ["audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm"];
         return {
-          allowedContentTypes: ["audio/mpeg", "audio/mp3", "audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/wav", "audio/x-wav", "audio/ogg", "audio/webm"],
+          allowedContentTypes: kinds,
           maximumSizeInBytes: 25 * 1024 * 1024,
           addRandomSuffix: true,
         };

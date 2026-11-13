@@ -95,7 +95,7 @@
       <table>
         <tr><th>Ảnh</th><th>Điện thoại</th><th>Máy tính</th></tr>
         <tr><td>Ảnh nền trang Mở thiệp</td><td><b>1000 x 1800</b><br>ảnh dọc, tỉ lệ 9:16</td><td><b>1800 x 1000</b><br>ảnh ngang, tỉ lệ 16:9</td></tr>
-        <tr><td>Ảnh bìa (đầu trang)</td><td><b>1000 x 1800</b><br>ảnh dọc, tỉ lệ 9:16</td><td><b>1800 x 1800</b><br>ảnh vuông, tỉ lệ 1:1</td></tr>
+        <tr><td>Ảnh bìa động (GIF hoặc MP4)</td><td><b>1000 x 1800</b><br>dọc 9:16, MP4 nên dưới 3MB</td><td><b>1800 x 1800</b><br>vuông 1:1, MP4 nên dưới 3MB</td></tr>
         <tr><td>Ảnh album</td><td colspan="2"><b>900 x 1200</b> (ảnh đứng, tỉ lệ 3:4), dùng chung cho cả hai</td></tr>
         <tr><td>Ảnh QR chuyển khoản</td><td colspan="2"><b>600 x 600</b> (vuông), dùng chung cho cả hai</td></tr>
       </table>
@@ -138,14 +138,15 @@
     <label>Ngày giờ (dùng cho đồng hồ đếm ngược và hiển thị trên thiệp)</label><input type="datetime-local" id="date">
 
     <h2>Ảnh bìa</h2>
-    <p class="hint">Ảnh nền đầu trang. Dùng một ảnh cho cả hai loại màn hình, hoặc thêm ảnh riêng cho máy tính.</p>
-    <label>Ảnh cho ĐIỆN THOẠI: <span class="sz">1000 x 1800px (ảnh dọc, 9:16)</span></label>
-    <input data-k="cover" placeholder="Dán đường dẫn hoặc tải ảnh lên">
-    <input type="file" accept="image/*" id="coverUp" style="margin-top:6px">
-    <label>Ảnh cho MÁY TÍNH: <span class="sz">1800 x 1800px (ảnh vuông, 1:1)</span> (để trống thì dùng ảnh điện thoại)</label>
-    <input data-k="coverD" placeholder="Dán đường dẫn hoặc tải ảnh lên">
-    <input type="file" accept="image/*" id="coverDUp" style="margin-top:6px">
-    <div class="row"><button type="button" id="posCover">Chỉnh vị trí ảnh</button><button type="button" id="clearCover">Xóa ảnh điện thoại</button><button type="button" id="clearCoverD">Xóa ảnh máy tính</button></div>
+    <p class="hint">Khung viền doodle của trang đầu là <b>khung cố định</b> (một khung dọc cho điện thoại, một khung vuông cho máy tính). Bạn chỉ cần tải <b>GIF hoặc MP4</b> động cho phần bên trong khung. Nên dùng <b>MP4</b> (nhẹ hơn GIF nhiều), tự phát lặp, không tiếng, dưới khoảng 3MB vì mỗi khách xem thiệp sẽ tải file này. Tối đa 25MB.</p>
+    <label>Cho ĐIỆN THOẠI: <span class="sz">1000 x 1800px (dọc 9:16)</span></label>
+    <input data-k="cover" placeholder="Dán đường dẫn hoặc tải GIF/MP4 lên">
+    <input type="file" accept="video/mp4,image/gif" id="coverUp" style="margin-top:6px">
+    <label>Cho MÁY TÍNH: <span class="sz">1800 x 1800px (vuông 1:1)</span> (để trống thì dùng file của điện thoại)</label>
+    <input data-k="coverD" placeholder="Dán đường dẫn hoặc tải GIF/MP4 lên">
+    <input type="file" accept="video/mp4,image/gif" id="coverDUp" style="margin-top:6px">
+    <p class="hint" id="coverStatus" style="margin-top:6px"></p>
+    <div class="row"><button type="button" id="clearCover">Xóa file điện thoại</button><button type="button" id="clearCoverD">Xóa ảnh máy tính</button></div>
     <label>Độ đậm ảnh bìa: <b id="coverStrengthVal">100%</b> (100% là ảnh rõ nhất, giảm dần sẽ phủ lớp kem mờ)</label>
     <input type="range" min="0" max="100" step="5" data-k="coverStrength" value="100">
     <label>Vị trí chữ (tên, ngày, đồng hồ) trên ảnh bìa</label>
@@ -471,7 +472,6 @@
     if (!v) return toastErr("Chưa có link, hãy bấm Tạo link");
     try { await navigator.clipboard.writeText(v); toast("Đã sao chép"); } catch { $("#guestLinks").select(); toastErr("Hãy sao chép thủ công"); }
   });
-  $("#posCover").addEventListener("click", () => openImgPos("cover"));
   // Đọc lỗi từ máy chủ: ưu tiên thông báo JSON, không có thì hiện mã HTTP và đoạn đầu nội dung
   async function apiError(r, fallback) {
     const t = await r.text().catch(() => "");
@@ -543,8 +543,34 @@
   }
   bindImgUpload("#introUp", "introBg", "intro", "m", "ảnh nền điện thoại");
   bindImgUpload("#introDUp", "introBgD", "intro", "d", "ảnh nền máy tính");
-  bindImgUpload("#coverUp", "cover", "cover", "m", "ảnh bìa điện thoại");
-  bindImgUpload("#coverDUp", "coverD", "cover", "d", "ảnh bìa máy tính");
+  // Tải GIF/MP4 của ảnh bìa: tải thẳng lên kho lưu trữ (file video thường lớn hơn giới hạn của hàm API)
+  function bindMediaUpload(sel, key, label) {
+    $(sel).addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      const st = $("#coverStatus");
+      try {
+        if (!pwEl.value) throw new Error("Hãy nhập mật khẩu quản trị trước");
+        const type = f.type || (/\.mp4$/i.test(f.name) ? "video/mp4" : /\.gif$/i.test(f.name) ? "image/gif" : "");
+        if (!["video/mp4", "video/webm", "image/gif"].includes(type)) throw new Error("Chỉ nhận file MP4 hoặc GIF");
+        if (f.size > 25 * 1024 * 1024) throw new Error("File quá lớn (tối đa 25MB)");
+        st.textContent = "Đang tải lên...";
+        const { upload } = await import("/vendor/blob-client.js");
+        const name = "cover/" + f.name.replace(/[^A-Za-z0-9._-]+/g, "-").slice(-80);
+        const blob = await upload(name, f, { access: "public", handleUploadUrl: "/api/music-token", clientPayload: pwEl.value, contentType: type, onUploadProgress: (p) => { st.textContent = "Đang tải lên... " + Math.round(p.percentage) + "%"; } });
+        cfg[key] = blob.url;
+        fill(); changed();
+        st.textContent = "Đã tải " + label + (f.size > 3.5 * 1024 * 1024 ? ". File hơi nặng (" + (f.size / 1048576).toFixed(1) + "MB), nên nén nhỏ hơn để khách tải nhanh." : ".") + " Bấm Đăng thiệp để áp dụng.";
+      } catch (err) {
+        st.textContent = "";
+        const m = String((err && err.message) || err);
+        toastErr("Tải thất bại: " + (/client token/i.test(m) ? "máy chủ từ chối cấp quyền, hãy kiểm tra mật khẩu quản trị." : m));
+      }
+    });
+  }
+  bindMediaUpload("#coverUp", "cover", "file bìa điện thoại");
+  bindMediaUpload("#coverDUp", "coverD", "file bìa máy tính");
   [["#clearIntro", "introBg"], ["#clearIntroD", "introBgD"], ["#clearCover", "cover"], ["#clearCoverD", "coverD"]].forEach(([sel, key]) => $(sel).addEventListener("click", () => { cfg[key] = ""; fill(); changed(); }));
   $("#phoneBtn").addEventListener("click", () => {
     const on = $("#frame").classList.toggle("phone");

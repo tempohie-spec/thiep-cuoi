@@ -32,19 +32,25 @@
   // màu chủ đề cho các trang nền màu (chọn trong editor); xem trước trong editor cập nhật tức thì qua tin nhắn
   applyTheme(W.theme);
   if (preview) addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.type === "theme") applyTheme(e.data.theme); });
-  const cssUrl = (u) => `url('${String(u).replace(/'/g, "%27")}')`;
-  // Ảnh riêng cho điện thoại (cover) và máy tính (coverD); thiếu một trong hai thì dùng ảnh còn lại
+  // Phần bên trong khung bìa: GIF hoặc MP4 động (có thể là ảnh tĩnh). Có hai nguồn riêng cho điện thoại (cover) và máy tính (coverD), thiếu một thì dùng cái kia.
   const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;
-  if (coverM) {
-    const h = $(".hero");
-    h.style.setProperty("--img", cssUrl(coverM));
-    h.style.setProperty("--img-d", cssUrl(coverD));
-    h.style.setProperty("--pos", posOf(coverM));
-    h.style.setProperty("--pos-d", posOfD(coverD));
-    // Khung trang đầu có đúng tỉ lệ của ảnh nên ảnh luôn hiện trọn vẹn, không bị cắt dù trình duyệt tính chiều cao màn hình thế nào
-    const ratio = (u, name) => { const im = new Image(); im.onload = () => { if (im.naturalWidth && im.naturalHeight) { h.style.setProperty(name, (im.naturalWidth / im.naturalHeight).toFixed(4)); h.classList.add("fit"); refit(); } }; im.src = u; };
-    ratio(coverM, "--ar");
-    ratio(coverD, "--ar-d");
+  {
+    const h = $(".hero"), media = $("#coverMedia");
+    const isVideo = (u) => /\.(mp4|webm|mov)(\?|#|$)/i.test(u);
+    let shown = null;
+    const renderCover = () => {
+      const wide = innerWidth >= 760, u = (wide ? coverD : coverM) || "";
+      if (u === shown) return;
+      shown = u;
+      if (!u) { media.innerHTML = ""; return; }
+      const pos = wide ? posOfD(u) : posOf(u);
+      media.innerHTML = isVideo(u)
+        ? `<video src="${esc(u)}" autoplay muted loop playsinline preload="auto" disablepictureinpicture style="object-position:${pos}"></video>`
+        : `<img src="${esc(u)}" alt="" style="object-position:${pos}">`;
+      const v = media.querySelector("video"); if (v) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    };
+    renderCover();
+    addEventListener("resize", renderCover);
     // Khối chữ và đồng hồ chỉ được chiếm khoảng 30% chiều cao ảnh đang hiển thị; ảnh co nhỏ (màn hình thấp, xoay ngang) thì chữ thu nhỏ theo để không che hai người
     const inner = h.querySelector(".hero-inner");
     const fitText = () => {

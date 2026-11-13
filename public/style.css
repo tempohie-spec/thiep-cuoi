@@ -60,8 +60,7 @@ body.locked { overflow: hidden; }
 .envelope.open .env-text { opacity: 0; pointer-events: none; }
 
 /* Hero */
-.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px;
-  background: url("images/cover.jpg") center/cover, #f1e3c1; }
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px; }
 /* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
 .hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8vh; }
 .hero[data-align="top"] { justify-content: flex-start; padding-top: 14vh; }
@@ -153,25 +152,21 @@ body {
 .event, .gift { background-color: #fffdf6; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
 .hero { position: relative; }
 /* Lớp phủ kem mờ trên ảnh bìa: độ đậm ảnh 100% thì --veil = 0 (không phủ), chỉnh trong editor */
-.hero::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: var(--veil, 0);
+.cover-stage::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--veil, 0);
   background: linear-gradient(rgba(253, 246, 229, .45), rgba(253, 246, 229, .55) 55%, rgba(253, 246, 229, .82)); }
-.hero-inner { position: relative; z-index: 1; }
+.hero-inner { position: relative; z-index: 3; }
 .hero .small, .hero-date, .countdown small { text-shadow: 0 0 10px rgba(255, 255, 255, .85), 0 0 3px rgba(255, 255, 255, .7); }
 
 /* Vị trí ảnh nền: điện thoại dùng --pos, máy tính (từ 760px) dùng --pos-d nếu có */
-.hero { background-position: var(--pos, 50% 50%); }
 .envelope { background-position: var(--pos, center); }
 @media (min-width: 760px) {
-  .hero { background-position: var(--pos-d, var(--pos, 50% 50%)); }
   .envelope { background-position: var(--pos-d, var(--pos, center)); }
 }
 
 /* Ảnh bìa và ảnh nền Mở thiệp: điện thoại dùng --img, máy tính (từ 760px) dùng --img-d nếu có */
 :root { --env-default: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); }
-.hero { background-image: var(--img, url("images/cover.jpg")); }
 .envelope { background-image: var(--img, var(--env-default)); }
 @media (min-width: 760px) {
-  .hero { background-image: var(--img-d, var(--img, url("images/cover.jpg"))); }
   .envelope { background-image: var(--img-d, var(--img, var(--env-default))); }
 }
 
@@ -242,7 +237,7 @@ body {
   --hh: max(100vh, 560px);
   --hh: max(100dvh, 560px);
   --ih: min(var(--hh), calc(min(100vw, 900px) / var(--ar, .5)));
-  min-height: var(--hh); background-size: contain; background-repeat: no-repeat; background-color: transparent;
+  min-height: var(--hh); background: none;
 }
 .hero.fit[data-align="top"] { padding-top: calc((var(--hh) - var(--ih)) / 2 + var(--ih) * .15); }
 .hero.fit[data-align="bottom"] { padding-bottom: calc((var(--hh) - var(--ih)) / 2 + var(--ih) * .07); }
@@ -501,3 +496,17 @@ body {
 @media (min-width: 760px) { .p-fit .wish-grid { --note-h: 6.6rem; } }
 @media (min-width: 760px) and (max-height: 820px) { .p-fit .wish-grid { --note-h: 5.8rem; } }
 @media (max-width: 759px) and (max-height: 700px) { .p-fit .wish-grid { --note-h: 5.6rem; } }
+
+/* ===== Trang đầu: khung viền doodle cố định + phần bên trong là GIF hoặc MP4 động (tải trong editor) =====
+   Điện thoại dùng khung 1000x1800 (9:16), máy tính dùng khung 1800x1800 (1:1). */
+.hero { --ar: .5556; --ar-d: 1; }
+.cover-stage { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 0; height: var(--ih, 100%); aspect-ratio: var(--ar); overflow: hidden; }
+@media (min-width: 760px) { .cover-stage { aspect-ratio: var(--ar-d); } }
+.cover-media { position: absolute; inset: 0; z-index: 0; }
+.cover-media img, .cover-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cover-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.cover-frame img { display: block; width: 100%; height: 100%; }
+.cover-stage::after { z-index: 1; }
+
+/* Trang 3: đẩy cả cụm dưới chữ Hỉ lên một chút */
+.p3 .page-in { padding-bottom: clamp(1rem, 11vh, 6rem); }
