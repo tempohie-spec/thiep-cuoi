@@ -21,14 +21,17 @@
   const onWidthChange = (fn, delay = 0) => { let w = innerWidth, t = null; addEventListener("resize", () => { if (innerWidth === w) return; w = innerWidth; clearTimeout(t); t = setTimeout(fn, delay); }); };
   const heroOff = { v: false };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const names = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+  const bride = window.SIDE === "bride";
+  const pair = bride ? [W.bride, W.groom] : [W.groom, W.bride];
+  const names = `${esc(pair[0].name)} &amp; ${esc(pair[1].name)}`;
   // Vị trí ảnh (do editor lưu): "x% y%", không hợp lệ thì căn giữa
   const okPos = (v) => /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(v || "");
   const posOf = (u) => { const v = W.imgPos && W.imgPos[u]; return okPos(v) ? v : "50% 50%"; };
   // Vị trí riêng cho máy tính (nếu có), không thì dùng vị trí của điện thoại
   const posOfD = (u) => { const v = W.imgPosD && W.imgPosD[u]; return okPos(v) ? v : posOf(u); };
 
-  document.title = `Thiệp Cưới ${W.groom.name} & ${W.bride.name}`;
+  document.title = `Thiệp Cưới ${pair[0].name} & ${pair[1].name}`;
+  if (bride) $("#p3").classList.add("swap");
   document.querySelectorAll("[data-names]").forEach((el) => (el.innerHTML = names));
 
   const date = new Date(W.date);
@@ -125,10 +128,7 @@
           </div>
         </div>
       </div>`;
-    // chia hai phần: Nhà gái ở trên, Nhà trai ở dưới (thẻ chưa chọn phần thì xếp vào Nhà gái)
-    const groups = [["bride", "Nhà gái"], ["groom", "Nhà trai"]].map(([k, t]) => [t, cards.filter((c) => (c.side === "groom" ? "groom" : "bride") === k)]).filter(([, l]) => l.length);
-    let n = 0;
-    list.innerHTML = groups.map(([t, l]) => `<div class="evgroup"><h3 class="evside"><span>${t}</span></h3>${l.map((c) => cardHtml(c, n++)).join("")}</div>`).join("");
+    list.innerHTML = cards.map((c, i) => cardHtml(c, i)).join("");
     list.querySelectorAll(".ev-card").forEach((card) => {
       let touched = false, timer = null, done = false;
       const flip = () => { const f = card.classList.toggle("flipped"); card.closest(".evflip").classList.toggle("is-flipped", f); };
@@ -136,15 +136,13 @@
       const manual = () => { touched = true; if (timer) { clearTimeout(timer); timer = null; } flip(); };
       card.addEventListener("click", (e) => { if (e.target.closest(".ev-map")) return; manual(); });
       card.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); manual(); } });
-      // tự lật một lần, 2 giây sau khi cuộn tới và thấy trọn thẻ; cuộn đi giữa chừng thì hủy
+      // tự lật một lần, 1 giây sau khi thẻ vừa hiện ra trên màn hình, kể cả khi người xem lướt qua luôn mà không dừng lại
       const wrap = card.closest(".evflip");
-      const fully = () => { const r = card.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight; };
-      const io = new IntersectionObserver(() => {
-        if (done || touched) return;
-        if (fully()) {
-          if (!timer) timer = setTimeout(() => { timer = null; if (!done && !touched && fully()) { done = true; io.disconnect(); flip(); } }, 1000);
-        } else if (timer) { clearTimeout(timer); timer = null; }
-      }, { threshold: [0, .25, .5, .75, .9, .98, 1] });
+      const io = new IntersectionObserver((en) => {
+        if (done || touched || !en.some((x) => x.isIntersecting)) return;
+        io.disconnect();
+        timer = setTimeout(() => { timer = null; if (!done && !touched) { done = true; flip(); } }, 1000);
+      }, { threshold: 0.15 });
       io.observe(wrap);
     });
   })();
@@ -301,14 +299,13 @@
     onWidthChange(() => { if (idx >= 0) show(idx, true); }, 150);
     label();
     load(0);
-    // khi thấy trọn khung ảnh lần đầu thì tự "tô" ảnh đầu tiên
-    const fully = () => { const r = wrap.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight; };
-    let timer = null;
-    const io2 = new IntersectionObserver(() => {
+    // khi khung ảnh vừa hiện ra trên màn hình thì tự "tô" ảnh đầu tiên sau nửa giây, kể cả khi người xem lướt qua luôn mà không dừng lại
+    const io2 = new IntersectionObserver((en) => {
       if (started) return io2.disconnect();
-      if (fully()) { if (!timer) timer = setTimeout(() => { timer = null; if (!started && fully()) { started = true; io2.disconnect(); show(0); } }, 500); }
-      else if (timer) { clearTimeout(timer); timer = null; }
-    }, { threshold: [0, .5, .9, 1] });
+      if (!en.some((x) => x.isIntersecting)) return;
+      io2.disconnect();
+      setTimeout(() => { if (!started) { started = true; show(0); } }, 500);
+    }, { threshold: 0.15 });
     io2.observe(wrap);
   })();
   lb.addEventListener("click", closeLb);
@@ -434,7 +431,7 @@
     }
     const guest = (params.get("to") || "").trim().slice(0, 60);
     document.body.classList.add("locked");
-    $("#envNames").innerHTML = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
+    $("#envNames").innerHTML = names;
     $("#envDate").textContent = (W.introDate || "").trim() || $("#heroDate").textContent;
     $("#envGuest").textContent = `Thân mời: ${guest || "Quý khách"}`;
     $("#letterNames").textContent = guest || "Quý khách";

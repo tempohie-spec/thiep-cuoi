@@ -28,7 +28,7 @@ body.locked { overflow: hidden; }
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
   transition: opacity .8s ease, transform .8s ease, visibility .8s; will-change: opacity; }
 .envelope.leaving { opacity: 0; transform: scale(1.08); visibility: hidden; }
-.env-stage { --r: .72; --w: max(240px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(64px, 8svh) auto auto; display: flex; flex-direction: column; align-items: center; }
+.env-stage { --r: .76; --w: max(262px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(64px, 8svh) auto auto; display: flex; flex-direction: column; align-items: center; }
 .env { position: relative; cursor: pointer; width: 100%; height: calc(var(--w) * var(--r)); }
 .env > * { position: absolute; }
 .env-back { inset: 0; background: #f0c6bf; border: 1px solid rgba(150, 110, 70, .45); border-radius: 7px; box-shadow: 0 22px 40px rgba(50, 36, 8, .34), 0 5px 12px rgba(50, 36, 8, .22); }
@@ -45,11 +45,11 @@ body.locked { overflow: hidden; }
 .env-front { inset: 0; width: 100%; height: 100%; z-index: 2; display: block; border-radius: 7px; }
 .env-front .ln, .fl .ln { fill: none; stroke: rgba(150, 112, 70, .55); stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .env-front .ln.soft { stroke: rgba(150, 112, 70, .2); }
-.env-text { left: 0; right: 0; top: calc(42% + 30px); bottom: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
+.env-text { left: 0; right: 0; top: calc(42% + 28px); bottom: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: .12rem; text-align: center; padding: 0 12px 8px; transition: opacity .35s ease; }
 .env-names { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(1.6rem, calc(var(--w) * .1), 3rem); line-height: 1.05; color: #7b4b3a; }
-.env-date { font-family: "Playfair Display", serif; font-weight: 500; letter-spacing: .2em; font-size: clamp(.62rem, calc(var(--w) * .026), .86rem); color: #6b5a48; }
-.env-guest { font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: clamp(.68rem, calc(var(--w) * .028), .92rem); color: #8a7762; }
+.env-date { font-family: "Playfair Display", serif; font-weight: 500; letter-spacing: .16em; font-size: clamp(.82rem, calc(var(--w) * .045), 1.2rem); color: #5e4d3b; }
+.env-guest { font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: clamp(.92rem, calc(var(--w) * .052), 1.4rem); color: #6f5b47; }
 /* nắp phong bì hai mặt: mặt ngoài giấy ngà, mặt trong lót hồng nhạt; lật lên rồi mờ dần để không để lại hình tam giác lơ lửng */
 .env-flap { left: 0; top: 0; width: 100%; height: 42%; z-index: 4; transform-origin: top center; transform: perspective(1400px) rotateX(0deg); transform-style: preserve-3d;
   transition: transform .8s cubic-bezier(.45, .05, .25, 1) .12s, opacity .3s ease .5s, z-index 0s .5s; }
@@ -68,7 +68,7 @@ body.locked { overflow: hidden; }
 /* phong bì nhún nhẹ để gợi ý bấm vào, kèm dòng gợi ý bên dưới */
 .env { animation: envBob 3.6s ease-in-out infinite; }
 @keyframes envBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-.env-hint { margin-top: 1.5rem; padding: .3rem 1.1rem; background: rgba(255, 252, 244, .88); color: #7b5a40; font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: .88rem; letter-spacing: .03em;
+.env-hint { position: relative; margin: 0 0 1.5rem; padding: .3rem 1.1rem; background: rgba(255, 252, 244, .88); color: #7b5a40; font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: .88rem; letter-spacing: .03em;
   border: 1px solid rgba(217, 184, 115, .9); border-radius: 999px; box-shadow: 0 3px 10px rgba(50, 36, 8, .22); transition: opacity .35s ease; }
 
 .envelope.open .env { animation-play-state: paused; }
@@ -306,10 +306,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 
 /* ===== Sự kiện: hai phần Nhà trai và Nhà gái trong cùng một trang ===== */
 .evlist { gap: 1.6rem; }
-.evgroup { display: grid; gap: 1.6rem; }
-.evside { margin: .4rem 0 -.6rem; text-align: center; font-size: 1.15rem; font-weight: 700; color: #6b3f1d; }
-.evside span { display: inline-block; padding: .25rem 1.1rem; border: 2.2px solid #4a2a14; border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px; background: #fff1b8; box-shadow: 3px 3px 0 #4a2a14; transform: rotate(-1.5deg); }
-.evgroup + .evgroup .evside span { background: #fde1ec; transform: rotate(1.5deg); }
 
 /* ===== Album: lớn hơn trên máy tính để tận dụng một trang ===== */
 @media (min-width: 760px) { .reel { width: min(520px, calc((100svh - 290px) * .75)); width: min(520px, calc((100svh - 290px) * .75)); } }
@@ -536,3 +532,19 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 /* địa chỉ dưới tên bố mẹ hai nhà */
 .p3 .addr { margin-top: .45rem; font-size: clamp(.74rem, 3.1vw, .98rem); line-height: 1.4; color: var(--th-soft, #ebcb8a); text-wrap: balance; }
 .p3 .addr[hidden] { display: none; }
+
+/* mũi tên nhỏ của nhãn gợi ý chỉ xuống phong bì */
+.env-hint::after { content: ""; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; background: rgba(255, 252, 244, .88); border-right: 1px solid rgba(217, 184, 115, .9); border-bottom: 1px solid rgba(217, 184, 115, .9); transform: translateX(-50%) rotate(45deg); }
+
+/* Trang nhà gái: đảo thứ tự cho nhà gái ở trước (tên Duyên & Hiếu, nhà gái bên trái, mèo cô dâu bên trái) */
+.p3.swap .parents-row .side:first-child { order: 2; }
+.p3.swap .names-panel #groomName { order: 3; }
+.p3.swap .names-panel .amp { order: 2; }
+.p3.swap .names-panel #brideName { order: 1; }
+.p3.swap .cats-row { flex-direction: row-reverse; }
+
+/* Mỗi lần lướt dừng cố định ở một trang (một khung đầy màn hình); lướt nhanh cũng không bỏ qua trang */
+html { scroll-snap-type: y mandatory; }
+header.hero, main .page { scroll-snap-align: start; scroll-snap-stop: always; }
+/* nhiều thẻ sự kiện: máy tính xếp cạnh nhau để vẫn vừa một trang */
+.evlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); justify-items: center; gap: 1.6rem 1.4rem; }

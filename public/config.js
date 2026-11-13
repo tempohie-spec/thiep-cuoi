@@ -1,4 +1,11 @@
 // Chỉnh sửa toàn bộ thông tin thiệp cưới tại đây
+// Hai trang web riêng: nhà trai (hieuduyenwedding.vercel.app) và nhà gái (duyenhieuwedding.vercel.app).
+// Nhận biết theo tên miền (tên miền bắt đầu bằng "duyenhieu" là nhà gái); thêm ?side=bride hoặc ?side=groom vào link để thử.
+(function () {
+  const q = new URLSearchParams(location.search).get("side");
+  window.SIDE = q === "bride" || q === "groom" ? q : /^duyenhieu/i.test(location.hostname) ? "bride" : "groom";
+  document.documentElement.classList.add("side-" + window.SIDE);
+})();
 window.WEDDING = {
   groom: { name: "Hiếu", fullName: "Đoàn Trung Hiếu", parents: "Ông Đoàn Danh Tuyến & Bà Đinh Thị Mai", address: "Phường Bắc Giang, Thành phố Bắc Ninh" },
   bride: { name: "Duyên", fullName: "Vũ Thị Duyên", parents: "Ông Vũ Xuân Quý & Bà Trần Thị Dinh", address: "Xã Giao Hưng, tỉnh Ninh Bình" },

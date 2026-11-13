@@ -37,6 +37,8 @@
     details.sizes th, details.sizes td { border: 1px solid #ead7a8; padding: 5px 7px; text-align: left; vertical-align: top; background: #fff; }
     details.sizes th { background: #f7e7bf; }
     details.sizes p { font-size: .78rem; color: #6b615a; margin: 4px 0 2px; }
+    .side-banner { margin: 6px 0 10px; padding: 8px 12px; border-radius: 10px; font-size: .88rem; line-height: 1.45; background: #e9f3ff; border: 1px solid #9cc4ee; color: #1d4670; }
+    .side-banner.bride { background: #fde9ee; border-color: #eba3b5; color: #7a2236; }
     .pghead { margin: 30px -20px 4px; padding: 8px 20px; background: #7a2433; color: #fbefd5; font-weight: 700; font-size: .95rem; position: sticky; top: 0; z-index: 5; }
     .pghead span { display: inline-block; background: #f2c46d; color: #4a2a14; border-radius: 999px; padding: 1px 10px; margin-right: 6px; font-size: .8rem; }
     .pghead + h2 { border-top: 0; padding-top: 4px; }
@@ -75,6 +77,7 @@
 <div class="wrap">
   <div class="panel">
     <h1>Chỉnh sửa thiệp cưới</h1>
+    <div class="side-banner" id="sideBanner"></div>
     <p class="hint">Nội dung hiện ngay ở khung xem trước và tự lưu nháp trên trình duyệt này. Khi xong, nhập mật khẩu rồi bấm "Đăng thiệp" để cập nhật thiệp chính.</p>
     <label>Mật khẩu quản trị</label><input type="password" id="pw" autocomplete="current-password">
 
@@ -184,7 +187,7 @@
     <div class="pghead"><span>Trang 4</span> Sự kiện cưới</div>
 
     <h2>Thiệp sự kiện (thẻ lật)</h2>
-    <p class="hint">Sự kiện được chia làm hai phần <b>Nhà gái</b> (ở trên) và <b>Nhà trai</b> (ở dưới) (cùng một trang). Chọn phần cho từng thẻ ở ô "Thuộc phần". Mỗi thẻ có hai mặt: mặt trước (ví dụ ảnh nhà thờ), tự lật sang mặt sau (ngày giờ, địa chỉ) sau 1 giây khi khách thấy trọn thẻ, và khách bấm để lật qua lại. Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span>, ảnh PNG nền trong suốt vẫn giữ nền trong suốt.</p>
+    <p class="hint">Mỗi thẻ có hai mặt: mặt trước (ví dụ ảnh nhà thờ), tự lật sang mặt sau (ngày giờ, địa chỉ) 1 giây sau khi khách lướt tới (kể cả khi lướt qua luôn), và khách bấm để lật qua lại. Nên dùng ảnh ngang <span class="sz">1400 x 930px (tỉ lệ 3:2)</span>, ảnh PNG nền trong suốt vẫn giữ nền trong suốt.</p>
     <div id="list-eventCards"></div>
     <button type="button" data-add="eventCards">Thêm thẻ sự kiện</button>
 
@@ -262,7 +265,7 @@
   try { const d = localStorage.getItem(KEY); if (d) { cfg = { ...clone(window.WEDDING), ...migrate(JSON.parse(d)) }; hasDraft = true; } } catch {}
 
   const schema = {
-    eventCards: { label: "Thẻ sự kiện", fields: [["side", "Thuộc phần", false, false, [["groom", "Nhà trai"], ["bride", "Nhà gái"]]], ["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { side: "groom", front: "", back: "", map: "" } },
+    eventCards: { label: "Thẻ sự kiện", fields: [["front", "Ảnh mặt trước (đường dẫn hoặc tải ảnh lên)", false, true], ["back", "Ảnh mặt sau: ngày giờ, địa chỉ (đường dẫn hoặc tải ảnh lên)", false, true], ["map", "Link Google Maps (khách bấm vào hình bản đồ ở mặt sau)"]], blank: { front: "", back: "", map: "" } },
     wishes: { label: "Lời chúc", fields: [["name", "Tên khách"], ["text", "Lời chúc", true]], blank: { name: "", text: "" } },
     gifts: { label: "Tài khoản", fields: [["side", "Của ai (Chú rể / Cô dâu)"], ["bank", "Ngân hàng"], ["account", "Số tài khoản"], ["owner", "Tên chủ tài khoản"], ["qr", "Ảnh QR chuyển khoản, nên 600 x 600px (vuông), có thể để trống", false, true]], blank: { side: "", bank: "", account: "", owner: "", qr: "" } }
   };
@@ -271,7 +274,13 @@
   const set = (o, p, v) => { const ks = p.split("."); const l = ks.pop(); ks.reduce((a, k) => a[k], o)[l] = v; };
 
   let timer, introMode = false;
-  const loadFrame = () => { $("#frame").src = "index.html?preview=1" + (introMode ? "&intro=1" : "") + "&t=" + Date.now(); };
+  const sideQ = new URLSearchParams(location.search).get("side");
+  const loadFrame = () => { $("#frame").src = "index.html?preview=1" + (sideQ ? "&side=" + encodeURIComponent(sideQ) : "") + (introMode ? "&intro=1" : "") + "&t=" + Date.now(); };
+  (() => {
+    const br = window.SIDE === "bride", b = $("#sideBanner");
+    b.classList.toggle("bride", br);
+    b.innerHTML = br ? "Bạn đang chỉnh sửa thiệp <b>NHÀ GÁI</b> (<b>" + location.host + "</b>). Nội dung, ảnh, nhạc và mật khẩu của trang này <b>tách riêng</b> với thiệp nhà trai. Thiệp hiện tên <b>Duyên &amp; Hiếu</b>, nhà gái ở trước." : "Bạn đang chỉnh sửa thiệp <b>NHÀ TRAI</b> (<b>" + location.host + "</b>). Nội dung, ảnh, nhạc và mật khẩu của trang này <b>tách riêng</b> với thiệp nhà gái. Thiệp hiện tên <b>Hiếu &amp; Duyên</b>, nhà trai ở trước.";
+  })();
   function changed(noReload) {
     try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch {}
     if (noReload === true) return;
