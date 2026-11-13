@@ -1,7 +1,7 @@
 // Chỉnh sửa toàn bộ thông tin thiệp cưới tại đây
 window.WEDDING = {
-  groom: { name: "Hiếu", fullName: "Đoàn Trung Hiếu", parents: "Ông Đoàn Danh Tuyến & Bà Đinh Thị Mai" },
-  bride: { name: "Duyên", fullName: "Vũ Thị Duyên", parents: "Ông Vũ Xuân Quý & Bà Trần Thị Dinh" },
+  groom: { name: "Hiếu", fullName: "Đoàn Trung Hiếu", parents: "Ông Đoàn Danh Tuyến & Bà Đinh Thị Mai", address: "Phường Bắc Giang, Thành phố Bắc Ninh" },
+  bride: { name: "Duyên", fullName: "Vũ Thị Duyên", parents: "Ông Vũ Xuân Quý & Bà Trần Thị Dinh", address: "Xã Giao Hưng, tỉnh Ninh Bình" },
   // Thời điểm dùng cho đồng hồ đếm ngược (giờ Việt Nam)
   date: "2026-12-20T11:00:00+07:00",
   // Màu nền các trang 3, 5, 7 (chọn bằng thanh màu trong editor): sắc màu 0-360, độ rực 0-100, độ sáng 8-88

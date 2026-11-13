@@ -535,3 +535,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 @media (max-height: 800px) { .p3 .page-in { padding-bottom: 0; } }
 /* góc trên của nắp bo theo góc phong bì để không nhô ra ngoài */
 .env-flap .fl { border-radius: 14px 12px 0 0; }
+
+/* địa chỉ dưới tên bố mẹ hai nhà */
+.p3 .addr { margin-top: .45rem; font-size: clamp(.74rem, 3.1vw, .98rem); line-height: 1.4; color: var(--th-soft, #ebcb8a); text-wrap: balance; }
+.p3 .addr[hidden] { display: none; }

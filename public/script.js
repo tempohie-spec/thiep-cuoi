@@ -3,7 +3,9 @@
   const preview = params.get("preview");
   let W = window.WEDDING;
   // Dữ liệu cũ có một thẻ (eventFront, eventBack, eventMap) thì chuyển thành danh sách thẻ
-  const migrate = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
+  const fillSides = (o) => (o && o.groom && o.bride ? { ...o, groom: { ...window.WEDDING.groom, ...o.groom }, bride: { ...window.WEDDING.bride, ...o.bride } } : o);
+  const migrate0 = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
+  const migrate = (o) => fillSides(migrate0(o));
   if (preview) {
     try { const d = localStorage.getItem("wedding_draft"); if (d) W = { ...window.WEDDING, ...migrate(JSON.parse(d)) }; } catch {}
   } else {
@@ -101,6 +103,8 @@
     return m ? `<span><em class="hon">${esc(m[1])}</em> ${esc(m[2])}</span>` : `<span>${esc(l)}</span>`;
   }).join("");
   $("#groomParents").innerHTML = parentsHtml(W.groom.parents);
+  $("#groomAddr").textContent = String(W.groom.address || "").trim(); $("#groomAddr").hidden = !String(W.groom.address || "").trim();
+  $("#brideAddr").textContent = String(W.bride.address || "").trim(); $("#brideAddr").hidden = !String(W.bride.address || "").trim();
   $("#brideParents").innerHTML = parentsHtml(W.bride.parents);
   $(".hero").dataset.align = W.heroAlign || "bottom";
   // Độ đậm ảnh bìa 0 đến 100 (mặc định 100 = không phủ lớp kem mờ)

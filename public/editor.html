@@ -173,11 +173,13 @@
     <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
     <label>Họ và tên đầy đủ</label><input data-k="groom.fullName">
     <label>Bố mẹ chú rể (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="groom.parents">
+    <label>Địa chỉ nhà trai (hiện dưới tên bố mẹ, để trống thì ẩn)</label><input data-k="groom.address" placeholder="Ví dụ: Phường Bắc Giang, Thành phố Bắc Ninh">
 
     <h2>Cô dâu</h2>
     <label>Tên hiển thị (ngắn)</label><input data-k="bride.name">
     <label>Họ và tên đầy đủ</label><input data-k="bride.fullName">
     <label>Bố mẹ cô dâu (viết dạng "Ông A & Bà B", sẽ tách thành 2 dòng)</label><input data-k="bride.parents">
+    <label>Địa chỉ nhà gái (hiện dưới tên bố mẹ, để trống thì ẩn)</label><input data-k="bride.address" placeholder="Ví dụ: Xã Giao Hưng, tỉnh Ninh Bình">
 
     <div class="pghead"><span>Trang 4</span> Sự kiện cưới</div>
 
@@ -249,7 +251,9 @@
   const $ = (s) => document.querySelector(s);
   const clone = (o) => JSON.parse(JSON.stringify(o));
   // Dữ liệu cũ có một thẻ (eventFront, eventBack, eventMap) thì chuyển thành danh sách thẻ
-  const migrate = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
+  const migrate0 = (o) => (o && o.eventCards === undefined && o.eventFront !== undefined ? { ...o, eventCards: [{ front: o.eventFront, back: o.eventBack || "", map: o.eventMap || "" }] } : o);
+  const fillSides = (o) => (o && o.groom && o.bride ? { ...o, groom: { ...window.WEDDING.groom, ...o.groom }, bride: { ...window.WEDDING.bride, ...o.bride } } : o);
+  const migrate = (o) => fillSides(migrate0(o));
   let base = clone(window.WEDDING);
   let cfg = base;
   let hasDraft = false, touched = false;
