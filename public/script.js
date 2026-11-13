@@ -286,13 +286,18 @@
     const clean = (l) => (l || []).filter((w) => w && String(w.text || "").trim()).map((w) => ({ name: String(w.name || "").trim(), text: String(w.text).trim() }));
     let pool = clean(W.wishes), order = [], pos = 0, timer = null;
     const colors = ["#fff1b8", "#ffd9c9", "#e4efc9", "#fde1ec", "#e3ecf7"], rots = [-2.2, 1.6, -1.2, 2.1, -1.8, 1.0], marks = ["♡", "✦", "☆", "✿"];
-    // máy tính: 6 tờ (3 cột x 2 hàng); điện thoại: 2 cột, số hàng tùy chiều cao màn hình còn trống
+    // Số tờ note tính theo chỗ thật còn trống trong khung lời chúc (chiều cao trang 6 cố định theo màn hình nhỏ nhất, không đổi khi thanh công cụ trình duyệt co giãn):
+    // máy tính tối đa 3 cột x 2 hàng, điện thoại 2 cột x tối đa 3 hàng
+    const area = wrap;
     const per = () => {
-      if (innerWidth >= 760) return 6;
-      const p6 = document.getElementById("p6"), form = p6.querySelector(".rsvp-card"), title = p6.querySelector(".title");
-      const free = innerHeight - 32 - (title ? title.offsetHeight + 16 : 0) - (form ? form.offsetHeight : 0) - 24;
-      const rows = Math.max(1, Math.min(3, Math.floor(free / 118)));
-      return rows * 2;
+      const cols = innerWidth >= 760 ? 3 : 2, maxRows = innerWidth >= 760 ? 2 : 3;
+      const probe = document.createElement("div");
+      probe.style.cssText = "height:var(--note-h);visibility:hidden;position:absolute;left:0;right:0";
+      box.appendChild(probe);
+      const nh = probe.offsetHeight || 96; probe.remove();
+      const gap = parseFloat(getComputedStyle(box).rowGap) || 16;
+      const avail = area.clientHeight - 14;
+      return cols * Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap))));
     };
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     const render = () => {
@@ -310,14 +315,19 @@
       }
       box.innerHTML = html.join("");
     };
-    let lastPer = 0;
-    addEventListener("resize", () => { const k = per(); if (k !== lastPer) { lastPer = k; render(); } });
+    // khi khung lời chúc đổi kích thước (xoay màn hình, thanh công cụ co giãn): chỉ vẽ lại khi số tờ thật sự đổi
+    let lastPer = 0, rt = null;
+    new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const k = per(); if (k !== lastPer) { lastPer = k; if (pool.length) { render(); start2(); } } }, 120); }).observe(area);
+    const start2 = () => {
+      clearInterval(timer);
+      if (pool.length > per()) timer = setInterval(() => { box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 5000);
+    };
     const start = () => {
       wrap.hidden = !pool.length;
       if (!pool.length) return;
+      lastPer = per();
       shuffle(); render();
-      clearInterval(timer);
-      if (pool.length > per()) timer = setInterval(() => { box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 450); }, 5000);
+      start2();
     };
     start();
     if (W.rsvpEndpoint && /^https?:\/\//.test(W.rsvpEndpoint)) {
