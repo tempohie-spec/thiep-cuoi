@@ -416,8 +416,9 @@
 
   // Envelope
   const env = $("#envelope");
+  const leavesMode = (m) => { const lv = $("#leaves"); if (lv) lv.dataset.mode = m; };
   if (preview && !params.get("intro")) {
-    env.remove();
+    env.remove(); leavesMode("doodle");
   } else {
     const bgM = W.introBg || W.introBgD, bgD = W.introBgD || W.introBg;
     if (bgM) {
@@ -440,7 +441,7 @@
       env.classList.add("open");
       if (W.music) audio.play().catch(() => {});
       setTimeout(() => {
-        env.classList.add("leaving");
+        env.classList.add("leaving"); leavesMode("doodle");
         document.body.classList.remove("locked");
         setTimeout(() => env.remove(), 900);
       }, 2700);
@@ -460,17 +461,23 @@
       (c) => `<path d='M16 36L14 30C8 30 4 26 5 21C2 18 3 13 7 12C6 7 11 4 14 7C15 3 17 3 18 7C21 4 26 7 25 12C29 13 30 18 27 21C28 26 24 30 18 30Z' fill='${c}' stroke='#5a3216' stroke-width='2.1' stroke-linejoin='round'/><path d='M16 34V12M16 22l-5-5M16 22l5-5' fill='none' stroke='#5a3216' stroke-width='1.5' stroke-linecap='round'/>`,
     ];
     const svg = (c, k) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'>${shapes[k](c)}</svg>`)}")`;
+    // lá vàng kiểu cũ (nét đơn giản, không viền) cho trang mở thiệp, nhỏ và mờ
+    const classicColors = ["#e0a63a", "#d18f26", "#e9bd5c", "#c97b1d"];
+    const classicSvg = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'><path d='M12 1C5 8 3 18 12 31C21 18 19 8 12 1Z' fill='${c}'/><path d='M12 4V29' stroke='rgba(120,70,10,.45)' stroke-width='1' fill='none'/></svg>`)}")`;
+    box.dataset.mode = document.getElementById("envelope") ? "classic" : "doodle";
     const n = innerWidth < 600 ? 6 : 12;
-    for (let i = 0; i < n; i++) {
+    const mk = (kind, i) => {
       const el = document.createElement("span");
-      el.className = "leaf";
-      const size = 12 + Math.random() * 10;
-      el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${(0.3 + Math.random() * 0.3).toFixed(2)}`;
+      el.className = "leaf " + kind;
+      const classic = kind === "classic";
+      const size = classic ? 9 + Math.random() * 9 : 12 + Math.random() * 10;
+      el.style.cssText = `left:${(Math.random() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${(size * 1.3).toFixed(1)}px;--d:${(14 + Math.random() * 10).toFixed(1)}s;--delay:${(-Math.random() * 22).toFixed(1)}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--rot:${(180 + Math.random() * 360).toFixed(0)}deg;--sway:${(3 + Math.random() * 3).toFixed(1)}s;opacity:${classic ? (0.3 + Math.random() * 0.3).toFixed(2) : (0.55 + Math.random() * 0.35).toFixed(2)}`;
       const leaf = document.createElement("i");
-      leaf.style.backgroundImage = svg(colors[i % colors.length], i % shapes.length);
+      leaf.style.backgroundImage = classic ? classicSvg(classicColors[i % classicColors.length]) : svg(colors[i % colors.length], i % shapes.length);
       el.appendChild(leaf);
       box.appendChild(el);
-    }
+    };
+    for (let i = 0; i < n; i++) { mk("classic", i); mk("doodle", i); }
   })();
 
   // Tạm dừng hoạt ảnh của phần nằm ngoài màn hình (lớp .off): giảm tải CPU/GPU khi lướt, nhất là trên điện thoại

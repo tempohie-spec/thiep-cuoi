@@ -21,24 +21,41 @@
         <div class="env-letter">
           <p class="small">Trân trọng kính mời:</p>
           <p class="letter-names script" id="letterNames"></p>
+          <svg class="lt-paw" viewBox="-12 -10 24 22" aria-hidden="true"><g fill="#e8b98a" stroke="#4a2a14" stroke-width="1.3"><ellipse cx="0" cy="4" rx="5.4" ry="4.6"/><circle cx="-6.4" cy="-1.4" r="2.3"/><circle cx="-2.3" cy="-5.6" r="2.3"/><circle cx="2.5" cy="-5.6" r="2.3"/><circle cx="6.6" cy="-1.4" r="2.3"/></g></svg>
         </div>
         <svg class="env-front" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <defs>
-            <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf0d8"/><stop offset="1" stop-color="#f3dfb6"/></linearGradient>
-            <linearGradient id="gFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9cf9a"/><stop offset="1" stop-color="#f0dba8"/></linearGradient>
+            <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6e0"/><stop offset="1" stop-color="#f8e4b9"/></linearGradient>
+            <linearGradient id="gFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe8bd"/><stop offset="1" stop-color="#f3d79b"/></linearGradient>
+            <linearGradient id="gLiner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7c8bf"/><stop offset="1" stop-color="#f3aba2"/></linearGradient>
           </defs>
-          <polygon points="0,0 50,42 100,0 100,100 0,100" fill="url(#gFront)" stroke="url(#gFront)" stroke-width="10" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+          <polygon points="0,0 25,21.3 50,42 75,20.7 100,0 100,100 0,100" fill="url(#gFront)"/>
+          <path class="ln" d="M0 0 L25 21.3 L50 42 L75 20.7 L100 0"/>
+          <path class="st" d="M3 5 L26 24 L50 37.5 L74 24 L97 5"/>
         </svg>
+        <div class="env-stamp" aria-hidden="true"><svg viewBox="-12 -10 24 22"><g fill="#e8b98a" stroke="#4a2a14" stroke-width="1.5"><ellipse cx="0" cy="4" rx="5.4" ry="4.6"/><circle cx="-6.4" cy="-1.4" r="2.3"/><circle cx="-2.3" cy="-5.6" r="2.3"/><circle cx="2.5" cy="-5.6" r="2.3"/><circle cx="6.6" cy="-1.4" r="2.3"/></g></svg></div>
+        <svg class="env-postmark" viewBox="0 0 40 24" aria-hidden="true"><g fill="none" stroke="#4a2a14" stroke-width="1.5" stroke-linecap="round"><path d="M1 6 q4 -4 8 0 t8 0 t8 0 t8 0"/><path d="M1 12 q4 -4 8 0 t8 0 t8 0 t8 0"/><path d="M1 18 q4 -4 8 0 t8 0 t8 0 t8 0"/></g></svg>
+        <svg class="env-deco d1" viewBox="-12 -12 24 24" aria-hidden="true"><g fill="#f28b82" stroke="#4a2a14" stroke-width="1.6" stroke-linejoin="round"><path d="M0 9C-9 3 -9 -6 -4.5 -7.2C-2 -7.8 0 -6 0 -4.2C0 -6 2 -7.8 4.5 -7.2C9 -6 9 3 0 9Z"/></g></svg>
+        <svg class="env-deco d2" viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -10L2.8 -2.8L10 0L2.8 2.8L0 10L-2.8 2.8L-10 0L-2.8 -2.8Z" fill="#f6c453" stroke="#4a2a14" stroke-width="1.6" stroke-linejoin="round"/></svg>
         <div class="env-text">
           <p class="env-names script" id="envNames"></p>
           <p class="env-date" id="envDate"></p>
           <p class="env-guest" id="envGuest"></p>
         </div>
-        <svg class="env-flap" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polygon points="0,0 100,0 50,100" fill="url(#gFlap)" stroke="url(#gFlap)" stroke-width="10" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
-        </svg>
+        <div class="env-flap">
+          <svg class="fl fl-out" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polygon points="0,0 100,0 75,49.3 50,100 25,50.7" fill="url(#gFlap)"/>
+            <path class="ln" d="M0 0 L25 50.7 L50 100 L75 49.3 L100 0"/>
+            <path class="st" d="M3 11 L26 56 L50 89 L74 56 L97 11"/>
+          </svg>
+          <svg class="fl fl-in" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polygon points="0,0 100,0 75,49.3 50,100 25,50.7" fill="url(#gLiner)"/>
+            <path class="ln" d="M0 0 L25 50.7 L50 100 L75 49.3 L100 0"/>
+          </svg>
+        </div>
         <div class="env-seal" id="envSeal" aria-label="Mở thiệp">&#22221;</div>
       </div>
+      <p class="env-hint">Chạm vào phong bì để mở</p>
     </div>
   </div>
 
