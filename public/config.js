@@ -13,7 +13,7 @@ window.WEDDING = {
   date: window.SIDE === "bride" ? "2026-11-21T09:00:00+07:00" : "2026-12-06T10:00:00+07:00", // nhà gái 21/11/2026 9h, nhà trai 06/12/2026 10h
   // Màu nền các trang 3, 5, 7 (chọn bằng thanh màu trong editor): sắc màu 0-360, độ rực 0-100, độ sáng 8-88
   theme: { h: 350, s: 59, l: 27 },
-  quote: "Hai trái tim, một hành trình. Trân trọng kính mời bạn đến chung vui cùng chúng mình.",
+  quote: "Hai trái tim, một hành trình!\nTrân trọng kính mời quý khách đến chung vui cùng gia đình.",
   // Các thẻ sự kiện lật: mỗi thẻ có ảnh mặt trước, ảnh mặt sau và link Google Maps (bấm vào hình bản đồ ở mặt sau)
   eventCards: [
     { front: "images/event-front.webp", back: "images/event-back.webp", map: "https://maps.google.com/?q=Đền+thánh+Giuse+Sa+Châu+Giao+Hưng+Ninh+Bình" }

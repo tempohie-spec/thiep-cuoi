@@ -37,6 +37,15 @@
   const date = new Date(W.date);
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
+  // co cỡ chữ lời mời để mỗi dòng nằm gọn trong một hàng (đúng số dòng đã xuống dòng)
+  {
+    const q = $("#quote");
+    if (!/\n/.test(W.quote || "")) q.style.whiteSpace = "pre-line";
+    const fitQuote = () => { q.style.fontSize = ""; if (q.style.whiteSpace === "pre-line") return; let f = parseFloat(getComputedStyle(q).fontSize); const box = q.parentElement; while (q.scrollWidth > box.clientWidth && f > 9) { f -= .5; q.style.fontSize = f + "px"; } };
+    fitQuote();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitQuote);
+    onWidthChange(fitQuote);
+  }
   // màu chủ đề cho các trang nền màu (chọn trong editor); xem trước trong editor cập nhật tức thì qua tin nhắn
   applyTheme(W.theme);
   if (preview) addEventListener("message", (e) => {

@@ -456,10 +456,11 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 
 /* ===== Trang 3: chữ Hỉ lớn, lời mời giữ nguyên các dòng, hai nhà, tên xếp dọc, hai chú mèo ở dưới cùng ===== */
 .p3 .page-in { max-width: 640px; min-height: calc(100svh - 6rem); min-height: calc(100svh - 6rem); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; text-align: center; }
-.hi { width: min(150px, 38vw); animation: hiBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+.doves { display: block; width: min(250px, 62vw, 22svh); height: auto; margin: 0 auto -.4rem; }
+.hi { width: min(150px, 38vw, 16svh); animation: hiBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
 .hi svg { display: block; width: 100%; overflow: visible; }
 @keyframes hiBob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
-.p3 .quote { margin: 0; max-width: 560px; font-size: clamp(1rem, 4.2vw, 1.22rem); line-height: 1.6; white-space: pre-line; font-weight: 700; color: color-mix(in srgb, var(--th-quote, #f3dcae) 35%, #fff); }
+.p3 .quote { margin: 0; max-width: 560px; font-size: 1.1rem; line-height: 1.6; white-space: pre; max-width: 100%; font-weight: 700; color: color-mix(in srgb, var(--th-quote, #f3dcae) 35%, #fff); }
 .parents-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
 .p3 .side .small { margin-bottom: .3rem; font-size: clamp(.88rem, 3.8vw, 1.1rem); font-weight: 700; color: color-mix(in srgb, var(--th-accent, #f2c46d) 55%, #fff); }
 .p3 .parents { font-size: clamp(.86rem, 3.8vw, 1.3rem); font-weight: 700; line-height: 1.6; color: color-mix(in srgb, var(--th-text, #fbefd5) 35%, #fff); }
@@ -500,7 +501,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .cover-stage::after { z-index: 1; }
 
 /* Trang 3: đẩy cả cụm dưới chữ Hỉ lên một chút */
-.p3 .page-in { padding-bottom: min(7svh, 4rem); }
+.p3 .page-in { padding-bottom: min(2svh, 1rem); gap: .6rem; }
 @media (max-height: 800px) { .p3 .page-in { padding-bottom: 0; } }
 
 /* địa chỉ dưới tên bố mẹ hai nhà */
