@@ -10,7 +10,7 @@ window.WEDDING = {
   groom: { name: "Hiếu", fullName: "Đoàn Trung Hiếu", parents: "Ông Đoàn Danh Tuyến & Bà Đinh Thị Mai", address: "Phường Bắc Giang, Thành phố Bắc Ninh" },
   bride: { name: "Duyên", fullName: "Vũ Thị Duyên", parents: "Ông Vũ Xuân Quý & Bà Trần Thị Dinh", address: "Xã Giao Hưng, tỉnh Ninh Bình" },
   // Thời điểm dùng cho đồng hồ đếm ngược (giờ Việt Nam)
-  date: "2026-12-20T11:00:00+07:00",
+  date: window.SIDE === "bride" ? "2026-11-21T09:00:00+07:00" : "2026-12-06T10:00:00+07:00", // nhà gái 21/11/2026 9h, nhà trai 06/12/2026 10h
   // Màu nền các trang 3, 5, 7 (chọn bằng thanh màu trong editor): sắc màu 0-360, độ rực 0-100, độ sáng 8-88
   theme: { h: 350, s: 59, l: 27 },
   quote: "Hai trái tim, một hành trình. Trân trọng kính mời bạn đến chung vui cùng chúng mình.",
