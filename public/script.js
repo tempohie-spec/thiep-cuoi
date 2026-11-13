@@ -31,7 +31,7 @@
   const posOfD = (u) => { const v = W.imgPosD && W.imgPosD[u]; return okPos(v) ? v : posOf(u); };
 
   document.title = `Thiệp Cưới ${pair[0].name} & ${pair[1].name}`;
-  if (bride) $("#p3").classList.add("swap");
+  // trang 3 giữ nguyên bố cục như nhà trai ở cả hai thiệp (nhà trai bên trái)
   document.querySelectorAll("[data-names]").forEach((el) => (el.innerHTML = names));
 
   const date = new Date(W.date);
