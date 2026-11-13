@@ -552,3 +552,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 
 /* xoay màn hình: cụm chữ thu nhỏ hoặc phóng to từ từ */
 .intro-text, .intro-who, .intro-small, .env-names, .env-date, .env-guest, .env-hint, .env-orn { transition: font-size .7s ease, gap .7s ease, margin .7s ease, height .7s ease, opacity .7s ease, line-height .7s ease; }
+
+/* Chỉ một sự kiện: thẻ phóng to tối đa theo màn hình (rộng và cao) */
+#p4 .page-in:has(.evlist > .evflip:only-child) { max-width: min(1240px, 100%); }
+#p4 .evlist > .evflip:only-child { max-width: min(100%, calc((100svh - 9.5rem) * 1.505)); }
