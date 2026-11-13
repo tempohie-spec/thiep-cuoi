@@ -29,6 +29,9 @@
   const date = new Date(W.date);
   $("#heroDate").textContent = date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).replace(/\//g, " . ");
   $("#quote").textContent = W.quote;
+  // màu chủ đề cho các trang nền màu (chọn trong editor); xem trước trong editor cập nhật tức thì qua tin nhắn
+  applyTheme(W.theme);
+  if (preview) addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.type === "theme") applyTheme(e.data.theme); });
   const cssUrl = (u) => `url('${String(u).replace(/'/g, "%27")}')`;
   // Ảnh riêng cho điện thoại (cover) và máy tính (coverD); thiếu một trong hai thì dùng ảnh còn lại
   const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;

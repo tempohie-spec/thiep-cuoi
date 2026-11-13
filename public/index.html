@@ -58,26 +58,34 @@
 
   <main>
     <!-- PAGE 3: nền đỏ đô. Cô dâu chú rể + một khoảng trống để bạn bổ sung nội dung sau -->
-    <section class="page p-red" id="p3">
+    <section class="page p-red p3" id="p3">
       <div class="page-in couple reveal">
-        <p class="quote" id="quote"></p>
-      <div class="couple-grid">
-        <div class="person">
-          <p class="small">Nhà trai</p>
-          <p class="parents" id="groomParents"></p>
-          <h2 class="script" id="groomName"></h2>
-          <img class="cat cat-groom" src="images/cat-groom.webp" alt="" width="520" height="358" loading="lazy">
+        <div class="hi" aria-hidden="true">
+          <svg viewBox="0 0 170 150">
+            <defs><filter id="hiw" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter></defs>
+            <g class="hi-spark" style="fill:var(--th-accent);stroke:var(--th-stroke,#4a2a14);stroke-width:1.6;stroke-linejoin:round">
+              <path d="M18 34l3-9 3 9 9 3-9 3-3 9-3-9-9-3z"/><path d="M150 26l2.4-7 2.4 7 7 2.4-7 2.4-2.4 7-2.4-7-7-2.4z"/>
+              <path d="M146 112c-9-6-9-15-4-16 3-1 4 1 4 3 0-2 1-4 4-3 5 1 5 10-4 16z" style="fill:#f28b82"/>
+              <path d="M20 108c-9-6-9-15-4-16 3-1 4 1 4 3 0-2 1-4 4-3 5 1 5 10-4 16z" style="fill:#f28b82"/>
+            </g>
+            <text x="85" y="112" text-anchor="middle" font-size="118" font-weight="700" font-family="'Noto Serif SC','Songti SC','SimSun','Noto Sans CJK SC',serif" filter="url(#hiw)" paint-order="stroke" stroke-linejoin="round" style="fill:var(--th-accent);stroke:var(--th-stroke,#4a2a14);stroke-width:5">&#22221;</text>
+          </svg>
         </div>
-        <div class="amp script">&amp;</div>
-        <div class="person">
-          <p class="small">Nhà gái</p>
-          <p class="parents" id="brideParents"></p>
+        <p class="quote" id="quote"></p>
+        <div class="parents-row">
+          <div class="side"><p class="small">Nhà trai</p><p class="parents" id="groomParents"></p></div>
+          <div class="side"><p class="small">Nhà gái</p><p class="parents" id="brideParents"></p></div>
+        </div>
+        <div class="names-panel">
+          <h2 class="script" id="groomName"></h2>
+          <div class="amp script">&amp;</div>
           <h2 class="script" id="brideName"></h2>
+        </div>
+        <div class="cats-row">
+          <img class="cat cat-groom" src="images/cat-groom.webp" alt="" width="520" height="358" loading="lazy">
           <img class="cat cat-bride" src="images/cat-bride.webp" alt="" width="560" height="197" loading="lazy">
         </div>
       </div>
-      </div>
-      <div class="p3-blank" aria-hidden="true"></div>
     </section>
 
     <!-- PAGE 4: nền trắng be. Sự kiện cưới -->
@@ -189,6 +197,7 @@
   <div id="lightbox" class="lightbox" hidden><img alt=""></div>
 
   <script src="config.js"></script>
+  <script src="theme.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

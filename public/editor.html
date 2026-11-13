@@ -40,6 +40,14 @@
     .pghead { margin: 30px -20px 4px; padding: 8px 20px; background: #7a2433; color: #fbefd5; font-weight: 700; font-size: .95rem; position: sticky; top: 0; z-index: 5; }
     .pghead span { display: inline-block; background: #f2c46d; color: #4a2a14; border-radius: 999px; padding: 1px 10px; margin-right: 6px; font-size: .8rem; }
     .pghead + h2 { border-top: 0; padding-top: 4px; }
+    .theme-box { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 12px; background: #fffdf6; }
+    .theme-swatch { height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 1.1rem; border: 1px solid rgba(0,0,0,.15); }
+    .theme-swatch b { font-size: 1.6rem; }
+    .rail { -webkit-appearance: none; appearance: none; height: 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,.2); padding: 0; }
+    .rail::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid #4a2a14; cursor: pointer; }
+    .rail::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid #4a2a14; cursor: pointer; }
+    .rail.hue { background: linear-gradient(90deg, hsl(0 70% 50%), hsl(60 70% 50%), hsl(120 70% 50%), hsl(180 70% 50%), hsl(240 70% 50%), hsl(300 70% 50%), hsl(360 70% 50%)); }
+    .rail.sat, .rail.lit { background: #ddd; }
     .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
     .thumbs { display: flex; flex-wrap: wrap; gap: 6px; }
     .thumb { padding: 0; width: 64px; height: 85px; overflow: hidden; border-radius: 6px; background: #eee; }
@@ -69,6 +77,18 @@
     <h1>Chỉnh sửa thiệp cưới</h1>
     <p class="hint">Nội dung hiện ngay ở khung xem trước và tự lưu nháp trên trình duyệt này. Khi xong, nhập mật khẩu rồi bấm "Đăng thiệp" để cập nhật thiệp chính.</p>
     <label>Mật khẩu quản trị</label><input type="password" id="pw" autocomplete="current-password">
+
+    <h2 style="border-top:0;margin-top:18px">Màu chủ đề (trang 3, 5, 7)</h2>
+    <p class="hint">Kéo các thanh để chọn màu nền của các trang nền màu. Màu chữ tự đổi cho dễ đọc, khung xem trước đổi ngay khi kéo. Bấm Đăng thiệp để áp dụng cho khách.</p>
+    <div class="theme-box">
+      <div class="theme-swatch" id="thSwatch"><b>Aa</b><span>Hiếu &amp; Duyên</span></div>
+      <label>Sắc màu <b id="thHv"></b></label><input type="range" min="0" max="360" step="1" id="thH" class="rail hue">
+      <label>Độ rực <b id="thSv"></b></label><input type="range" min="0" max="100" step="1" id="thS" class="rail sat">
+      <label>Độ sáng <b id="thLv"></b></label><input type="range" min="8" max="88" step="1" id="thL" class="rail lit">
+      <div class="row" id="thPresets">
+        <button type="button" data-th="350,59,27">Đỏ đô</button><button type="button" data-th="17,52,50">Cam đất</button><button type="button" data-th="72,29,34">Xanh rêu</button><button type="button" data-th="5,38,70">Hồng đất</button><button type="button" data-th="22,33,28">Nâu cacao</button>
+      </div>
+    </div>
 
     <details class="sizes" open>
       <summary>Bảng kích thước ảnh nên dùng (rộng x cao, tính bằng pixel)</summary>
@@ -134,7 +154,7 @@
     <div class="pghead"><span>Trang 3</span> Cô dâu chú rể</div>
 
     <h2>Lời mời</h2>
-    <label>Câu lời mời ở đầu trang</label><textarea rows="3" data-k="quote"></textarea>
+    <label>Câu lời mời ở đầu trang (nhấn Enter để xuống dòng, thiệp giữ đúng các dòng bạn nhập)</label><textarea rows="3" data-k="quote"></textarea>
 
     <h2>Chú rể</h2>
     <label>Tên hiển thị (ngắn)</label><input data-k="groom.name">
@@ -209,6 +229,7 @@
 </div>
 
 <script src="config.js"></script>
+<script src="theme.js"></script>
 <script>
 (function () {
   const KEY = "wedding_draft";
@@ -234,11 +255,34 @@
 
   let timer, introMode = false;
   const loadFrame = () => { $("#frame").src = "index.html?preview=1" + (introMode ? "&intro=1" : "") + "&t=" + Date.now(); };
-  function changed() {
+  function changed(noReload) {
     try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch {}
+    if (noReload === true) return;
     clearTimeout(timer);
     timer = setTimeout(loadFrame, 400);
   }
+
+  // ---- Màu chủ đề: kéo thanh để chọn, khung xem trước đổi ngay (không cần tải lại)
+  const thDef = () => ({ ...window.THEME_DEFAULT });
+  function showTheme() {
+    const t = cfg.theme || thDef(), v = window.themeVars(t);
+    $("#thH").value = t.h; $("#thS").value = t.s; $("#thL").value = t.l;
+    $("#thHv").textContent = Math.round(t.h) + "°"; $("#thSv").textContent = Math.round(t.s) + "%"; $("#thLv").textContent = Math.round(t.l) + "%";
+    const sw = $("#thSwatch");
+    sw.style.background = `linear-gradient(135deg, ${v["--th-bg2"]}, ${v["--th-bg"]} 55%, ${v["--th-bg3"]})`;
+    sw.style.color = v["--th-text"]; sw.querySelector("b").style.color = v["--th-accent"];
+    $("#thS").style.background = `linear-gradient(90deg, hsl(${t.h} 0% ${t.l}%), hsl(${t.h} 100% ${t.l}%))`;
+    $("#thL").style.background = `linear-gradient(90deg, hsl(${t.h} ${t.s}% 8%), hsl(${t.h} ${t.s}% 48%), hsl(${t.h} ${t.s}% 88%))`;
+  }
+  function setTheme(t) {
+    cfg.theme = { h: +t.h, s: +t.s, l: +t.l };
+    showTheme();
+    const f = $("#frame");
+    if (f && f.contentWindow) f.contentWindow.postMessage({ type: "theme", theme: cfg.theme }, location.origin);
+    changed(true);
+  }
+  ["#thH", "#thS", "#thL"].forEach((id) => $(id).addEventListener("input", () => setTheme({ h: $("#thH").value, s: $("#thS").value, l: $("#thL").value })));
+  $("#thPresets").addEventListener("click", (e) => { const b = e.target.closest("[data-th]"); if (!b) return; const [h, s, l] = b.dataset.th.split(",").map(Number); setTheme({ h, s, l }); });
 
   function renderLists() {
     Object.keys(schema).forEach((name) => {
@@ -268,6 +312,7 @@
   function fill() {
     document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
     $("#date").value = (cfg.date || "").slice(0, 16);
+    showTheme();
     $("#coverStrengthVal").textContent = (cfg.coverStrength === undefined || cfg.coverStrength === "" ? 100 : cfg.coverStrength) + "%";
     $("#gallery").value = (cfg.gallery || []).join("\n");
     syncMusic();

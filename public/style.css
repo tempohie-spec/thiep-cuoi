@@ -77,24 +77,9 @@ body.locked { overflow: hidden; }
 /* Couple */
 .couple { text-align: center; }
 .quote { font-family: var(--font); font-style: normal; font-size: 1.02rem; max-width: 600px; margin: 0 auto 3rem; color: var(--muted); }
-/* Lưới 3 cột: chú rể | & | cô dâu. Mỗi hàng căn ngang nhau: nhãn, bố mẹ, tên (có dấu &), mèo */
-.couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: .6rem; align-items: center; justify-items: center; }
-.person { display: contents; }
-.person:first-child > * { grid-column: 1; }
-.person:last-child > * { grid-column: 3; }
-.person .small { grid-row: 1; }
-.person .parents { grid-row: 2; }
-.person h2 { grid-row: 3; }
-.person .cat { grid-row: 4; }
-.person h2 { font-size: clamp(1.1rem, 4.2vw, 1.5rem); line-height: 1.2; margin-top: .6rem; text-wrap: balance; }
 .parents { font-size: clamp(.74rem, 3.2vw, .88rem); font-weight: 600; color: var(--ink); line-height: 1.55; }
 .parents span { display: block; }
 .parents .hon { font-style: normal; font-weight: 400; color: var(--muted); }
-/* Hai chú mèo nằm dưới tên, cùng đáy với nhau */
-.cat { display: block; height: auto; margin-top: 1.1rem; }
-.cat-groom { width: min(100%, 200px); }
-.cat-bride { width: min(100%, 190px); }
-.amp { grid-column: 2; grid-row: 3; font-size: 1.5rem; line-height: 1; position: relative; top: 5px; }
 
 /* Events */
 .events { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
@@ -281,20 +266,14 @@ body {
 .page-in { width: 100%; max-width: 592px; margin: 0 auto; }
 .page-in.wide { max-width: 868px; }
 .p-be { background-color: var(--be); background-image: var(--paper), linear-gradient(180deg, #fffaf0, #f8efdb); background-size: 256px, 100% 100%; background-blend-mode: multiply, normal; }
-.p-red { color: var(--cream); background-color: var(--wine); background-image: var(--paper-dark), radial-gradient(ellipse at 50% 28%, #8a2a3c 0%, #6f1d2b 55%, #4d1019 100%); background-size: 256px, 100% 100%; }
-.p-red .title { color: #f8e6b8; }
-.p-red .title::after { background: var(--gold-soft); }
-.p-red .small { color: #ebcb8a; }
-.p-red .script { color: var(--gold-soft); }
+.p-red { color: var(--th-text, #fbefd5); background-color: var(--th-bg, #6f1d2b); background-image: var(--th-img, var(--paper-dark)), radial-gradient(ellipse at 50% 28%, var(--th-bg2, #8a2a3c) 0%, var(--th-bg, #6f1d2b) 55%, var(--th-bg3, #4d1019) 100%); background-size: 256px, 100% 100%; background-blend-mode: var(--th-bm, normal), normal; }
+.p-red .title { color: var(--th-title, #f8e6b8); }
+.p-red .title::after { background: var(--th-accent, #f2c46d); }
+.p-red .small { color: var(--th-soft, #ebcb8a); }
+.p-red .script { color: var(--th-accent, #f2c46d); }
 .title.sub { font-size: 1.3rem; margin: 2.4rem 0 1.2rem; }
 /* page 3 */
-.p-red .quote { color: #f3dcae; }
-.p-red .parents { color: #fbefd5; }
-.p-red .parents .hon { color: #d4b08c; }
-.p-red .person h2 { color: var(--gold-soft); }
-.p-red .amp { color: var(--gold-soft); }
-.p3-blank { flex: 0 0 auto; min-height: 24vh; }
-/* page 6: lời chúc là các tờ giấy note dán */
+.p-red .p-red /* page 6: lời chúc là các tờ giấy note dán */
 .wishes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem .9rem; }
 .note { position: relative; margin: 0; padding: 1rem .85rem .8rem; background: var(--nc, #fff1b8); color: #4a2a14; border: 2.2px solid #4a2a14;
   border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px; transform: rotate(var(--nr, 0deg)); box-shadow: 4px 5px 0 rgba(74, 42, 20, .85); font-size: .92rem; line-height: 1.5; text-align: left; }
@@ -364,7 +343,7 @@ body {
 .giftbox svg { display: block; width: 100%; overflow: visible; animation: gbWobble 2.4s ease-in-out infinite; transform-origin: 50% 92%; }
 .giftbox .gb-lid { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .6s cubic-bezier(.3, 1.4, .5, 1), opacity .6s; }
 .giftbox .gb-spark { opacity: 0; transition: opacity .3s .25s; }
-.gb-hint { margin-top: .6rem; color: #ebcb8a; font-size: .95rem; }
+.gb-hint { margin-top: .6rem; color: var(--th-soft, #ebcb8a); font-size: .95rem; }
 .giftbox.open svg { animation: none; }
 .giftbox.open .gb-lid { transform: translate(18px, -46px) rotate(18deg); }
 .giftbox.open .gb-spark { opacity: 1; }
@@ -488,3 +467,22 @@ body {
 .wish-grid .note:nth-child(2n) { animation-duration: .55s, 3.8s; animation-delay: 0s, .9s; }
 .wish-grid .note:nth-child(3n) { animation-duration: .55s, 3.5s; animation-delay: 0s, 1.6s; }
 @keyframes noteWiggle { 0%, 100% { translate: 0 0; rotate: 0deg; } 30% { translate: 0 -3px; rotate: -1.2deg; } 65% { translate: 0 1px; rotate: 1deg; } }
+
+/* ===== Trang 3: chữ Hỉ lớn, lời mời giữ nguyên các dòng, hai nhà, tên xếp dọc, hai chú mèo ở dưới cùng ===== */
+.p3 .page-in { max-width: 640px; min-height: calc(100vh - 6rem); min-height: calc(100dvh - 6rem); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; text-align: center; }
+.hi { width: min(150px, 38vw); animation: hiBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+.hi svg { display: block; width: 100%; overflow: visible; }
+@keyframes hiBob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
+.p3 .quote { margin: 0; max-width: 520px; font-size: 1.04rem; line-height: 1.6; white-space: pre-line; color: var(--th-quote, #f3dcae); }
+.parents-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.p3 .side .small { margin-bottom: .2rem; }
+.p3 .parents { font-size: clamp(.74rem, 3.2vw, .9rem); font-weight: 600; line-height: 1.6; color: var(--th-text, #fbefd5); }
+.p3 .parents span { display: block; }
+.p3 .parents .hon { font-style: normal; font-weight: 400; color: var(--th-hon, #d4b08c); }
+.names-panel { width: min(100%, 440px); padding: 1.3rem 1.4rem 1.2rem; background: var(--th-panel, rgba(20, 0, 4, .17)); border-radius: 44px 64px 48px 60px / 60px 44px 64px 48px; display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+.names-panel h2 { font-size: clamp(1.5rem, 6.8vw, 2.1rem); line-height: 1.2; color: var(--th-accent, #f2c46d); }
+.names-panel .amp { font-size: clamp(2.4rem, 11vw, 3.4rem); line-height: 1; color: var(--th-accent, #f2c46d); }
+.cats-row { width: 100%; display: flex; justify-content: space-around; align-items: flex-end; }
+.cats-row .cat { display: block; height: auto; }
+.cat-groom { width: min(44%, 200px); }
+.cat-bride { width: min(44%, 210px); }
