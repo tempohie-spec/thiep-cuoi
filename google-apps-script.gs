@@ -14,6 +14,9 @@
  * 5. Sao chép "URL ứng dụng web" (dạng https://script.google.com/macros/s/.../exec)
  *    rồi dán vào ô "Link Web App" trong editor của thiệp, bấm Đăng thiệp.
  *
+ * DÙNG CHUNG CHO HAI THIỆP: dán cùng một "URL ứng dụng web" vào editor của cả thiệp nhà trai lẫn nhà gái.
+ * Cột "Nhà" ghi rõ khách gửi từ thiệp Nhà trai hay Nhà gái. Lời chúc đã tick hiện ở cả hai thiệp.
+ *
  * DUYỆT LỜI CHÚC: trong trang tính "Phản hồi", tick vào ô cột "Hiển thị lời chúc"
  * của lời chúc nào thì lời chúc đó sẽ hiện trên thiệp (bỏ tick để ẩn).
  *
@@ -22,7 +25,7 @@
  */
 
 const SHEET_NAME = "Phản hồi";
-const HEADERS = ["Thời gian", "Tên", "Số điện thoại", "Tham dự", "Số người", "Lời chúc", "Hiển thị lời chúc"];
+const HEADERS = ["Thời gian", "Tên", "Số điện thoại", "Tham dự", "Số người", "Lời chúc", "Hiển thị lời chúc", "Nhà"];
 
 function sheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -32,6 +35,9 @@ function sheet_() {
     sh.appendRow(HEADERS);
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
+  } else if (!String(sh.getRange(1, 8).getValue()).trim()) {
+    // trang tính cũ chưa có cột "Nhà": thêm tiêu đề cột thứ 8
+    sh.getRange(1, 8).setValue("Nhà").setFontWeight("bold");
   }
   return sh;
 }
@@ -63,8 +69,9 @@ function doPost(e) {
       clean_(p.guests, 10),
       clean_(p.message, 500),
       false,
+      p.side === "Nhà gái" ? "Nhà gái" : "Nhà trai",
     ]);
-    sh.getRange(sh.getLastRow(), HEADERS.length).insertCheckboxes();
+    sh.getRange(sh.getLastRow(), 7).insertCheckboxes();
   } finally {
     lock.releaseLock();
   }

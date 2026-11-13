@@ -516,6 +516,7 @@
   $("#rsvp").addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
+    data.side = window.SIDE === "bride" ? "Nhà gái" : "Nhà trai";
     const msg = $("#rsvpMsg");
     msg.textContent = "Đang gửi...";
     try {
