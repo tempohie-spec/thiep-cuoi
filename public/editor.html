@@ -57,6 +57,9 @@
     .thumb.over { outline: 3px solid var(--accent, #c0617a); outline-offset: 1px; }
     .thumb .no { position: absolute; left: 3px; top: 3px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; line-height: 18px; text-align: center; pointer-events: none; }
     .thumb .del { position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-size: 13px; line-height: 17px; text-align: center; cursor: pointer; }
+    .thumb .mv { position: absolute; bottom: 0; width: 50%; height: 26px; background: rgba(0,0,0,.55); color: #fff; font-size: 15px; line-height: 26px; text-align: center; cursor: pointer; }
+    .thumb .mv.l { left: 0; } .thumb .mv.r { right: 0; border-left: 1px solid rgba(255,255,255,.3); }
+    .thumb .mv.off { opacity: .25; pointer-events: none; }
     .thumb .del:hover { background: #c0392b; }
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .modal { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 16px; }
@@ -202,7 +205,7 @@
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link), album hiện từng ảnh một theo đúng thứ tự các dòng. Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
     <textarea rows="6" id="gallery"></textarea>
     <label>Tải ảnh lên (chọn được nhiều ảnh)</label><input type="file" accept="image/*" multiple id="galUp">
-    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí ảnh trong khung. Kéo thả ảnh nhỏ để đổi thứ tự trước/sau, bấm dấu x để xóa ảnh.</p>
+    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí ảnh trong khung. Đổi thứ tự trước/sau bằng cách kéo thả ảnh nhỏ (máy tính) hoặc bấm mũi tên trái phải dưới mỗi ảnh (cả điện thoại), bấm dấu x để xóa ảnh.</p>
     <div class="thumbs" id="galThumbs"></div>
 
     <div class="pghead"><span>Trang 6</span> Xác nhận tham dự và lời chúc</div>
@@ -473,7 +476,7 @@
   });
   function renderThumbs() {
     $("#galThumbs").innerHTML = (cfg.gallery || []).map((u, i) =>
-      `<button type="button" class="thumb" draggable="true" data-pos="${i}" title="Bấm để chỉnh vị trí, kéo thả để đổi thứ tự"><img src="${esc(u)}" alt="" draggable="false" style="object-position:${posCss(u)}"><span class="no">${i + 1}</span><span class="del" data-gdel="${i}" title="Xóa ảnh">&times;</span></button>`).join("");
+      `<button type="button" class="thumb" draggable="true" data-pos="${i}" title="Bấm để chỉnh vị trí, kéo thả để đổi thứ tự"><img src="${esc(u)}" alt="" draggable="false" style="object-position:${posCss(u)}"><span class="no">${i + 1}</span><span class="del" data-gdel="${i}" title="Xóa ảnh">&times;</span><span class="mv l${i === 0 ? " off" : ""}" data-gmv="${i},-1" title="Chuyển lên trước">&#9664;</span><span class="mv r${i === (cfg.gallery || []).length - 1 ? " off" : ""}" data-gmv="${i},1" title="Chuyển ra sau">&#9654;</span></button>`).join("");
   }
   // kéo thả để đổi thứ tự ảnh trong album
   (() => {
@@ -490,6 +493,12 @@
     });
   })();
   document.addEventListener("click", (e) => {
+    const mv = e.target.closest && e.target.closest("[data-gmv]");
+    if (mv) {
+      e.stopPropagation(); const [i, d] = mv.dataset.gmv.split(",").map(Number), j = i + d;
+      if (j >= 0 && j < cfg.gallery.length) { const g = cfg.gallery.slice(); [g[i], g[j]] = [g[j], g[i]]; cfg.gallery = g; fill(); changed(); }
+      return;
+    }
     const del = e.target.closest && e.target.closest("[data-gdel]");
     if (del) { e.stopPropagation(); cfg.gallery = cfg.gallery.filter((_, i) => i !== +del.dataset.gdel); fill(); changed(); return; }
     const th = e.target.closest && e.target.closest("[data-pos]");
