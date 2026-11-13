@@ -23,7 +23,7 @@ window.WEDDING = {
   sheetLink: "", // link Google Sheet (chỉ để bạn mở nhanh trong editor)
   rsvpEndpoint: "",
   // Vị trí và kích thước file bìa trong khung: s = kích thước % (100 là vừa kín khung), x và y = dịch ngang và dọc theo % của khung
-  coverFit: { m: { s: 78, x: 0, y: 4 }, d: { s: 66, x: 0, y: 10 } },
+  coverFit: { m: { s: 78, x: 0, y: 1.5 }, d: { s: 66, x: 0, y: 10 } },
   // Ảnh bìa động (WebP động nền trong suốt, nền giấy lộ ra) được cố định trong mã. coverLocked: true thì bỏ qua file bìa và vị trí đã đăng từ editor.
   cover: "images/cover-anim.webp",
   coverD: "",
