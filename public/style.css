@@ -28,7 +28,7 @@ body.locked { overflow: hidden; }
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
   transition: opacity .8s ease, transform .8s ease, visibility .8s; will-change: opacity; }
 .envelope.leaving { opacity: 0; transform: scale(1.08); visibility: hidden; }
-.env-stage { --r: .76; --w: max(262px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(64px, 8svh) auto auto; display: flex; flex-direction: column; align-items: center; }
+.env-stage { --r: .76; --w: max(262px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(26px, 2.5svh) auto auto; display: flex; flex-direction: column; align-items: center; }
 .env { position: relative; cursor: pointer; width: 100%; height: calc(var(--w) * var(--r)); }
 .env > * { position: absolute; }
 .env-back { inset: 0; background: #f0c6bf; border: 1px solid rgba(150, 110, 70, .45); border-radius: 7px; box-shadow: 0 22px 40px rgba(50, 36, 8, .34), 0 5px 12px rgba(50, 36, 8, .22); }
@@ -544,7 +544,18 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .p3.swap .cats-row { flex-direction: row-reverse; }
 
 /* Mỗi lần lướt dừng cố định ở một trang (một khung đầy màn hình); lướt nhanh cũng không bỏ qua trang */
-html { scroll-snap-type: y mandatory; }
-header.hero, main .page { scroll-snap-align: start; scroll-snap-stop: always; }
+/* dừng trang do script.js xử lý: cuộn xong thì nhảy tới trang đang hiện nhiều nhất */
 /* nhiều thẻ sự kiện: máy tính xếp cạnh nhau để vẫn vừa một trang */
 .evlist { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 1.6rem; }
+
+/* Trang 4: dòng gợi ý gọn, bỏ gạch ngang dưới tiêu đề; máy tính hai thẻ vừa đúng một màn hình */
+#p4 .title { margin-bottom: .5rem; }
+#p4 .title::after { display: none; }
+#p4 .ev-hint { margin: 0 0 1rem; }
+@media (min-width: 900px) {
+  #p4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  #p4 .title { font-size: 1.6rem; }
+  #p4 .ev-hint { margin-bottom: .7rem; }
+  #p4 .evlist { gap: 1rem; }
+  #p4 .ev-card { max-width: calc((100svh - 10.5rem - 1rem) / 2 * 1.505); }
+}

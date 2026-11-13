@@ -525,3 +525,28 @@
     }
   });
 })();
+
+
+// Cuộn xong thì nhảy tới trang đang hiện nhiều nhất (trừ khi đang đọc giữa một trang cao hơn màn hình)
+(() => {
+  if (new URLSearchParams(location.search).has("preview")) return;
+  const pages = () => [...document.querySelectorAll("header.hero, main .page")];
+  let t, busy = false;
+  const snap = () => {
+    if (busy || document.body.classList.contains("locked")) return;
+    const vh = innerHeight; let best = null, bestV = 0;
+    pages().forEach((el) => {
+      const r = el.getBoundingClientRect();
+      const v = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      if (v > bestV) { bestV = v; best = el; }
+    });
+    if (!best) return;
+    const r = best.getBoundingClientRect();
+    if (r.height > vh * 1.05 && r.top < 0 && r.bottom > vh * 0.6) return;
+    if (Math.abs(r.top) < 2) return;
+    busy = true;
+    scrollBy({ top: r.top, behavior: "smooth" });
+    setTimeout(() => { busy = false; }, 700);
+  };
+  addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(snap, 140); }, { passive: true });
+})();
