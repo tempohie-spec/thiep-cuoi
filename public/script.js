@@ -530,6 +530,21 @@
       msg.textContent = "Có lỗi xảy ra, bạn vui lòng thử lại nhé.";
     }
   });
+
+  // Chỉ hiện trang khi mọi thứ đã sẵn sàng (font, ảnh nền mở thiệp, ảnh bìa và khung), tránh cảnh từng phần hiện lên lần lượt
+  (async () => {
+    const wide = innerWidth >= 760;
+    const urls = [];
+    const intro = wide ? (W.introBgD || W.introBg) : (W.introBg || W.introBgD);
+    if (intro && !(preview && !params.get("intro"))) urls.push(intro);
+    const cov = wide ? (W.coverD || W.cover) : (W.cover || W.coverD);
+    if (cov && !/\.(mp4|webm|mov)(\?|#|$)/i.test(cov)) urls.push(cov);
+    urls.push(wide ? "images/frame-desktop.webp" : "images/frame-phone.webp");
+    const img = (u) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = () => res(); i.src = u; if (i.decode) i.decode().then(res, res); });
+    const fonts = document.fonts ? Promise.all(["400 1rem 'Fuzzy Bubbles'", "700 1rem 'Fuzzy Bubbles'", "700 1rem 'Dancing Script'", "700 1rem 'Noto Serif SC'"].map((f) => document.fonts.load(f, "Hiếu Duyên 囍").catch(() => {}))).then(() => document.fonts.ready) : Promise.resolve();
+    await Promise.race([Promise.all([fonts, ...urls.map(img)]), new Promise((r) => setTimeout(r, 4500))]);
+    requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove("loading")));
+  })();
 })();
 
 
