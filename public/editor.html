@@ -437,7 +437,7 @@
   // Mở hộp chỉnh vị trí cho ảnh bìa hoặc ảnh nền Mở thiệp (dùng ảnh điện thoại, ảnh máy tính, hoặc một ảnh chung)
   function openImgPos(kind, dev) {
     const [kM, kD, asp, sizes] = kind === "intro"
-      ? ["introBg", "introBgD", 1.6, { m: "1000 x 1800px (ảnh dọc, 9:16)", d: "1800 x 1000px (ảnh ngang, 16:9)" }]
+      ? ["introBg", "introBgD", Math.min(2.2, Math.max(1.3, innerWidth / Math.max(1, innerHeight))), { m: "1000 x 1800px (ảnh dọc, 9:16)", d: "1800 x 1000px (ảnh ngang, 16:9)" }]
       : ["cover", "coverD", 1, { m: "1000 x 1800px (ảnh dọc, 9:16)", d: "1800 x 1800px (ảnh vuông, 1:1)" }];
     openPos(cfg[kM] || cfg[kD], 9 / 16, { url: cfg[kD] || cfg[kM], aspect: asp }, dev, sizes);
   }

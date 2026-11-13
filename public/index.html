@@ -15,45 +15,13 @@
   <div id="leaves" aria-hidden="true"></div>
 
   <div id="envelope" class="envelope">
-    <div class="env-stage">
-      <p class="env-hint">Chạm vào phong bì để mở</p>
-      <div class="env">
-        <div class="env-back"></div>
-        <div class="env-letter">
-          <p class="lt-small">Trân trọng kính mời</p>
-          <p class="letter-names" id="letterNames"></p>
-          <div class="lt-orn" aria-hidden="true"><i></i><b></b><i></i></div>
-        </div>
-        <svg class="env-front" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f5ead4"/></linearGradient>
-            <linearGradient id="gFlap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbf2"/><stop offset="1" stop-color="#f1e3c8"/></linearGradient>
-            <linearGradient id="gLiner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8d9d3"/><stop offset="1" stop-color="#efbfb8"/></linearGradient>
-          </defs>
-          <polygon points="0,0 25,21.3 50,42 75,20.7 100,0 100,100 0,100" fill="url(#gFront)"/>
-          <polygon points="0,0 50,42 0,100" fill="rgba(120,88,48,.055)"/>
-          <polygon points="100,0 50,42 100,100" fill="rgba(120,88,48,.055)"/>
-          <polygon points="0,100 50,42 100,100" fill="rgba(255,255,255,.4)"/>
-          <path class="ln" d="M0 0 L25 21.3 L50 42 L75 20.7 L100 0"/>
-          <path class="ln soft" d="M0 100 L50 42 L100 100"/>
-        </svg>
-        <div class="env-text">
-          <p class="env-names" id="envNames"></p>
-          <p class="env-date" id="envDate"></p>
-          <p class="env-guest" id="envGuest"></p>
-        </div>
-        <div class="env-flap">
-          <svg class="fl fl-out" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <polygon points="0,0 100,0 75,49.3 50,100 25,50.7" fill="url(#gFlap)"/>
-            <path class="ln" d="M0 0 L25 50.7 L50 100 L75 49.3 L100 0"/>
-          </svg>
-          <svg class="fl fl-in" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <polygon points="0,0 100,0 75,49.3 50,100 25,50.7" fill="url(#gLiner)"/>
-            <path class="ln" d="M0 0 L25 50.7 L50 100 L75 49.3 L100 0"/>
-          </svg>
-        </div>
-        <div class="env-seal" id="envSeal" aria-label="Mở thiệp">&#22221;</div>
-      </div>
+    <div class="intro-text">
+      <p class="intro-small">Trân trọng kính mời</p>
+      <p class="env-guest" id="envGuest"></p>
+      <svg class="env-orn" viewBox="0 0 70 10" aria-hidden="true"><path d="M2 5 Q10 0 18 5 T34 5 T50 5 T68 5" fill="none" stroke="#5a3216" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <p class="env-names" id="envNames"></p>
+      <p class="env-date" id="envDate"></p>
+      <p class="env-hint">Chạm vào màn hình để mở thiệp</p>
     </div>
   </div>
 

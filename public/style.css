@@ -24,60 +24,34 @@ body.locked { overflow: hidden; }
 .btn:hover { transform: translateY(-2px); opacity: .9; }
 
 /* Envelope */
-.envelope { position: fixed; inset: 0; z-index: 50; display: grid; padding: 16px; overflow-y: auto;
+.envelope { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; padding: max(28px, 5svh) 16px 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
-  transition: opacity .8s ease, transform .8s ease, visibility .8s; will-change: opacity; }
-.envelope.leaving { opacity: 0; transform: scale(1.08); visibility: hidden; }
-.env-stage { --r: .76; --w: max(262px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(26px, 2.5svh) auto auto; display: flex; flex-direction: column; align-items: center; }
-.env { position: relative; cursor: pointer; width: 100%; height: calc(var(--w) * var(--r)); }
-.env > * { position: absolute; }
-.env-back { inset: 0; background: #f0c6bf; border: 1px solid rgba(150, 110, 70, .45); border-radius: 7px; box-shadow: 0 22px 40px rgba(50, 36, 8, .34), 0 5px 12px rgba(50, 36, 8, .22); }
-.env-letter { left: 6%; right: 6%; top: 7%; height: 84%; background: #fffdf7; border-radius: 4px; box-shadow: 0 1px 3px rgba(60, 40, 10, .25);
+  transform-origin: 50% 0; will-change: transform; }
+/* bấm mở: cả trang ảnh lật từ dưới lên, bản lề ở mép trên, để lộ thiệp phía sau */
+.envelope.open { animation: introFlip 1.25s cubic-bezier(.55, .05, .3, 1) forwards; pointer-events: none; }
+@keyframes introFlip { 0% { transform: perspective(1800px) rotateX(0); box-shadow: 0 0 0 rgba(60, 40, 20, 0); } 70% { opacity: 1; } 100% { transform: perspective(1800px) rotateX(-100deg); opacity: 0; } }
+.intro-text { width: min(92vw, 560px); text-align: center; font-family: var(--font); color: #5a3216; display: flex; flex-direction: column; align-items: center; gap: .35rem;
+  text-shadow: 0 0 3px #fffbe6, 0 0 8px #fffbe6, 0 0 16px rgba(255, 251, 230, .95), 0 1px 0 #fffbe6; }
+.intro-small { font-weight: 700; font-size: clamp(1.05rem, 2.8vw, 1.35rem); letter-spacing: .08em; }
+.env-names { font-weight: 700; font-size: clamp(2.5rem, 8vw, 4.2rem); line-height: 1.15; margin: .1rem 0; }
+.env-date { font-weight: 700; font-size: clamp(1.3rem, 3.6vw, 1.8rem); letter-spacing: .12em; }
+.env-guest { font-weight: 700; font-size: clamp(1.3rem, 3.6vw, 1.8rem); }
+.env-orn { width: 70px; height: 10px; margin: .2rem 0; }
+.env-hint { margin-top: 1.1rem; font-weight: 700; font-size: clamp(1rem, 2.6vw, 1.2rem); animation: introHint 1.8s ease-in-out infinite; }
+@keyframes introHint { 0%, 100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-4px); opacity: 1; } }
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 8%; text-align: center; z-index: 1;
   transition: transform 1.05s cubic-bezier(.25, .8, .25, 1) .55s; }
-.env-letter::before { content: ""; position: absolute; inset: 4%; border: 1px solid #d9b873; pointer-events: none; }
-.env-letter::after { content: ""; position: absolute; inset: 6%; border: 1px solid rgba(217, 184, 115, .4); pointer-events: none; }
-.lt-small { font-family: "Playfair Display", serif; font-weight: 500; text-transform: uppercase; letter-spacing: .26em; font-size: clamp(.5rem, calc(var(--w) * .024), .72rem); color: #9a7b55; }
-.letter-names { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(1.7rem, calc(var(--w) * .105), 3rem); line-height: 1.15; margin-top: .3rem; max-width: 86%; color: #7b4b3a; }
-.lt-orn { display: flex; align-items: center; gap: 6px; margin-top: .5rem; width: 36%; }
-.lt-orn i { flex: 1; height: 1px; background: #d9b873; }
-.lt-orn b { width: 6px; height: 6px; background: #d9b873; transform: rotate(45deg); }
-.env-front { inset: 0; width: 100%; height: 100%; z-index: 2; display: block; border-radius: 7px; }
-.env-front .ln, .fl .ln { fill: none; stroke: rgba(150, 112, 70, .55); stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.env-front .ln.soft { stroke: rgba(150, 112, 70, .2); }
-.env-text { left: 0; right: 0; top: calc(42% + 28px); bottom: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: .12rem; text-align: center; padding: 0 12px 8px; transition: opacity .35s ease; }
-.env-names { font-family: "Great Vibes", cursive; font-weight: 400; font-size: clamp(1.6rem, calc(var(--w) * .1), 3rem); line-height: 1.05; color: #7b4b3a; }
-.env-date { font-family: "Playfair Display", serif; font-weight: 500; letter-spacing: .16em; font-size: clamp(.82rem, calc(var(--w) * .045), 1.2rem); color: #5e4d3b; }
-.env-guest { font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: clamp(.92rem, calc(var(--w) * .052), 1.4rem); color: #6f5b47; }
 /* nắp phong bì hai mặt: mặt ngoài giấy ngà, mặt trong lót hồng nhạt; lật lên rồi mờ dần để không để lại hình tam giác lơ lửng */
-.env-flap { left: 0; top: 0; width: 100%; height: 42%; z-index: 4; transform-origin: top center; transform: perspective(1400px) rotateX(0deg); transform-style: preserve-3d;
   transition: transform .8s cubic-bezier(.45, .05, .25, 1) .12s, opacity .3s ease .5s, z-index 0s .5s; }
-.env-flap .fl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 7px 7px 0 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.env-flap .fl-in { transform: rotateX(180deg); }
 /* Dấu sáp chữ Hỉ nhấp nháy nhẹ */
-.env-seal { left: 50%; top: 42%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 51% 49% 52% 48% / 49% 52% 48% 51%; z-index: 5; display: grid; place-items: center; cursor: pointer;
   background: radial-gradient(circle at 34% 28%, #eaa0ac 0%, #d1677c 48%, #a83a52 100%); color: #fde9d4;
   font: 700 1.7rem/1 "Noto Serif SC", "Songti SC", "SimSun", "Noto Sans CJK SC", serif; text-shadow: 0 1px 0 rgba(90, 15, 30, .55), 0 -1px 0 rgba(255, 255, 255, .22);
   box-shadow: 0 4px 8px rgba(90, 20, 35, .45), inset 0 1px 2px rgba(255, 255, 255, .45), inset 0 -3px 5px rgba(90, 15, 30, .3);
   animation: hiBeat 2.8s ease-in-out infinite; transition: opacity .35s ease; }
-.env-seal::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1px solid rgba(253, 233, 212, .4); }
-.env-seal::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1px solid rgba(217, 184, 115, .85); animation: hiHalo 2.8s ease-out infinite; }
 @keyframes hiBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 @keyframes hiHalo { 0% { transform: scale(.92); opacity: .9; } 70%, 100% { transform: scale(1.4); opacity: 0; } }
-/* phong bì nhún nhẹ để gợi ý bấm vào, kèm dòng gợi ý bên dưới */
-.env { animation: envBob 3.6s ease-in-out infinite; }
-@keyframes envBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-.env-hint { position: relative; margin: 0 0 1.5rem; padding: .3rem 1.1rem; background: rgba(255, 252, 244, .88); color: #7b5a40; font-family: "Playfair Display", serif; font-style: italic; font-weight: 500; font-size: .88rem; letter-spacing: .03em;
-  border: 1px solid rgba(217, 184, 115, .9); border-radius: 999px; box-shadow: 0 3px 10px rgba(50, 36, 8, .22); transition: opacity .35s ease; }
 
-.envelope.open .env { animation-play-state: paused; }
-.envelope.open .env-hint { opacity: 0; }
-.envelope.open .env-flap { transform: perspective(1400px) rotateX(180deg); opacity: 0; z-index: 0; }
-.envelope.open .env-seal { opacity: 0; animation: none; pointer-events: none; }
-.envelope.open .env-seal::after { animation: none; opacity: 0; }
-.envelope.open .env-letter { transform: translateY(-35%); }
-.envelope.open .env-text { opacity: 0; pointer-events: none; }
 
 /* Hero */
 .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px; }
@@ -533,8 +507,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .p3 .addr { margin-top: .45rem; font-size: clamp(.74rem, 3.1vw, .98rem); line-height: 1.4; color: var(--th-soft, #ebcb8a); text-wrap: balance; }
 .p3 .addr[hidden] { display: none; }
 
-/* mũi tên nhỏ của nhãn gợi ý chỉ xuống phong bì */
-.env-hint::after { content: ""; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; background: rgba(255, 252, 244, .88); border-right: 1px solid rgba(217, 184, 115, .9); border-bottom: 1px solid rgba(217, 184, 115, .9); transform: translateX(-50%) rotate(45deg); }
 
 /* Trang nhà gái: đảo thứ tự cho nhà gái ở trước (tên Duyên & Hiếu, nhà gái bên trái, mèo cô dâu bên trái) */
 .p3.swap .parents-row .side:first-child { order: 2; }

@@ -433,8 +433,7 @@
     document.body.classList.add("locked");
     $("#envNames").innerHTML = names;
     $("#envDate").textContent = (W.introDate || "").trim() || $("#heroDate").textContent;
-    $("#envGuest").textContent = `Thân mời: ${guest || "Quý khách"}`;
-    $("#letterNames").textContent = guest || "Quý khách";
+    $("#envGuest").textContent = guest || "Quý khách";
     let opened = false;
     const openIt = () => {
       if (opened) return;
@@ -444,10 +443,10 @@
       setTimeout(() => {
         env.classList.add("leaving"); leavesMode("doodle");
         document.body.classList.remove("locked");
-        setTimeout(() => env.remove(), 900);
-      }, 2700);
+        setTimeout(() => env.remove(), 200);
+      }, 1150);
     };
-    $(".env").addEventListener("click", openIt);
+    env.addEventListener("click", openIt);
   }
 
   // Lá vàng rơi nhè nhẹ
