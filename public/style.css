@@ -459,12 +459,12 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .hi { width: min(150px, 38vw); animation: hiBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
 .hi svg { display: block; width: 100%; overflow: visible; }
 @keyframes hiBob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
-.p3 .quote { margin: 0; max-width: 520px; font-size: 1.04rem; line-height: 1.6; white-space: pre-line; color: var(--th-quote, #f3dcae); }
+.p3 .quote { margin: 0; max-width: 560px; font-size: clamp(1rem, 4.2vw, 1.22rem); line-height: 1.6; white-space: pre-line; font-weight: 700; color: color-mix(in srgb, var(--th-quote, #f3dcae) 35%, #fff); }
 .parents-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
-.p3 .side .small { margin-bottom: .3rem; font-size: clamp(.78rem, 3.4vw, .95rem); }
-.p3 .parents { font-size: clamp(.8rem, 3.5vw, 1.15rem); font-weight: 600; line-height: 1.6; color: var(--th-text, #fbefd5); }
+.p3 .side .small { margin-bottom: .3rem; font-size: clamp(.88rem, 3.8vw, 1.1rem); font-weight: 700; color: color-mix(in srgb, var(--th-accent, #f2c46d) 55%, #fff); }
+.p3 .parents { font-size: clamp(.86rem, 3.8vw, 1.3rem); font-weight: 700; line-height: 1.6; color: color-mix(in srgb, var(--th-text, #fbefd5) 35%, #fff); }
 .p3 .parents span { display: block; white-space: nowrap; }
-.p3 .parents .hon { font-style: normal; font-weight: 400; color: var(--th-hon, #d4b08c); }
+.p3 .parents .hon { font-style: normal; font-weight: 500; color: color-mix(in srgb, var(--th-hon, #d4b08c) 40%, #fff); }
 .names-panel { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0; }
 .names-panel h2, .names-panel .amp { font-family: "Dancing Script", "Great Vibes", cursive; font-weight: 700; color: var(--th-accent, #f2c46d); }
 .names-panel h2 { font-size: clamp(2rem, 9vw, 2.9rem); line-height: 1.15; }
@@ -504,7 +504,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 @media (max-height: 800px) { .p3 .page-in { padding-bottom: 0; } }
 
 /* địa chỉ dưới tên bố mẹ hai nhà */
-.p3 .addr { margin-top: .45rem; font-size: clamp(.74rem, 3.1vw, .98rem); line-height: 1.4; color: var(--th-soft, #ebcb8a); text-wrap: balance; }
+.p3 .addr { margin-top: .45rem; font-size: clamp(.8rem, 3.4vw, 1.1rem); font-weight: 600; line-height: 1.4; color: color-mix(in srgb, var(--th-soft, #ebcb8a) 45%, #fff); text-wrap: balance; }
 .p3 .addr[hidden] { display: none; }
 
 
