@@ -30,7 +30,6 @@ body.locked { overflow: hidden; }
 /* bấm mở: tờ giấy bị lật từ mép dưới lên, mép quăn cuộn lại (script.js đặt --p từ 0 đến 1) */
 .envelope { clip-path: inset(0 0 calc(var(--p, 0) * 100%) 0); opacity: calc(1 - var(--p, 0) * .9); }
 .envelope.open { pointer-events: none; }
-  top: calc((1 - var(--p, 0)) * 100svh - 84px); display: none; }
 .intro-text { width: min(92vw, 560px); text-align: center; font-family: var(--font); color: #5a3216; display: flex; flex-direction: column; align-items: center; gap: .2rem;
   text-shadow: 0 0 3px #fffbe6, 0 0 8px #fffbe6, 0 0 16px rgba(255, 251, 230, .95), 0 1px 0 #fffbe6; }
 .intro-small { font-weight: 700; font-size: clamp(.8rem, min(3.3vw, 2.6svh), 1.35rem); letter-spacing: .08em; }
@@ -538,9 +537,8 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 @media (orientation: landscape) and (max-height: 520px) {
   .envelope { padding-top: 8px; }
   .intro-text { gap: .05rem; }
-  .intro-who { flex-direction: row; gap: .5rem; align-items: baseline; }
   .intro-small, .env-guest { font-size: .78rem; }
-  .env-orn { display: none; }
+  .env-orn { height: 0; opacity: 0; margin: 0; }
   .env-names { font-size: 1.5rem; margin: 0; line-height: 1.1; }
   .env-date { font-size: .8rem; }
   .env-hint { font-size: .62rem; margin-top: .15rem; }
@@ -551,3 +549,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .countdown div:nth-child(3) { background-image: url(images/frame-cd3.webp); }
 .countdown div:nth-child(4) { background-image: url(images/frame-cd4.webp); }
 .countdown { gap: .5rem; }
+
+/* xoay màn hình: cụm chữ thu nhỏ hoặc phóng to từ từ */
+.intro-text, .intro-who, .intro-small, .env-names, .env-date, .env-guest, .env-hint, .env-orn { transition: font-size .7s ease, gap .7s ease, margin .7s ease, height .7s ease, opacity .7s ease, line-height .7s ease; }
