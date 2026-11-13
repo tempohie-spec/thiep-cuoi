@@ -28,6 +28,7 @@ async function readViaList(bust) {
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
+    res.setHeader("access-control-allow-origin", "*");
     try {
       // Trang editor gọi kèm ?t= nên luôn lấy bản mới nhất; khách xem thiệp dùng bản lưu tạm ngắn
       const exact = new URL(req.url, "http://x").searchParams.has("t");

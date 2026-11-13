@@ -224,6 +224,7 @@
       <button class="primary" id="publish" type="button">Đăng thiệp</button>
       <button id="download" type="button">Tải config.js</button>
       <button id="reset" type="button">Đặt lại</button>
+      <button id="importGroom" type="button" hidden>Nhập nội dung từ trang nhà trai</button>
       <span class="toast" id="toast"></span>
     </div>
   </div>
@@ -687,6 +688,21 @@
     URL.revokeObjectURL(a.href);
     toast("Đã tải config.js");
   });
+  (() => {
+    const b = $("#importGroom");
+    if (window.SIDE !== "bride") return;
+    b.hidden = false;
+    b.addEventListener("click", async () => {
+      if (!confirm("Chép toàn bộ nội dung đã đăng của trang nhà trai vào bản nháp này? Chỉnh sửa hiện tại sẽ mất. Sau đó bạn bấm Đăng thiệp để đăng.")) return;
+      try {
+        const r = await fetch("https://hieuduyenwedding.vercel.app/api/config?t=" + Date.now(), { cache: "no-store" });
+        const d = r.ok ? await r.json() : null;
+        if (!d || !d.groom) throw 0;
+        cfg = { ...clone(window.WEDDING), ...migrate(clone(d)) }; fill(); changed(); toast("Đã nhập, hãy kiểm tra rồi bấm Đăng thiệp");
+      } catch { toast("Không lấy được nội dung nhà trai"); }
+    });
+  })();
+
   $("#reset").addEventListener("click", () => {
     if (!confirm("Đặt lại về nội dung thiệp đang đăng? Các chỉnh sửa chưa tải sẽ mất.")) return;
     cfg = clone(base); fill(); changed();
