@@ -557,5 +557,5 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
   #p4 .title { font-size: 1.6rem; }
   #p4 .ev-hint { margin-bottom: .7rem; }
   #p4 .evlist { gap: 1rem; }
-  #p4 .ev-card { max-width: calc((100svh - 10.5rem - 1rem) / 2 * 1.505); }
+  #p4 .evflip { width: 100%; max-width: calc((100svh - 10.5rem - 1rem) / 2 * 1.505); margin: 0 auto; }
 }

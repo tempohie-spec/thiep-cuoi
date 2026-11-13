@@ -532,6 +532,16 @@
   if (new URLSearchParams(location.search).has("preview")) return;
   const pages = () => [...document.querySelectorAll("header.hero, main .page")];
   let t, busy = false;
+  // trượt chậm và mượt (easeInOut) thay cho cuộn mặc định của trình duyệt
+  const glide = (dy, ms) => {
+    const y0 = scrollY, t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      scrollTo({ top: y0 + dy * e, behavior: "instant" });
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
   const snap = () => {
     if (busy || document.body.classList.contains("locked")) return;
     const vh = innerHeight; let best = null, bestV = 0;
@@ -545,8 +555,8 @@
     if (r.height > vh * 1.05 && r.top < 0 && r.bottom > vh * 0.6) return;
     if (Math.abs(r.top) < 2) return;
     busy = true;
-    scrollBy({ top: r.top, behavior: "smooth" });
-    setTimeout(() => { busy = false; }, 700);
+    glide(r.top, 900);
+    setTimeout(() => { busy = false; }, 1000);
   };
   addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(snap, 140); }, { passive: true });
 })();
