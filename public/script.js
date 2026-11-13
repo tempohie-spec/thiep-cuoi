@@ -34,10 +34,15 @@
   if (preview) addEventListener("message", (e) => {
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === "theme") applyTheme(e.data.theme);
-    if (e.data.type === "coverfit" && window.__applyCoverFit) { W.coverFit = e.data.fit; window.__applyCoverFit(); }
+    if (e.data.type === "coverfit" && window.__applyCoverFit && !window.WEDDING.coverLocked) { W.coverFit = e.data.fit; window.__applyCoverFit(); }
   });
   const cssUrl = (u) => `url('${String(u).replace(/'/g, "%27")}')`;
   // Phần bên trong khung bìa: GIF hoặc MP4 động (có thể là ảnh tĩnh). Có hai nguồn riêng cho điện thoại (cover) và máy tính (coverD), thiếu một thì dùng cái kia.
+  // Ảnh bìa cố định trong mã: bỏ qua file bìa, vị trí và kích thước đã đăng từ editor
+  if (window.WEDDING.coverLocked) {
+    const L = window.WEDDING;
+    W = { ...W, cover: L.cover, coverD: L.coverD, coverFit: L.coverFit, coverFitMode: L.coverFitMode };
+  }
   const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;
   {
     const h = $(".hero"), media = $("#coverMedia");
@@ -48,16 +53,18 @@
       if (u === shown) return;
       shown = u;
       if (!u) { media.innerHTML = ""; return; }
-      const pos = wide ? posOfD(u) : posOf(u);
       media.innerHTML = isVideo(u)
-        ? `<video src="${esc(u)}" autoplay muted loop playsinline preload="auto" disablepictureinpicture style="object-position:${pos}"></video>`
-        : `<img src="${esc(u)}" alt="" style="object-position:${pos}">`;
+        ? `<video src="${esc(u)}" autoplay muted loop playsinline preload="auto" disablepictureinpicture></video>`
+        : `<img src="${esc(u)}" alt="">`;
       const v = media.querySelector("video"); if (v) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
     };
     // Vị trí và kích thước file bìa trong khung: riêng cho điện thoại (m) và máy tính (d)
     const applyFit = () => {
       const f = (W.coverFit && (innerWidth >= 760 ? W.coverFit.d : W.coverFit.m)) || {};
       const num = (v, d, a, b) => { v = Number(v); return Number.isFinite(v) ? Math.min(b, Math.max(a, v)) : d; };
+      const contain = (W.coverFitMode || "cover") === "contain";
+      media.style.setProperty("--co", contain ? "contain" : "cover");
+      media.style.setProperty("--cop", contain ? "50% 100%" : "50% 50%");
       media.style.setProperty("--cs", (num(f.s, 100, 30, 400) / 100).toFixed(3));
       media.style.setProperty("--cx", String(num(f.x, 0, -100, 100)));
       media.style.setProperty("--cy", String(num(f.y, 0, -100, 100)));

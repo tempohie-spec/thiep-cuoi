@@ -147,7 +147,10 @@
     <input type="file" accept="video/mp4,image/gif" id="coverDUp" style="margin-top:6px">
     <p class="hint" id="coverStatus" style="margin-top:6px"></p>
     <div class="theme-box" id="fitBox">
+      <p class="hint" id="coverLockNote" hidden style="color:#a4121f"><b>Ảnh bìa đang được cố định trong mã</b> (ảnh động nền trong suốt tự tách nền). Các ô tải file và thanh chỉnh bên dưới chưa có tác dụng trên thiệp thật. Muốn đổi ảnh bìa hoặc vị trí, nhắn Claude để mở khóa hoặc chỉnh giúp.</p>
       <b>Chỉnh vị trí và kích thước file trong khung</b>
+      <label>Cách đặt file trong khung</label>
+      <select data-k="coverFitMode"><option value="contain">Vừa trong khung, nằm sát đáy (không cắt)</option><option value="cover">Phủ kín khung (cắt phần thừa)</option></select>
       <div class="seg" id="fitDev"><button type="button" data-dev="m" class="on">Điện thoại</button><button type="button" data-dev="d">Máy tính</button></div>
       <label>Kích thước <b id="fitSv"></b></label><input type="range" min="30" max="300" step="1" id="fitS" class="rail">
       <label>Vị trí ngang <b id="fitXv"></b> (kéo sang phải thì file dịch sang phải)</label><input type="range" min="-100" max="100" step="1" id="fitX" class="rail">
@@ -355,6 +358,7 @@
     document.querySelectorAll("[data-k]").forEach((el) => { el.value = get(cfg, el.dataset.k) || ""; });
     $("#date").value = (cfg.date || "").slice(0, 16);
     showTheme(); showFit();
+    $("#coverLockNote").hidden = !window.WEDDING.coverLocked;
     $("#coverStrengthVal").textContent = (cfg.coverStrength === undefined || cfg.coverStrength === "" ? 100 : cfg.coverStrength) + "%";
     $("#gallery").value = (cfg.gallery || []).join("\n");
     syncMusic();

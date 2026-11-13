@@ -503,7 +503,7 @@ body {
 .cover-stage { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 0; height: var(--ih, 100%); aspect-ratio: var(--ar); overflow: hidden; }
 @media (min-width: 760px) { .cover-stage { aspect-ratio: var(--ar-d); } }
 .cover-media { position: absolute; inset: 0; z-index: 0; }
-.cover-media img, .cover-media video { display: block; width: 100%; height: 100%; object-fit: cover; transform: translate(calc(var(--cx, 0) * 1%), calc(var(--cy, 0) * 1%)) scale(var(--cs, 1)); transform-origin: 50% 50%; }
+.cover-media img, .cover-media video { display: block; width: 100%; height: 100%; object-fit: var(--co, cover); object-position: var(--cop, 50% 50%); transform: translate(calc(var(--cx, 0) * 1%), calc(var(--cy, 0) * 1%)) scale(var(--cs, 1)); transform-origin: 50% 50%; }
 .cover-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .cover-frame img { display: block; width: 100%; height: 100%; }
 .cover-stage::after { z-index: 1; }
