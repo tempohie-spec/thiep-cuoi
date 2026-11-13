@@ -419,7 +419,7 @@
   const env = $("#envelope");
   const leavesMode = (m) => { const lv = $("#leaves"); if (lv) lv.dataset.mode = m; };
   if (preview && !params.get("intro")) {
-    env.remove(); $("#envCurl").remove(); leavesMode("doodle");
+    env.remove(); leavesMode("doodle");
   } else {
     const bgM = W.introBg || W.introBgD, bgD = W.introBgD || W.introBg;
     if (bgM) {
@@ -440,16 +440,15 @@
       opened = true;
       env.classList.add("open");
       if (W.music) audio.play().catch(() => {});
-      const curl = $("#envCurl"); curl.classList.add("on");
       const t0 = performance.now(), ms = 1500;
       const step = (now) => {
         const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
         const p = (e * 1.08).toFixed(4); // vượt nhẹ để cuộn giấy ra khỏi màn hình
-        env.style.setProperty("--p", p); curl.style.setProperty("--p", p);
+        env.style.setProperty("--p", p);
         if (k < 1) return requestAnimationFrame(step);
         leavesMode("doodle");
         document.body.classList.remove("locked");
-        env.remove(); curl.remove();
+        env.remove();
       };
       requestAnimationFrame(step);
     };
@@ -565,5 +564,5 @@
     glide(r.top, 900);
     setTimeout(() => { busy = false; }, 1000);
   };
-  addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(snap, 140); }, { passive: true });
+  addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(snap, 2000); }, { passive: true });
 })();

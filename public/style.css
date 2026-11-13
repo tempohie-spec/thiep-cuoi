@@ -28,13 +28,9 @@ body.locked { overflow: hidden; }
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
   transform-origin: 50% 0; will-change: transform; }
 /* bấm mở: tờ giấy bị lật từ mép dưới lên, mép quăn cuộn lại (script.js đặt --p từ 0 đến 1) */
-.envelope { clip-path: inset(0 0 calc(var(--p, 0) * 100%) 0); }
+.envelope { clip-path: inset(0 0 calc(var(--p, 0) * 100%) 0); opacity: calc(1 - var(--p, 0) * .9); }
 .envelope.open { pointer-events: none; }
-.env-curl { position: fixed; left: 0; right: 0; z-index: 51; height: 84px; pointer-events: none; transform: translateY(0);
   top: calc((1 - var(--p, 0)) * 100svh - 84px); display: none; }
-.env-curl.on { display: block; }
-.env-curl::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, #bfa874 0%, #e9dcb6 14%, #fffdf2 38%, #f3e9c9 62%, #e3d4a6 82%, rgba(227, 212, 166, 0) 100%); box-shadow: 0 -2px 6px rgba(80, 55, 20, .12); border-radius: 0 0 2px 2px; }
-.env-curl::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 70px; background: linear-gradient(to bottom, rgba(50, 30, 10, .38), rgba(50, 30, 10, 0)); }
 .intro-text { width: min(92vw, 560px); text-align: center; font-family: var(--font); color: #5a3216; display: flex; flex-direction: column; align-items: center; gap: .2rem;
   text-shadow: 0 0 3px #fffbe6, 0 0 8px #fffbe6, 0 0 16px rgba(255, 251, 230, .95), 0 1px 0 #fffbe6; }
 .intro-small { font-weight: 700; font-size: clamp(.8rem, min(3.3vw, 2.6svh), 1.35rem); letter-spacing: .08em; }
@@ -63,7 +59,7 @@ body.locked { overflow: hidden; }
 /* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
 .hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8svh; }
 .hero[data-align="top"] { justify-content: flex-start; padding-top: 14svh; }
-.hero .small { color: var(--ink); font-weight: 500; position: relative; top: 5px; }
+.hero .small { color: var(--ink); font-family: var(--font); font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; text-transform: none; position: relative; top: 5px; }
 .hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1.2; margin: .4rem 0; position: relative; top: 5px; color: var(--accent-dark); text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
 .hero-date { font-family: var(--font); font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; color: var(--ink); }
 .countdown { display: flex; gap: .7rem; justify-content: center; margin-top: 1.1rem; flex-wrap: wrap; }
@@ -125,7 +121,7 @@ body.locked { overflow: hidden; }
   .countdown { gap: .9rem; }
   .countdown div { width: 88px; padding: 0 0 .15rem; }
   .countdown span { font-size: 1.6rem; }
-  .hero-date { font-size: 1.15rem; }
+  .hero-date, .hero .small { font-size: 1.15rem; }
   .title { font-size: 1.85rem; }
 }
 @media (prefers-reduced-motion: reduce) {
