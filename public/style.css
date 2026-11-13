@@ -538,7 +538,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
   .envelope { padding-top: 8px; }
   .intro-text { gap: .05rem; }
   .intro-small, .env-guest { font-size: .78rem; }
-  .env-orn { height: 0; opacity: 0; margin: 0; }
+  .env-orn { width: 50px; height: 8px; margin: 0; }
   .env-names { font-size: 1.5rem; margin: 0; line-height: 1.1; }
   .env-date { font-size: .8rem; }
   .env-hint { font-size: .62rem; margin-top: .15rem; }
