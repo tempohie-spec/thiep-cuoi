@@ -524,7 +524,7 @@
       } else {
         try { localStorage.setItem("rsvp", JSON.stringify(data)); } catch {}
       }
-      msg.textContent = `Cảm ơn ${data.name}! Chúng mình đã nhận được xác nhận của bạn.`;
+      msg.textContent = `Cảm ơn ${data.name}! Chúng mình đã nhận được lời chúc của bạn.`;
       e.target.reset();
     } catch {
       msg.textContent = "Có lỗi xảy ra, bạn vui lòng thử lại nhé.";
