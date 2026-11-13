@@ -693,12 +693,12 @@
     if (window.SIDE !== "bride") return;
     b.hidden = false;
     b.addEventListener("click", async () => {
-      if (!confirm("Chép toàn bộ nội dung đã đăng của trang nhà trai vào bản nháp này, trừ thẻ sự kiện (giữ nguyên thẻ của nhà gái)? Chỉnh sửa hiện tại sẽ mất. Sau đó bạn bấm Đăng thiệp để đăng.")) return;
+      if (!confirm("Chép toàn bộ nội dung đã đăng của trang nhà trai vào bản nháp này, trừ thẻ sự kiện, ngày giờ cưới và dòng ngày tháng (giữ nguyên của nhà gái)? Chỉnh sửa hiện tại sẽ mất. Sau đó bạn bấm Đăng thiệp để đăng.")) return;
       try {
         const r = await fetch("https://hieuduyenwedding.vercel.app/api/config?t=" + Date.now(), { cache: "no-store" });
         const d = r.ok ? await r.json() : null;
         if (!d || !d.groom) throw 0;
-        const keep = cfg.eventCards; cfg = { ...clone(window.WEDDING), ...migrate(clone(d)) }; if (keep) cfg.eventCards = keep; fill(); changed(); toast("Đã nhập (giữ nguyên thẻ lật của nhà gái), hãy kiểm tra rồi bấm Đăng thiệp");
+        const keep = { eventCards: cfg.eventCards, date: cfg.date, introDate: cfg.introDate }; cfg = { ...clone(window.WEDDING), ...migrate(clone(d)) }; Object.keys(keep).forEach((k) => { if (keep[k] !== undefined) cfg[k] = keep[k]; }); fill(); changed(); toast("Đã nhập (giữ nguyên thẻ lật, ngày giờ và dòng ngày tháng của nhà gái), hãy kiểm tra rồi bấm Đăng thiệp");
       } catch { toast("Không lấy được nội dung nhà trai"); }
     });
   })();
