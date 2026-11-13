@@ -36,6 +36,7 @@
     if (e.data.type === "theme") applyTheme(e.data.theme);
     if (e.data.type === "coverfit" && window.__applyCoverFit) { W.coverFit = e.data.fit; window.__applyCoverFit(); }
   });
+  const cssUrl = (u) => `url('${String(u).replace(/'/g, "%27")}')`;
   // Phần bên trong khung bìa: GIF hoặc MP4 động (có thể là ảnh tĩnh). Có hai nguồn riêng cho điện thoại (cover) và máy tính (coverD), thiếu một thì dùng cái kia.
   const coverM = W.cover || W.coverD, coverD = W.coverD || W.cover;
   {
