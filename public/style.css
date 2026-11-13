@@ -27,9 +27,14 @@ body.locked { overflow: hidden; }
 .envelope { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; padding: max(14px, 3.5svh) 16px 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
   transform-origin: 50% 0; will-change: transform; }
-/* bấm mở: cả trang ảnh lật từ dưới lên, bản lề ở mép trên, để lộ thiệp phía sau */
-.envelope.open { animation: introFlip 1.25s cubic-bezier(.55, .05, .3, 1) forwards; pointer-events: none; }
-@keyframes introFlip { 0% { transform: perspective(1800px) rotateX(0); box-shadow: 0 0 0 rgba(60, 40, 20, 0); } 70% { opacity: 1; } 100% { transform: perspective(1800px) rotateX(-100deg); opacity: 0; } }
+/* bấm mở: tờ giấy bị lật từ mép dưới lên, mép quăn cuộn lại (script.js đặt --p từ 0 đến 1) */
+.envelope { clip-path: inset(0 0 calc(var(--p, 0) * 100%) 0); }
+.envelope.open { pointer-events: none; }
+.env-curl { position: fixed; left: 0; right: 0; z-index: 51; height: 84px; pointer-events: none; transform: translateY(0);
+  top: calc((1 - var(--p, 0)) * 100svh - 84px); display: none; }
+.env-curl.on { display: block; }
+.env-curl::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, #bfa874 0%, #e9dcb6 14%, #fffdf2 38%, #f3e9c9 62%, #e3d4a6 82%, rgba(227, 212, 166, 0) 100%); box-shadow: 0 -2px 6px rgba(80, 55, 20, .12); border-radius: 0 0 2px 2px; }
+.env-curl::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 70px; background: linear-gradient(to bottom, rgba(50, 30, 10, .38), rgba(50, 30, 10, 0)); }
 .intro-text { width: min(92vw, 560px); text-align: center; font-family: var(--font); color: #5a3216; display: flex; flex-direction: column; align-items: center; gap: .2rem;
   text-shadow: 0 0 3px #fffbe6, 0 0 8px #fffbe6, 0 0 16px rgba(255, 251, 230, .95), 0 1px 0 #fffbe6; }
 .intro-small { font-weight: 700; font-size: clamp(.8rem, min(3.3vw, 2.6svh), 1.35rem); letter-spacing: .08em; }
@@ -37,7 +42,7 @@ body.locked { overflow: hidden; }
 .env-date { font-weight: 700; font-size: clamp(.95rem, min(3.9vw, 3svh), 1.8rem); letter-spacing: .12em; }
 .env-guest { font-weight: 700; font-size: clamp(.95rem, min(3.9vw, 3svh), 1.8rem); }
 .env-orn { width: 70px; height: 10px; margin: .2rem 0; }
-.env-hint { margin-top: .7rem; font-weight: 700; font-size: clamp(.8rem, min(3.2vw, 2.5svh), 1.2rem); animation: introHint 1.8s ease-in-out infinite; }
+.env-hint { margin-top: .7rem; font-weight: 700; font-size: clamp(.64rem, min(2.56vw, 2svh), .96rem); animation: introHint 1.8s ease-in-out infinite; }
 @keyframes introHint { 0%, 100% { transform: translateY(0); opacity: .85; } 50% { transform: translateY(-4px); opacity: 1; } }
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 8%; text-align: center; z-index: 1;
   transition: transform 1.05s cubic-bezier(.25, .8, .25, 1) .55s; }
@@ -530,4 +535,17 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
   #p4 .ev-hint { margin-bottom: .7rem; }
   #p4 .evlist { gap: 1rem; }
   #p4 .evflip { width: 100%; max-width: calc((100svh - 10.5rem - 1rem) / 2 * 1.505); margin: 0 auto; }
+}
+
+/* điện thoại xoay ngang: cụm chữ thu gọn, gom thành vài dòng để không che hai bạn */
+.intro-who { display: flex; flex-direction: column; align-items: center; gap: .2rem; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .envelope { padding-top: 8px; }
+  .intro-text { gap: .05rem; }
+  .intro-who { flex-direction: row; gap: .5rem; align-items: baseline; }
+  .intro-small, .env-guest { font-size: .78rem; }
+  .env-orn { display: none; }
+  .env-names { font-size: 1.5rem; margin: 0; line-height: 1.1; }
+  .env-date { font-size: .8rem; }
+  .env-hint { font-size: .62rem; margin-top: .15rem; }
 }

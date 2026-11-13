@@ -419,7 +419,7 @@
   const env = $("#envelope");
   const leavesMode = (m) => { const lv = $("#leaves"); if (lv) lv.dataset.mode = m; };
   if (preview && !params.get("intro")) {
-    env.remove(); leavesMode("doodle");
+    env.remove(); $("#envCurl").remove(); leavesMode("doodle");
   } else {
     const bgM = W.introBg || W.introBgD, bgD = W.introBgD || W.introBg;
     if (bgM) {
@@ -440,11 +440,18 @@
       opened = true;
       env.classList.add("open");
       if (W.music) audio.play().catch(() => {});
-      setTimeout(() => {
-        env.classList.add("leaving"); leavesMode("doodle");
+      const curl = $("#envCurl"); curl.classList.add("on");
+      const t0 = performance.now(), ms = 1500;
+      const step = (now) => {
+        const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        const p = (e * 1.08).toFixed(4); // vượt nhẹ để cuộn giấy ra khỏi màn hình
+        env.style.setProperty("--p", p); curl.style.setProperty("--p", p);
+        if (k < 1) return requestAnimationFrame(step);
+        leavesMode("doodle");
         document.body.classList.remove("locked");
-        setTimeout(() => env.remove(), 200);
-      }, 1150);
+        env.remove(); curl.remove();
+      };
+      requestAnimationFrame(step);
     };
     env.addEventListener("click", openIt);
   }
