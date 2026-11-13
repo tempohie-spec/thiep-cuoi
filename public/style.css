@@ -14,7 +14,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: #eadcbc; }
 /* Trang là một cột dọc: phủ hết màn hình điện thoại, rộng tối đa 900px trên máy tính */
-body { font-synthesis: none; max-width: 900px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 60px rgba(140, 95, 25, .16); font-family: var(--font); font-weight: 400; background: var(--bg); color: var(--ink); line-height: 1.7; }
+body { font-synthesis: none; max-width: 900px; margin: 0 auto; min-height: 100svh; box-shadow: 0 0 60px rgba(140, 95, 25, .16); font-family: var(--font); font-weight: 400; background: var(--bg); color: var(--ink); line-height: 1.7; }
 body.locked { overflow: hidden; }
 .script { font-family: var(--font); font-weight: 700; color: var(--accent); }
 .small { text-transform: uppercase; letter-spacing: .25em; font-size: .75rem; color: var(--muted); }
@@ -28,7 +28,7 @@ body.locked { overflow: hidden; }
   background: radial-gradient(circle at 50% 30%, #fcf2da, #e8cd96 70%); background-size: cover; background-position: center;
   transition: opacity .8s ease, transform .8s ease, visibility .8s; will-change: opacity; }
 .envelope.leaving { opacity: 0; transform: scale(1.08); visibility: hidden; }
-.env-stage { --r: .72; --w: max(240px, min(calc(min(100vw, 480px) * .68), 340px, calc((89vh - 30px) / var(--r)))); width: var(--w); margin: max(64px, 8vh) auto auto; display: flex; flex-direction: column; align-items: center; }
+.env-stage { --r: .72; --w: max(240px, min(calc(min(100vw, 480px) * .68), 340px, calc((89svh - 30px) / var(--r)))); width: var(--w); margin: max(64px, 8svh) auto auto; display: flex; flex-direction: column; align-items: center; }
 .env { position: relative; cursor: pointer; width: 100%; height: calc(var(--w) * var(--r)); }
 .env > * { position: absolute; }
 .env-back { inset: 0; background: #ebd3a6; border-radius: 18px; box-shadow: 0 18px 40px rgba(150, 100, 30, .22), 0 3px 10px rgba(150, 100, 30, .12); }
@@ -60,10 +60,10 @@ body.locked { overflow: hidden; }
 .envelope.open .env-text { opacity: 0; pointer-events: none; }
 
 /* Hero */
-.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px; }
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem 16px; }
 /* Vị trí khối chữ trên ảnh bìa (chỉnh trong editor): trên, giữa hoặc dưới */
-.hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8vh; }
-.hero[data-align="top"] { justify-content: flex-start; padding-top: 14vh; }
+.hero[data-align="bottom"] { justify-content: flex-end; padding-bottom: 8svh; }
+.hero[data-align="top"] { justify-content: flex-start; padding-top: 14svh; }
 .hero .small { color: var(--ink); font-weight: 500; position: relative; top: 5px; }
 .hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1.2; margin: .4rem 0; position: relative; top: 5px; color: var(--accent-dark); text-shadow: 0 1px 14px rgba(255, 255, 255, .7); }
 .hero-date { font-family: var(--font); font-weight: 700; font-size: 1.05rem; letter-spacing: .08em; color: var(--ink); }
@@ -98,7 +98,7 @@ body.locked { overflow: hidden; }
 .gallery img:hover { transform: scale(1.02); }
 .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.85); display: grid; place-items: center; z-index: 60; padding: 16px; cursor: zoom-out; }
 .lightbox[hidden] { display: none; }
-.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 16px; }
+.lightbox img { max-width: 100%; max-height: 90svh; border-radius: 16px; }
 
 /* RSVP */
 .rsvp { max-width: 480px; margin: 0 auto; display: grid; gap: .8rem; }
@@ -137,19 +137,16 @@ body.locked { overflow: hidden; }
 #leaves { position: fixed; inset: 0; z-index: 55; pointer-events: none; overflow: hidden; }
 .leaf { position: absolute; top: -40px; animation: leafFall var(--d) linear var(--delay) infinite; }
 .leaf i { display: block; width: 100%; height: 100%; background: center / contain no-repeat; animation: leafSway var(--sway) ease-in-out infinite alternate; }
-@keyframes leafFall { from { transform: translate3d(0, -5vh, 0) rotate(0deg); } to { transform: translate3d(var(--drift), 108vh, 0) rotate(var(--rot)); } }
+@keyframes leafFall { from { transform: translate3d(0, -5svh, 0) rotate(0deg); } to { transform: translate3d(var(--drift), 108svh, 0) rotate(var(--rot)); } }
 @keyframes leafSway { from { transform: translateX(-14px) rotate(-22deg); } to { transform: translateX(14px) rotate(22deg); } }
 
 /* Nền vân giấy thiệp cưới: giấy vẽ màu nước có hạt nổi, ô lặp liền mạch lấy từ ảnh giấy thật (images/paper.webp, nhân với màu nền kem) */
 :root { --paper: url("images/paper.webp"); }
-html { background-color: #e9dcbf; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
-body {
-  background-color: #fff7e6;
-  background-image: var(--paper), linear-gradient(180deg, #fffaf0, #fbf2de);
-  background-size: 256px, 100% 100%;
-  background-blend-mode: multiply, normal;
-}
-.event, .gift { background-color: #fffdf6; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; }
+html { background: #e9dcbf url("images/paper-kraft.webp") 0 0 / 256px; }
+@media (max-width: 900px) { html { background-image: none; } }
+body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
+@media (max-width: 900px) { body { box-shadow: none; } }
+.event, .gift { background: #fffaf0 url("images/paper-card.webp") 0 0 / 256px; }
 .hero { position: relative; }
 /* Lớp phủ kem mờ trên ảnh bìa: độ đậm ảnh 100% thì --veil = 0 (không phủ), chỉnh trong editor */
 .cover-stage::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--veil, 0);
@@ -171,8 +168,8 @@ body {
 }
 
 /* ===== Album ảnh kiểu doodle: một ảnh trong khung vẽ tay, chuyển ảnh bằng nét cọ quét ===== */
-.reel { position: relative; width: min(340px, calc(100vw - 72px), calc((100dvh - 250px) * .75)); margin: 0 auto; outline: none; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: pointer; }
-.reel-card { position: relative; aspect-ratio: 3 / 4; padding: 5% 5% 15%; background-color: #fffaf0; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply;
+.reel { position: relative; width: min(340px, calc(100vw - 72px), calc((100svh - 250px) * .75)); margin: 0 auto; outline: none; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: pointer; }
+.reel-card { position: relative; aspect-ratio: 3 / 4; padding: 5% 5% 15%; background: #fffaf0 url("images/paper-card.webp") 0 0 / 256px;
   border-radius: 14px 10px 16px 9px; transform: rotate(-1.2deg); box-shadow: 5px 7px 0 rgba(40, 8, 14, .35); }
 .reel-card canvas { display: block; width: 100%; height: 100%; border-radius: 6px 9px 5px 8px; background: #f1e3c1; }
 /* viền vẽ tay "rung" nhẹ: ba nét vẽ luân phiên */
@@ -234,8 +231,8 @@ body {
 /* Trang đầu cao đúng một màn hình, ảnh bìa co vừa khung (không cắt, không cuộn) và đặt giữa; phần trắng thừa liền với nền trắng của ảnh.
    --ih là chiều cao ảnh thật sự hiển thị, dùng để đặt chữ nằm trong ảnh trên mọi kích thước màn hình. */
 .hero.fit {
-  --hh: max(100vh, 560px);
-  --hh: max(100dvh, 560px);
+  --hh: max(100svh, 560px);
+  --hh: max(100svh, 560px);
   --ih: min(var(--hh), calc(min(100vw, 900px) / var(--ar, .5)));
   min-height: var(--hh); background: none;
 }
@@ -257,10 +254,10 @@ body {
 
 /* ===== Chia thành các page: mỗi page cao tối thiểu một màn hình, nền xen kẽ đỏ đô và trắng be, đều có vân giấy ===== */
 :root { --wine: #6f1d2b; --be: #fbf4e4; --cream: #fbefd5; --gold-soft: #f2c46d; --paper-dark: url("images/paper-dark.webp"); }
-.page { position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: 3rem 16px; }
+.page { position: relative; min-height: 100svh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 3rem 16px; }
 .page-in { width: 100%; max-width: 592px; margin: 0 auto; }
 .page-in.wide { max-width: 868px; }
-.p-be { background-color: var(--be); background-image: var(--paper), linear-gradient(180deg, #fffaf0, #f8efdb); background-size: 256px, 100% 100%; background-blend-mode: multiply, normal; }
+.p-be { background: var(--be) url("images/paper-be.webp") 0 0 / 256px; }
 .p-red { color: var(--th-text, #fbefd5); background-color: var(--th-bg, #6f1d2b); background-image: var(--th-img, var(--paper-dark)), radial-gradient(ellipse at 50% 28%, var(--th-bg2, #8a2a3c) 0%, var(--th-bg, #6f1d2b) 55%, var(--th-bg3, #4d1019) 100%); background-size: 256px, 100% 100%; background-blend-mode: var(--th-bm, normal), normal; }
 .p-red .title { color: var(--th-title, #f8e6b8); }
 .p-red .title::after { background: var(--th-accent, #f2c46d); }
@@ -294,10 +291,10 @@ body {
 .evgroup + .evgroup .evside span { background: #fde1ec; transform: rotate(1.5deg); }
 
 /* ===== Album: lớn hơn trên máy tính để tận dụng một trang ===== */
-@media (min-width: 760px) { .reel { width: min(520px, calc((100vh - 290px) * .75)); width: min(520px, calc((100dvh - 290px) * .75)); } }
+@media (min-width: 760px) { .reel { width: min(520px, calc((100svh - 290px) * .75)); width: min(520px, calc((100svh - 290px) * .75)); } }
 
 /* ===== Trang 6: xác nhận tham dự và lời chúc vừa đúng một màn hình ===== */
-.p-fit { min-height: 0; height: 100vh; height: 100dvh; padding-top: 2rem; padding-bottom: 2rem; }
+.p-fit { min-height: 0; height: 100svh; height: 100svh; padding-top: 2rem; padding-bottom: 2rem; }
 .rsvp-page .title { margin-bottom: 1.1rem; }
 .rsvp-grid { display: grid; gap: 1rem; }
 .rsvp { gap: .55rem; max-width: none; }
@@ -331,7 +328,7 @@ body {
   .note p { -webkit-line-clamp: 3; }
 }
 /* màn hình quá thấp: vẫn cho cuộn để không cắt chữ */
-@media (max-height: 600px) { .p-fit { height: auto; min-height: 100vh; min-height: 100dvh; } }
+@media (max-height: 600px) { .p-fit { height: auto; min-height: 100svh; min-height: 100svh; } }
 
 /* ===== Trang 7: hộp quà doodle động đậy nhẹ, bấm để mở ===== */
 .giftbox { width: min(230px, 62vw); margin: .4rem auto 0; cursor: pointer; text-align: center; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -349,8 +346,11 @@ body {
 @keyframes giftIn { from { opacity: 0; transform: translateY(-24px) scale(.92); } to { opacity: 1; transform: none; } }
 .giftbox.open { margin-bottom: -1.5rem; }
 
+/* ===== Hiệu năng: hoạt ảnh của trang nằm ngoài màn hình được tạm dừng (script gắn lớp .off) ===== */
+.off, .off *, .off *::before, .off *::after { animation-play-state: paused !important; }
+.hero.off #coverMedia { display: none; }
 /* ===== Lá doodle ===== */
-.leaf i { filter: drop-shadow(1px 1px 0 rgba(90, 50, 22, .25)); }
+
 
 /* ===== Album: doodle bay từ quanh mép ảnh; cụm nút nằm trong phần trống phía dưới ảnh ===== */
 .reel-fx { inset: 5% 5% 15%; }
@@ -363,7 +363,7 @@ body {
 .reel-card .zoom { bottom: auto; top: auto; right: 5%; bottom: calc(7.5% - 15px); }
 
 /* ===== Trang 6: hai thẻ giấy doodle, vừa một màn hình ===== */
-.dcard { position: relative; background-color: #fffaf0; background-image: var(--paper); background-size: 256px; background-blend-mode: multiply; border: 2.4px solid #4a2a14;
+.dcard { position: relative; background: #fffaf0 url("images/paper-card.webp") 0 0 / 256px; border: 2.4px solid #4a2a14;
   border-radius: 255px 22px 225px 22px / 22px 225px 22px 255px; box-shadow: 5px 6px 0 rgba(74, 42, 20, .85); padding: 1.1rem 1.1rem 1rem; }
 .dcard-title { text-align: center; font-weight: 700; font-size: 1.12rem; color: #6b3f1d; margin: 0 0 .7rem; }
 .dcard-title::after { content: ""; display: block; width: 90px; height: 8px; margin: .25rem auto 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 8'%3E%3Cpath d='M2 5 Q12 1 22 5 T42 5 T62 5 T82 5' fill='none' stroke='%23e0a56c' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
@@ -401,7 +401,7 @@ body {
   .rsvp-grid { gap: .8rem; }
 }
 /* cụm nút đã nằm trong khung ảnh nên album trên máy tính được lớn thêm */
-@media (min-width: 760px) { .reel { width: min(560px, calc((100vh - 210px) * .75)); width: min(560px, calc((100dvh - 210px) * .75)); } }
+@media (min-width: 760px) { .reel { width: min(560px, calc((100svh - 210px) * .75)); width: min(560px, calc((100svh - 210px) * .75)); } }
 
 /* ===== Trang 6 bố cục mới: thẻ form ở giữa phía trên, lưới giấy note lời chúc phía dưới ===== */
 .rsvp-page { max-width: 860px; }
@@ -461,10 +461,10 @@ body {
 .wish-grid .note { animation: noteIn .55s cubic-bezier(.3, 1.5, .5, 1), noteWiggle 3.2s ease-in-out .55s infinite; }
 .wish-grid .note:nth-child(2n) { animation-duration: .55s, 3.8s; animation-delay: 0s, .9s; }
 .wish-grid .note:nth-child(3n) { animation-duration: .55s, 3.5s; animation-delay: 0s, 1.6s; }
-@keyframes noteWiggle { 0%, 100% { translate: 0 0; rotate: 0deg; } 30% { translate: 0 -3px; rotate: -1.2deg; } 65% { translate: 0 1px; rotate: 1deg; } }
+@keyframes noteWiggle { 0%, 100% { transform: translateY(0) rotate(var(--nr, 0deg)); } 30% { transform: translateY(-3px) rotate(calc(var(--nr, 0deg) - 1.2deg)); } 65% { transform: translateY(1px) rotate(calc(var(--nr, 0deg) + 1deg)); } }
 
 /* ===== Trang 3: chữ Hỉ lớn, lời mời giữ nguyên các dòng, hai nhà, tên xếp dọc, hai chú mèo ở dưới cùng ===== */
-.p3 .page-in { max-width: 640px; min-height: calc(100vh - 6rem); min-height: calc(100dvh - 6rem); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; text-align: center; }
+.p3 .page-in { max-width: 640px; min-height: calc(100svh - 6rem); min-height: calc(100svh - 6rem); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem; text-align: center; }
 .hi { width: min(150px, 38vw); animation: hiBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
 .hi svg { display: block; width: 100%; overflow: visible; }
 @keyframes hiBob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-5px) rotate(1.5deg); } }
@@ -485,7 +485,7 @@ body {
 
 /* ===== Trang 6 ổn định: chiều cao cố định theo màn hình nhỏ nhất (svh) nên không nhảy khi thanh công cụ trình duyệt co giãn;
    lưới lời chúc chiếm phần còn lại và không bao giờ tràn sang trang kế ===== */
-.p-fit { height: 100vh; height: 100svh; min-height: 40rem; overflow: hidden; justify-content: flex-start; }
+.p-fit { height: 100svh; height: 100svh; min-height: 40rem; overflow: hidden; justify-content: flex-start; }
 .p-fit .page-in { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .p-fit .rsvp-grid { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 1.1rem; }
 .p-fit .rsvp-card { flex: none; }
@@ -509,5 +509,5 @@ body {
 .cover-stage::after { z-index: 1; }
 
 /* Trang 3: đẩy cả cụm dưới chữ Hỉ lên một chút */
-.p3 .page-in { padding-bottom: min(7vh, 4rem); }
+.p3 .page-in { padding-bottom: min(7svh, 4rem); }
 @media (max-height: 800px) { .p3 .page-in { padding-bottom: 0; } }

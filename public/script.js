@@ -15,6 +15,9 @@
     } catch {}
   }
   const $ = (s) => document.querySelector(s);
+  // Trình duyệt điện thoại co giãn thanh công cụ khi lướt làm chiều cao màn hình đổi liên tục; chỉ xử lý lại khi ĐỘ RỘNG đổi (xoay màn hình, đổi cỡ cửa sổ)
+  const onWidthChange = (fn, delay = 0) => { let w = innerWidth, t = null; addEventListener("resize", () => { if (innerWidth === w) return; w = innerWidth; clearTimeout(t); t = setTimeout(fn, delay); }); };
+  const heroOff = { v: false };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const names = `${esc(W.groom.name)} &amp; ${esc(W.bride.name)}`;
   // Vị trí ảnh (do editor lưu): "x% y%", không hợp lệ thì căn giữa
@@ -72,7 +75,7 @@
     window.__applyCoverFit = applyFit;
     applyFit();
     renderCover();
-    addEventListener("resize", () => { renderCover(); applyFit(); });
+    onWidthChange(() => { renderCover(); applyFit(); });
     // Khối chữ và đồng hồ chỉ được chiếm khoảng 30% chiều cao ảnh đang hiển thị; ảnh co nhỏ (màn hình thấp, xoay ngang) thì chữ thu nhỏ theo để không che hai người
     const inner = h.querySelector(".hero-inner");
     const fitText = () => {
@@ -84,7 +87,7 @@
       h.style.setProperty("--k", String(Math.max(0.5, Math.min(1, (0.3 * ih) / th)).toFixed(3)));
     };
     const refit = () => requestAnimationFrame(fitText);
-    addEventListener("resize", refit);
+    onWidthChange(refit);
     addEventListener("orientationchange", () => setTimeout(refit, 250));
     window.addEventListener("load", refit);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
@@ -113,8 +116,8 @@
       <div class="evflip" style="--d:${(i * 0.9).toFixed(1)}s">
         <div class="ev-float">
           <div class="ev-card" role="button" tabindex="0" aria-label="Thiệp sự kiện, chạm để lật xem ngày giờ và địa chỉ">
-            <div class="ev-face ev-front"><img src="${esc(c.front || c.back)}" alt="Thiệp sự kiện mặt trước" width="1400" height="930"></div>
-            <div class="ev-face ev-back"><img src="${esc(c.back || c.front)}" alt="Ngày giờ và địa chỉ" width="1400" height="930">${c.map ? `<a class="ev-map" href="${esc(c.map)}" target="_blank" rel="noopener" aria-label="Xem bản đồ Google Maps"></a>` : ""}</div>
+            <div class="ev-face ev-front"><img src="${esc(c.front || c.back)}" alt="Thiệp sự kiện mặt trước" width="1400" height="930" decoding="async" loading="lazy"></div>
+            <div class="ev-face ev-back"><img src="${esc(c.back || c.front)}" alt="Ngày giờ và địa chỉ" width="1400" height="930" decoding="async" loading="lazy">${c.map ? `<a class="ev-map" href="${esc(c.map)}" target="_blank" rel="noopener" aria-label="Xem bản đồ Google Maps"></a>` : ""}</div>
           </div>
         </div>
       </div>`;
@@ -291,7 +294,7 @@
     wrap.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
     zoomBtn.addEventListener("click", () => { if (idx >= 0) openLb(photos[idx], cv.getBoundingClientRect()); });
     let rt = null;
-    addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (idx >= 0) show(idx, true); }, 150); });
+    onWidthChange(() => { if (idx >= 0) show(idx, true); }, 150);
     label();
     load(0);
     // khi thấy trọn khung ảnh lần đầu thì tự "tô" ảnh đầu tiên
@@ -348,7 +351,7 @@
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const k = per(); if (k !== lastPer) { lastPer = k; if (pool.length) { render(); start2(); } } }, 120); }).observe(area);
     const start2 = () => {
       clearInterval(timer);
-      if (pool.length > per()) timer = setInterval(() => { box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 5000);
+      if (pool.length > per()) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 5000);
     };
     const start = () => {
       wrap.hidden = !pool.length;
@@ -396,7 +399,7 @@
     $("#cd-m").textContent = pad(Math.floor((diff % 3600) / 60));
     $("#cd-s").textContent = pad(Math.floor(diff % 60));
   }
-  tick(); setInterval(tick, 1000);
+  tick(); setInterval(() => { if (!heroOff.v) tick(); }, 1000);
 
   // Music
   const audio = $("#bgm"), mBtn = $("#musicBtn");
@@ -457,7 +460,7 @@
       (c) => `<path d='M16 36L14 30C8 30 4 26 5 21C2 18 3 13 7 12C6 7 11 4 14 7C15 3 17 3 18 7C21 4 26 7 25 12C29 13 30 18 27 21C28 26 24 30 18 30Z' fill='${c}' stroke='#5a3216' stroke-width='2.1' stroke-linejoin='round'/><path d='M16 34V12M16 22l-5-5M16 22l5-5' fill='none' stroke='#5a3216' stroke-width='1.5' stroke-linecap='round'/>`,
     ];
     const svg = (c, k) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'>${shapes[k](c)}</svg>`)}")`;
-    const n = innerWidth < 600 ? 9 : 14;
+    const n = innerWidth < 600 ? 6 : 12;
     for (let i = 0; i < n; i++) {
       const el = document.createElement("span");
       el.className = "leaf";
@@ -468,6 +471,17 @@
       el.appendChild(leaf);
       box.appendChild(el);
     }
+  })();
+
+  // Tạm dừng hoạt ảnh của phần nằm ngoài màn hình (lớp .off): giảm tải CPU/GPU khi lướt, nhất là trên điện thoại
+  (() => {
+    const secs = [...document.querySelectorAll("header.hero, main .page")];
+    if (!("IntersectionObserver" in window)) return;
+    const io3 = new IntersectionObserver((entries) => entries.forEach((en) => {
+      en.target.classList.toggle("off", !en.isIntersecting);
+      if (en.target.matches("header.hero")) heroOff.v = !en.isIntersecting;
+    }), { rootMargin: "120px 0px" });
+    secs.forEach((el) => io3.observe(el));
   })();
 
   // Reveal on scroll
