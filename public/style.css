@@ -509,4 +509,5 @@ body {
 .cover-stage::after { z-index: 1; }
 
 /* Trang 3: đẩy cả cụm dưới chữ Hỉ lên một chút */
-.p3 .page-in { padding-bottom: clamp(1rem, 11vh, 6rem); }
+.p3 .page-in { padding-bottom: min(7vh, 4rem); }
+@media (max-height: 800px) { .p3 .page-in { padding-bottom: 0; } }
