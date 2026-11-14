@@ -321,7 +321,7 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
   // Lời chúc của khách mời: lời chúc nhập trong editor + lời chúc được tick "Hiển thị" trong Google Sheet.
-  // Hiện ngẫu nhiên trên giấy note doodle, tự đổi sau mỗi 5 giây.
+  // Hiện ngẫu nhiên trên giấy note doodle, tự đổi sau mỗi 10 giây.
   (() => {
     const wrap = $("#wishesWrap"), box = $("#wishes");
     const clean = (l) => (l || []).filter((w) => w && String(w.text || "").trim()).map((w) => ({ name: String(w.name || "").trim(), text: String(w.text).trim() }));
@@ -365,7 +365,7 @@
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const k = per(); if (k !== lastPer) { lastPer = k; if (pool.length) { render(); start2(); } } }, 120); }).observe(area);
     const start2 = () => {
       clearInterval(timer);
-      if (pool.length > per()) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 5000);
+      if (pool.length > per()) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 10000);
     };
     const start = () => {
       wrap.hidden = !pool.length;
