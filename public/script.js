@@ -341,11 +341,15 @@
       return cols * Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap))));
     };
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
+    let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
     const render = () => {
       if (!pool.length) return;
       const k = Math.min(per(), pool.length), html = [];
       const used = new Set();
-      for (let t = 0; t < k; t++) {
+      const card = (w) => { const i = Math.floor(Math.random() * 20); return `<figure class="note in" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`; };
+      if (first >= 0 && pool[first]) { html.push(card(pool[first])); used.add(first); }
+      first = -1;
+      for (let t = html.length; t < k; t++) {
         if (pos >= order.length) shuffle();
         // không lặp lại cùng một lời chúc trong một lượt hiển thị
         let tries = 0;
@@ -371,6 +375,13 @@
       start2();
     };
     start();
+    // khách vừa gửi lời chúc: thêm vào và hiện ngay trên giấy note đầu tiên
+    window.__addWish = (name, text) => {
+      const w = clean([{ name, text }])[0]; if (!w) return;
+      pool.push(w); first = pool.length - 1;
+      wrap.hidden = false; lastPer = per();
+      shuffle(); box.classList.remove("out"); render(); start2();
+    };
     if (W.rsvpEndpoint && /^https?:\/\//.test(W.rsvpEndpoint)) {
       fetch(W.rsvpEndpoint).then((r) => r.json()).then((d) => { const extra = clean(d && d.wishes); if (extra.length) { pool = pool.concat(extra); start(); } }).catch(() => {});
     }
@@ -534,6 +545,7 @@
         try { localStorage.setItem("rsvp", JSON.stringify(data)); } catch {}
       }
       msg.textContent = `Cảm ơn ${data.name}! Chúng mình đã nhận được lời chúc của bạn.`;
+      if (window.__addWish && String(data.message || "").trim()) window.__addWish(data.name, data.message);
       e.target.reset();
     } catch {
       msg.textContent = "Có lỗi xảy ra, bạn vui lòng thử lại nhé.";

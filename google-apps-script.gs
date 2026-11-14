@@ -17,8 +17,8 @@
  * DÙNG CHUNG CHO HAI THIỆP: dán cùng một "URL ứng dụng web" vào editor của cả thiệp nhà trai lẫn nhà gái.
  * Cột "Nhà" ghi rõ khách gửi từ thiệp Nhà trai hay Nhà gái. Lời chúc đã tick hiện ở cả hai thiệp.
  *
- * DUYỆT LỜI CHÚC: trong trang tính "Phản hồi", tick vào ô cột "Hiển thị lời chúc"
- * của lời chúc nào thì lời chúc đó sẽ hiện trên thiệp (bỏ tick để ẩn).
+ * DUYỆT LỜI CHÚC: lời chúc mới gửi mặc định đã được tick ở cột "Hiển thị lời chúc" nên hiện luôn trên thiệp.
+ * Muốn ẩn lời chúc nào thì bỏ tick ô của lời chúc đó trong trang tính "Phản hồi".
  *
  * Khi sửa mã này, cần Triển khai > Quản lý triển khai > sửa phiên bản thành "Phiên bản mới"
  * để link cũ dùng mã mới.
@@ -68,7 +68,7 @@ function doPost(e) {
       p.attend === "no" ? "Không đến" : "Sẽ đến",
       clean_(p.guests, 10),
       clean_(p.message, 500),
-      false,
+      true, // lời chúc mặc định được tick hiển thị; bỏ tick để ẩn
       p.side === "Nhà gái" ? "Nhà gái" : "Nhà trai",
     ]);
     sh.getRange(sh.getLastRow(), 7).insertCheckboxes();
