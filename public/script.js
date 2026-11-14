@@ -590,3 +590,16 @@
   };
   addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(snap, 2000); }, { passive: true });
 })();
+
+// Nút chỉ xuống ở ảnh bìa: biến mất ngay khi khách bắt đầu lướt
+(() => {
+  const el = document.getElementById("scrollHint");
+  if (!el) return;
+  const hide = () => { el.classList.add("gone"); ["wheel", "touchmove", "keydown", "scroll"].forEach((n) => removeEventListener(n, onAct)); };
+  const onAct = (e) => {
+    if (e.type === "keydown" && !["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Home", "End"].includes(e.key)) return;
+    if (e.type === "scroll" && window.scrollY < 2) return;
+    hide();
+  };
+  ["wheel", "touchmove", "keydown", "scroll"].forEach((n) => addEventListener(n, onAct, { passive: true }));
+})();
