@@ -15,8 +15,8 @@
     const dark = lum(hslToRgb(h, s, l)) < 0.3;
     const hsl = (hh, ss, ll) => `hsl(${Math.round(hh)} ${Math.round(ss)}% ${Math.round(ll)}%)`;
     const v = { "--th-bg": hsl(h, s, l), "--th-bg2": hsl(h, s, Math.min(l + 11, 94)), "--th-bg3": hsl(h, s, Math.max(l - 9, 4)) };
-    if (dark) Object.assign(v, { "--th-text": "#fbefd5", "--th-title": "#f8e6b8", "--th-accent": "#f2c46d", "--th-soft": "#ebcb8a", "--th-quote": "#f3dcae", "--th-hon": "#d4b08c", "--th-panel": "rgba(20, 0, 4, .17)", "--th-stroke": "#4a2a14", "--th-img": 'url("images/paper-dark.webp")', "--th-bm": "normal" });
-    else Object.assign(v, { "--th-text": hsl(h, 45, 14), "--th-title": hsl(h, 60, 15), "--th-accent": hsl(h, 70, 21), "--th-soft": hsl(h, 38, 27), "--th-quote": hsl(h, 45, 16), "--th-hon": hsl(h, 28, 33), "--th-panel": "rgba(255, 255, 255, .3)", "--th-stroke": "#fff6e2", "--th-img": 'url("images/paper.webp")', "--th-bm": "multiply" });
+    if (dark) Object.assign(v, { "--th-text": "#fbefd5", "--th-title": "#f8e6b8", "--th-accent": "#f2c46d", "--th-soft": "#ebcb8a", "--th-quote": "#f3dcae", "--th-hon": "#d4b08c", "--th-mix": "#fff", "--th-panel": "rgba(20, 0, 4, .17)", "--th-stroke": "#4a2a14", "--th-img": 'url("images/paper-dark.webp")', "--th-bm": "normal" });
+    else Object.assign(v, { "--th-text": hsl(h, 45, 14), "--th-title": hsl(h, 60, 15), "--th-accent": hsl(h, 70, 21), "--th-soft": hsl(h, 38, 27), "--th-quote": hsl(h, 45, 16), "--th-hon": hsl(h, 28, 33), "--th-mix": "#000", "--th-panel": "rgba(255, 255, 255, .3)", "--th-stroke": "#fff6e2", "--th-img": 'url("images/paper.webp")', "--th-bm": "multiply" });
     v.dark = dark;
     return v;
   }
