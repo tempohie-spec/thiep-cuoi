@@ -532,9 +532,14 @@
   })();
 
   // RSVP
+  // chọn "không đến được" thì ô số người bị khóa (không khả dụng)
+  const syncGuests = () => { const f = $("#rsvp"); if (!f) return; const no = f.attend.value === "no"; f.guests.disabled = no; f.guests.closest(".rsvp-row").classList.toggle("no-guests", no); };
+  $("#rsvp").attend.addEventListener("change", syncGuests);
+  syncGuests();
   $("#rsvp").addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
+    if (data.attend === "no") data.guests = "0"; // không đến thì không có số người
     data.side = window.SIDE === "bride" ? "Nhà gái" : "Nhà trai";
     const msg = $("#rsvpMsg");
     msg.textContent = "Đang gửi...";
@@ -546,7 +551,7 @@
       }
       msg.textContent = `Cảm ơn ${data.name}! Chúng mình đã nhận được lời chúc của bạn.`;
       if (window.__addWish && String(data.message || "").trim()) window.__addWish(data.name, data.message);
-      e.target.reset();
+      e.target.reset(); syncGuests();
     } catch {
       msg.textContent = "Có lỗi xảy ra, bạn vui lòng thử lại nhé.";
     }

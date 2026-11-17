@@ -564,3 +564,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .scroll-hint svg { display: block; width: 100%; transform: rotate(-16deg); }
 .scroll-hint.gone { opacity: 0; animation: none; visibility: hidden; }
 @keyframes hintSwipe { 0% { transform: translateY(8px); opacity: 0; } 25% { opacity: .6; } 100% { transform: translateY(-12px); opacity: 0; } }
+
+/* ô số người không khả dụng khi chọn không đến */
+.rsvp select:disabled { opacity: .45; cursor: not-allowed; }
