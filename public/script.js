@@ -341,8 +341,8 @@
       return { cols, rows: Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap)))) };
     };
     const per = () => { const g = grid(); return g.cols * g.rows; };
-    // lời chúc dài (hơn 44 ký tự) chiếm rộng 2 ô để vẫn hiện đủ trên giấy note
-    const WIDE = 44;
+    // lời chúc dài xuống dòng trong giấy note (kích thước giấy note giữ nguyên), chữ tự co nếu cần
+    const WIDE = Infinity;
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
     const render = () => {
@@ -370,11 +370,11 @@
       box.innerHTML = out.map((r) => r.join("")).join("");
       fitNotes();
     };
-    // chữ trên giấy note tự co lại một chút nếu vẫn chưa hiện đủ (màn hình nhỏ), tối thiểu 9px
+    // chữ trên giấy note tự co lại nếu lời chúc dài chưa hiện đủ, tối thiểu 8px
     const fitNotes = () => {
       box.querySelectorAll(".note p").forEach((p) => {
         p.style.fontSize = ""; let f = parseFloat(getComputedStyle(p).fontSize);
-        while (p.scrollHeight > p.clientHeight + 1 && f > 9) { f -= .5; p.style.fontSize = f + "px"; }
+        while (p.scrollHeight > p.clientHeight + 1 && f > 8) { f -= .5; p.style.fontSize = f + "px"; }
       });
     };
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitNotes());
