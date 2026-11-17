@@ -569,7 +569,8 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .rsvp select:disabled { opacity: .45; cursor: not-allowed; }
 
 /* lời chúc dài: giấy note cao gấp đôi, chữ xuống dòng không cắt (script.js tự co cỡ chữ nếu cần) */
-.wish-grid .note.tall { height: auto; }
+.wish-grid .note.tall { height: auto; justify-content: flex-start; gap: .45rem; }
+.wish-grid .note.tall p { flex: 0 1 auto; }
 .wish-grid .note.probe p { margin: 0; }
 .wish-grid .note p { display: block; -webkit-line-clamp: unset; flex: 1 1 auto; min-height: 0; overflow: hidden; line-height: 1.25; }
 

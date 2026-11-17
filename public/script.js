@@ -341,7 +341,7 @@
       return { cols, rows: Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap)))) };
     };
     const per = () => { const g = grid(); return g.cols * g.rows; };
-    // lời chúc dài quá 2 dòng của giấy note nhỏ thì hiện trên giấy note lớn (cao gấp đôi, cùng chiều rộng)
+    // lời chúc dài quá 3 dòng của giấy note nhỏ thì hiện trên giấy note lớn (cao gấp đôi, cùng chiều rộng)
     const tallCache = new Map();
     const needsTall = (text, cols) => {
       const cw = Math.max(80, Math.floor((box.clientWidth - (cols - 1) * (parseFloat(getComputedStyle(box).columnGap) || 12)) / cols));
@@ -356,7 +356,7 @@
       const lh = parseFloat(getComputedStyle(p).lineHeight) || parseFloat(getComputedStyle(p).fontSize) * 1.3;
       const lines = Math.round(p.getBoundingClientRect().height / lh);
       f.remove();
-      const r = lines > 2; tallCache.set(key, r); return r;
+      const r = lines > 3; tallCache.set(key, r); return r;
     };
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
