@@ -330,7 +330,7 @@
     // Số tờ note tính theo chỗ thật còn trống trong khung lời chúc (chiều cao trang 6 cố định theo màn hình nhỏ nhất, không đổi khi thanh công cụ trình duyệt co giãn):
     // máy tính tối đa 3 cột x 2 hàng, điện thoại 2 cột x tối đa 3 hàng
     const area = wrap;
-    const per = () => {
+    const grid = () => {
       const cols = innerWidth >= 760 ? 3 : 2, maxRows = innerWidth >= 760 ? 2 : 3;
       const probe = document.createElement("div");
       probe.style.cssText = "height:var(--note-h);visibility:hidden;position:absolute;left:0;right:0";
@@ -338,34 +338,52 @@
       const nh = probe.offsetHeight || 96; probe.remove();
       const gap = parseFloat(getComputedStyle(box).rowGap) || 16;
       const avail = area.clientHeight - 14;
-      return cols * Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap))));
+      return { cols, rows: Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap)))) };
     };
+    const per = () => { const g = grid(); return g.cols * g.rows; };
+    // lời chúc dài (hơn 44 ký tự) chiếm rộng 2 ô để vẫn hiện đủ trên giấy note
+    const WIDE = 44;
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
     const render = () => {
       if (!pool.length) return;
-      const k = Math.min(per(), pool.length), html = [];
-      const used = new Set();
-      const card = (w) => { const i = Math.floor(Math.random() * 20); return `<figure class="note in" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`; };
-      if (first >= 0 && pool[first]) { html.push(card(pool[first])); used.add(first); }
+      const { cols, rows } = grid();
+      const cap = Array(rows).fill(cols), slots = [];
+      const card = (w, wide) => { const i = Math.floor(Math.random() * 20); return `<figure class="note in${wide ? " wide" : ""}" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`; };
+      const used = new Set(), out = Array.from({ length: rows }, () => []);
+      const place = (idx) => {
+        const w = pool[idx], wide = w.text.length > WIDE && cols >= 2, need = wide ? 2 : 1;
+        const r = cap.findIndex((c) => c >= need);
+        if (r < 0) return false;
+        cap[r] -= need; out[r].push(card(w, wide)); used.add(idx); return true;
+      };
+      if (first >= 0 && pool[first]) place(first);
       first = -1;
-      for (let t = html.length; t < k; t++) {
+      // lấy lần lượt theo thứ tự xáo trộn, bỏ qua lời chúc không còn chỗ, không lặp lại trong một lượt
+      let guard = 0;
+      while (cap.some((c) => c > 0) && used.size < pool.length && guard++ < pool.length * 3) {
         if (pos >= order.length) shuffle();
-        // không lặp lại cùng một lời chúc trong một lượt hiển thị
-        let tries = 0;
-        while (used.has(order[pos]) && tries++ < order.length) { if (++pos >= order.length) shuffle(); }
-        used.add(order[pos]);
-        const w = pool[order[pos++]], i = Math.floor(Math.random() * 20);
-        html.push(`<figure class="note in" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`);
+        const idx = order[pos++];
+        if (used.has(idx)) continue;
+        place(idx);
       }
-      box.innerHTML = html.join("");
+      box.innerHTML = out.map((r) => r.join("")).join("");
+      fitNotes();
     };
+    // chữ trên giấy note tự co lại một chút nếu vẫn chưa hiện đủ (màn hình nhỏ), tối thiểu 9px
+    const fitNotes = () => {
+      box.querySelectorAll(".note p").forEach((p) => {
+        p.style.fontSize = ""; let f = parseFloat(getComputedStyle(p).fontSize);
+        while (p.scrollHeight > p.clientHeight + 1 && f > 9) { f -= .5; p.style.fontSize = f + "px"; }
+      });
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitNotes());
     // khi khung lời chúc đổi kích thước (xoay màn hình, thanh công cụ co giãn): chỉ vẽ lại khi số tờ thật sự đổi
     let lastPer = 0, rt = null;
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const k = per(); if (k !== lastPer) { lastPer = k; if (pool.length) { render(); start2(); } } }, 120); }).observe(area);
     const start2 = () => {
       clearInterval(timer);
-      if (pool.length > per()) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 10000);
+      if (pool.length > per() || pool.some((w) => w.text.length > WIDE)) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 10000);
     };
     const start = () => {
       wrap.hidden = !pool.length;
@@ -523,11 +541,11 @@
   }), { threshold: 0.15 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-  // Đếm ký tự lời chúc (tối đa 50 để hiện trọn trên giấy note ở mọi màn hình)
+  // Đếm ký tự lời chúc (tối đa 100; lời chúc dài tự chiếm rộng hơn để hiện đủ trên giấy note)
   (() => {
     const ta = document.querySelector("#rsvp [name=message]"), cnt = $("#msgCount");
     if (!ta || !cnt) return;
-    const upd = () => { cnt.textContent = `${ta.value.length} / 50 ký tự`; cnt.classList.toggle("full", ta.value.length >= 50); };
+    const upd = () => { cnt.textContent = `${ta.value.length} / 100 ký tự`; cnt.classList.toggle("full", ta.value.length >= 100); };
     ta.addEventListener("input", upd); $("#rsvp").addEventListener("reset", () => setTimeout(upd));
   })();
 

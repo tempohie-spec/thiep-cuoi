@@ -567,3 +567,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 
 /* ô số người không khả dụng khi chọn không đến */
 .rsvp select:disabled { opacity: .45; cursor: not-allowed; }
+
+/* lời chúc dài chiếm 2 ô để hiện đủ chữ */
+.wish-grid .note.wide { grid-column: span 2; }
