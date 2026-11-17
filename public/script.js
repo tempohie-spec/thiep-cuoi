@@ -331,7 +331,7 @@
     // máy tính tối đa 3 cột x 2 hàng, điện thoại 2 cột x tối đa 3 hàng
     const area = wrap;
     const grid = () => {
-      const cols = innerWidth >= 760 ? 3 : 2, maxRows = innerWidth >= 760 ? 2 : 3;
+      const cols = innerWidth >= 760 ? 3 : 2, maxRows = innerWidth >= 760 ? 4 : 4;
       const probe = document.createElement("div");
       probe.style.cssText = "height:var(--note-h);visibility:hidden;position:absolute;left:0;right:0";
       box.appendChild(probe);
@@ -341,33 +341,51 @@
       return { cols, rows: Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap)))) };
     };
     const per = () => { const g = grid(); return g.cols * g.rows; };
-    // lời chúc dài hơn 45 ký tự (không đủ một giấy note thường) hiện trên giấy note dài gấp đôi; chữ tự co nếu vẫn chưa đủ
-    const WIDE = 45;
+    // lời chúc dài quá 2 dòng của giấy note nhỏ thì hiện trên giấy note lớn (cao gấp đôi, cùng chiều rộng)
+    const tallCache = new Map();
+    const needsTall = (text, cols) => {
+      const cw = Math.max(80, Math.floor((box.clientWidth - (cols - 1) * (parseFloat(getComputedStyle(box).columnGap) || 12)) / cols));
+      const key = cw + "|" + text;
+      if (tallCache.has(key)) return tallCache.get(key);
+      const f = document.createElement("figure");
+      f.className = "note probe";
+      f.style.cssText = `position:absolute;visibility:hidden;left:0;top:0;width:${cw}px;height:auto`;
+      f.innerHTML = `<p style="display:block;-webkit-line-clamp:unset;flex:none;overflow:visible"></p>`;
+      const p = f.firstChild; p.textContent = text;
+      box.appendChild(f);
+      const lh = parseFloat(getComputedStyle(p).lineHeight) || parseFloat(getComputedStyle(p).fontSize) * 1.3;
+      const lines = Math.round(p.getBoundingClientRect().height / lh);
+      f.remove();
+      const r = lines > 2; tallCache.set(key, r); return r;
+    };
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
     const render = () => {
       if (!pool.length) return;
       const { cols, rows } = grid();
-      const cap = Array(rows).fill(cols), slots = [];
-      const card = (w, wide) => { const i = Math.floor(Math.random() * 20); return `<figure class="note in${wide ? " wide" : ""}" style="--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`; };
-      const used = new Set(), out = Array.from({ length: rows }, () => []);
+      const occ = Array.from({ length: rows }, () => Array(cols).fill(false)), out = [];
+      const card = (w, tall, r, c) => { const i = Math.floor(Math.random() * 20); return `<figure class="note in${tall ? " tall" : ""}" style="grid-column:${c + 1};grid-row:${r + 1} / span ${tall ? 2 : 1};--nc:${colors[i % colors.length]};--nr:${rots[i % rots.length]}deg"><span class="note-mark" aria-hidden="true">${marks[i % marks.length]}</span><p>${esc(w.text)}</p>${w.name ? `<cite>${esc(w.name)}</cite>` : ""}</figure>`; };
+      const used = new Set();
       const place = (idx) => {
-        const w = pool[idx], wide = w.text.length > WIDE && cols >= 2, need = wide ? 2 : 1;
-        const r = cap.findIndex((c) => c >= need);
-        if (r < 0) return false;
-        cap[r] -= need; out[r].push(card(w, wide)); used.add(idx); return true;
+        const w = pool[idx], tall = needsTall(w.text, cols);
+        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+          if (occ[r][c] || (tall && (r + 1 >= rows || occ[r + 1][c]))) continue;
+          occ[r][c] = true; if (tall) occ[r + 1][c] = true;
+          out.push(card(w, tall, r, c)); used.add(idx); return true;
+        }
+        return false;
       };
       if (first >= 0 && pool[first]) place(first);
       first = -1;
       // lấy lần lượt theo thứ tự xáo trộn, bỏ qua lời chúc không còn chỗ, không lặp lại trong một lượt
       let guard = 0;
-      while (cap.some((c) => c > 0) && used.size < pool.length && guard++ < pool.length * 3) {
+      while (occ.some((row) => row.some((x) => !x)) && used.size < pool.length && guard++ < pool.length * 3) {
         if (pos >= order.length) shuffle();
         const idx = order[pos++];
         if (used.has(idx)) continue;
         place(idx);
       }
-      box.innerHTML = out.map((r) => r.join("")).join("");
+      box.innerHTML = out.join("");
       fitNotes();
     };
     // chữ trên giấy note tự co lại nếu lời chúc dài chưa hiện đủ, tối thiểu 8px
@@ -383,7 +401,7 @@
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { const k = per(); if (k !== lastPer) { lastPer = k; if (pool.length) { render(); start2(); } } }, 120); }).observe(area);
     const start2 = () => {
       clearInterval(timer);
-      if (pool.length > per() || pool.some((w) => w.text.length > WIDE)) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 10000);
+      if (pool.length > per() || pool.some((w) => w.text.length > 40)) timer = setInterval(() => { if (document.getElementById("p6").classList.contains("off")) return; box.classList.add("out"); setTimeout(() => { box.classList.remove("out"); render(); }, 260); }, 10000);
     };
     const start = () => {
       wrap.hidden = !pool.length;
