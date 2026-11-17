@@ -341,8 +341,8 @@
       return { cols, rows: Math.max(1, Math.min(maxRows, Math.floor((avail + gap) / (nh + gap)))) };
     };
     const per = () => { const g = grid(); return g.cols * g.rows; };
-    // lời chúc dài xuống dòng trong giấy note (kích thước giấy note giữ nguyên), chữ tự co nếu cần
-    const WIDE = Infinity;
+    // lời chúc dài hơn 45 ký tự (không đủ một giấy note thường) hiện trên giấy note dài gấp đôi; chữ tự co nếu vẫn chưa đủ
+    const WIDE = 45;
     const shuffle = () => { order = pool.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } pos = 0; };
     let first = -1; // lời chúc vừa gửi: ưu tiên hiện ngay trên giấy note
     const render = () => {
@@ -541,11 +541,11 @@
   }), { threshold: 0.15 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-  // Đếm ký tự lời chúc (tối đa 100; lời chúc dài tự chiếm rộng hơn để hiện đủ trên giấy note)
+  // Đếm ký tự lời chúc (tối đa 200; lời chúc dài hiện trên giấy note dài gấp đôi)
   (() => {
     const ta = document.querySelector("#rsvp [name=message]"), cnt = $("#msgCount");
     if (!ta || !cnt) return;
-    const upd = () => { cnt.textContent = `${ta.value.length} / 100 ký tự`; cnt.classList.toggle("full", ta.value.length >= 100); };
+    const upd = () => { cnt.textContent = `${ta.value.length} / 200 ký tự`; cnt.classList.toggle("full", ta.value.length >= 200); };
     ta.addEventListener("input", upd); $("#rsvp").addEventListener("reset", () => setTimeout(upd));
   })();
 
