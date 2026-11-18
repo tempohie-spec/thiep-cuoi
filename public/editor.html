@@ -205,7 +205,7 @@
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link), album hiện từng ảnh một theo đúng thứ tự các dòng. Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
     <label>Bìa album kiểu tạp chí</label>
     <select data-k="albumCover"><option value="doodle">Tạp chí doodle</option><option value="classic">Tạp chí cổ điển</option><option value="off">Tắt bìa</option></select>
-    <label>Ảnh bìa album (ảnh riêng cho bìa, để trống thì dùng ảnh đầu tiên của album). Nên dùng ảnh <span class="sz">1200 x 1000px (hơi ngang, tỉ lệ 6:5)</span></label>
+    <label>Ảnh bìa album (ảnh riêng cho bìa, để trống thì dùng ảnh đầu tiên của album). Nên dùng ảnh <span class="sz">1250 x 1000px (hơi ngang, tỉ lệ 5:4)</span></label>
     <input data-k="albumCoverImg" placeholder="Đường dẫn ảnh bìa, hoặc tải ảnh lên bên dưới">
     <input type="file" accept="image/*" id="albumCoverUp">
     <div class="thumbs" id="albumCoverThumb"></div>
@@ -494,7 +494,7 @@
     posModal.hidden = true; ps = null;
     renderThumbs(); changed(); toast("Đã lưu vị trí ảnh");
   });
-  const COVER_ASPECT = 1.2;
+  const COVER_ASPECT = 1.25;
   function renderCoverThumb() {
     const u = cfg.albumCoverImg, box = $("#albumCoverThumb");
     box.innerHTML = u ? `<button type="button" class="thumb" data-cover="1" title="Bấm để chỉnh vị trí và phóng to ảnh bìa" style="width:150px;height:${Math.round(150 / COVER_ASPECT)}px;cursor:pointer"><img src="${esc(u)}" alt="" style="object-position:${posCss(u)};transform-origin:${posCss(u)};transform:scale(${zoomOf(u)})"><span class="del" data-cclear="1" title="Xóa ảnh bìa">&times;</span></button>` : "";

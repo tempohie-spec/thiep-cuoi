@@ -658,4 +658,40 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .mag-classic .mg-foot .l b { font-size: 3.8cqw; }
 .mag-classic .mg-bar { width: 15cqw; height: 8cqw; }
 /* trang ảnh lật như giở tạp chí */
-.reel-card .pg { position: absolute; z-index: 3; transform-origin: 0 50%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 6px 9px 5px 8px; box-shadow: 0 0 14px rgba(40, 20, 0, .35); pointer-events: none; }
+.reel-card .pg-unused { position: absolute; z-index: 3; transform-origin: 0 50%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 6px 9px 5px 8px; box-shadow: 0 0 14px rgba(40, 20, 0, .35); pointer-events: none; }
+
+/* ===== Album tạp chí: bố cục bìa doodle theo ý bạn, trang ảnh là từng tờ giấy ===== */
+.reel.mag-mode .reel-card { visibility: hidden; }
+.mag { z-index: 8; }
+.mag .mg-nav > *, .mag .mg-ph > * { position: static; }
+.mag-doodle .mg-photo { top: 27%; height: 50%; }
+.mag-doodle .mg-bub.b1 { left: 4cqw; top: 19.5%; bottom: auto; transform: rotate(-6deg); background: #fde1ec; font-size: 3.2cqw; padding: 1.4cqw 2.6cqw; z-index: 4; }
+.mag-doodle .mg-date { right: 4cqw; top: 18.5%; width: 14.5cqw; height: 14.5cqw; font-size: 2.3cqw; z-index: 4; }
+.mag-doodle .mg-date b { font-size: 4cqw; }
+.mag-doodle .mg-bub.b3 { left: auto; right: 8cqw; top: 79%; bottom: auto; transform: rotate(-3deg); font-size: 3.4cqw; background: #fff1b8; }
+.mag-doodle .mg-price { left: 8cqw; bottom: 4.5%; font-size: 2.9cqw; font-weight: 700; max-width: 59cqw; line-height: 1.25; }
+.mag-doodle .mg-bar { right: 8cqw; bottom: 3.5%; width: 15cqw; height: 9.5cqw; }
+.mag-classic .mg-photo { top: 27.5%; height: 51%; }
+
+/* trang ảnh doodle */
+.mag-page.mag-doodle .mg-ph { left: 7cqw; right: 7cqw; top: 3.2%; display: flex; justify-content: space-between; align-items: baseline; }
+.mag-page.mag-doodle .mg-pname { font-family: "Dancing Script", var(--font), cursive; font-weight: 700; font-size: 7cqw; color: #d9534f; -webkit-text-stroke: 1px #4a2a14; paint-order: stroke fill; text-shadow: .5cqw .5cqw 0 #f7c9a8; white-space: nowrap; }
+.mag-page.mag-doodle .mg-pno { font-size: 2.8cqw; font-weight: 700; letter-spacing: .05em; }
+.mag-page.mag-doodle .mg-photo { left: 7cqw; right: 7cqw; top: 11.5%; height: 73%; }
+.mag-page .mg-nav { left: 7cqw; right: 7cqw; bottom: 2.8%; height: 9cqw; display: flex; align-items: center; justify-content: center; gap: 4cqw; font-size: 3.4cqw; font-weight: 700; }
+.mag-page .mg-nav button { position: relative; width: 9cqw; height: 9cqw; padding: 0; border-radius: 50%; cursor: pointer; font-family: inherit; }
+.mag-page.mag-doodle .mg-nav button { border: 2px solid #4a2a14; background: #f7d98b; box-shadow: 2px 2px 0 #4a2a14; color: #4a2a14; }
+.mag-page .mg-nav button::before { content: ""; position: absolute; left: 50%; top: 50%; width: 2.3cqw; height: 2.3cqw; border: solid currentColor; border-width: 0 0 2.6px 2.6px; }
+.mag-page .mg-nav button[data-mgnav="-1"]::before { transform: translate(-30%, -50%) rotate(45deg); }
+.mag-page .mg-nav button[data-mgnav="1"]::before { transform: translate(-70%, -50%) rotate(-135deg); }
+.mag-page .mg-zoom { right: 7cqw; bottom: 3.4%; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 5cqw; line-height: 1; display: flex; align-items: center; justify-content: center; z-index: 7; }
+.mag-page.mag-doodle .mg-zoom { border: 2px solid #4a2a14; background: #f7d98b; box-shadow: 2px 2px 0 #4a2a14; color: #4a2a14; }
+
+/* trang ảnh cổ điển */
+.mag-page.mag-classic .mg-ph { left: 8cqw; right: 8cqw; top: 4.6%; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #8a6a33; padding-bottom: .9cqw; }
+.mag-page.mag-classic .mg-pname { font-family: "Playfair Display", serif; font-style: italic; font-weight: 700; font-size: 4.4cqw; }
+.mag-page.mag-classic .mg-pno { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 3.3cqw; color: #5a4426; }
+.mag-page.mag-classic .mg-photo { left: 8cqw; right: 8cqw; top: 12%; height: 72%; }
+.mag-page.mag-classic .mg-nav { font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600; font-size: 3.8cqw; color: #5a4426; bottom: 3.8%; z-index: 7; }
+.mag-page.mag-classic .mg-nav button { background: none; border: 0; color: #8b2d2d; width: 8cqw; height: 8cqw; }
+.mag-page.mag-classic .mg-zoom { background: none; border: 1px solid #8a6a33; color: #8b2d2d; font-family: "Playfair Display", serif; bottom: 4.2%; }
