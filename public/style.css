@@ -172,8 +172,6 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .reel-frame path { fill: none; stroke: #4a2a14; stroke-width: 3; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: 0; animation: boil .75s steps(1) infinite; }
 .reel-frame .b2 { animation-delay: -.25s; } .reel-frame .b3 { animation-delay: -.5s; }
 @keyframes boil { 0% { opacity: 1; } 33.4%, 100% { opacity: 0; } }
-.reel-card::before { content: ""; position: absolute; z-index: 3; top: -3.5%; left: 50%; width: 34%; height: 7%; transform: translateX(-50%) rotate(-3deg); background: #f7c9a8; opacity: .92;
-  clip-path: polygon(0 0, 100% 0, 97% 25%, 100% 50%, 97% 75%, 100% 100%, 0 100%, 3% 75%, 0 50%, 3% 25%); }
 .zoom { position: absolute; z-index: 4; right: 6%; bottom: 3.2%; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #4a2a14; cursor: pointer; background: #f7d98b; box-shadow: 2px 2px 0 #4a2a14; }
 .zoom::before, .zoom::after { content: ""; position: absolute; left: 50%; top: 50%; background: #4a2a14; transform: translate(-50%, -50%); border-radius: 2px; }
 .zoom::before { width: 13px; height: 2.6px; } .zoom::after { width: 2.6px; height: 13px; }
@@ -609,7 +607,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .mag-doodle .mg-issue { display: flex; justify-content: space-between; padding: 0 4.1cqw; font-size: 2.8cqw; font-weight: 700; letter-spacing: .05em; }
 .mag-doodle .mg-mast { display: block; font-family: "Dancing Script", var(--font), cursive; font-weight: 700; font-size: 14.7cqw; line-height: 1; margin-top: .6cqw; color: #d9534f; -webkit-text-stroke: 1.6px #4a2a14; paint-order: stroke fill; text-shadow: .9cqw .9cqw 0 #f7c9a8; white-space: nowrap; }
 .mag-doodle .mg-sub { display: block; font-size: 2.9cqw; font-weight: 700; letter-spacing: .18em; margin-top: .6cqw; }
-.mag-doodle .mg-photo { left: 10cqw; right: 10cqw; top: 23.3%; height: 55.8%; border: 3px solid #4a2a14; border-radius: 10px 14px 9px 13px; box-shadow: 3px 4px 0 #4a2a14; }
+.mag-doodle .mg-photo { left: 8cqw; right: 8cqw; top: 22%; height: 53%; border: 3px solid #4a2a14; border-radius: 10px 14px 9px 13px; box-shadow: 3px 4px 0 #4a2a14; }
 .mag-doodle .mg-tape { width: 18.8cqw; height: 5.3cqw; background: rgba(247, 201, 168, .9); top: 21.7%; }
 .mag-doodle .mg-tape.t1 { left: 7.6cqw; transform: rotate(-24deg); }
 .mag-doodle .mg-tape.t2 { right: 7.6cqw; transform: rotate(24deg); }
@@ -648,3 +646,16 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .mag-classic .mg-foot .l { position: static; font-family: "Playfair Display", serif; font-size: 2.8cqw; letter-spacing: .18em; text-transform: uppercase; line-height: 1.5; }
 .mag-classic .mg-foot .l b { display: block; font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600; font-size: 4.1cqw; letter-spacing: 0; text-transform: none; color: #8b2d2d; }
 .mag-classic .mg-bar { position: static; width: 17.6cqw; height: 10cqw; background: #fff; padding: .9cqw; border: 1px solid #8a6a33; }
+
+/* bìa tạp chí: bố cục thoáng, không đặt hình hay chữ đè lên ảnh */
+.mag-doodle .mg-bub.b3 { left: 8cqw; bottom: 6%; top: auto; transform: rotate(-3deg); font-size: 4cqw; background: #fff1b8; }
+.mag-doodle .mg-bar { bottom: 5%; right: 8cqw; }
+.mag-classic .mg-photo { left: 8cqw; right: 8cqw; top: 27.5%; height: 52%; }
+.mag-classic .mg-line { top: 80.8%; font-size: 5.8cqw; }
+.mag-classic .mg-line small { font-size: 3.4cqw; margin-top: .4cqw; }
+.mag-classic .mg-foot { bottom: 3.8%; left: 8cqw; right: 8cqw; }
+.mag-classic .mg-foot .l { font-size: 0; }
+.mag-classic .mg-foot .l b { font-size: 3.8cqw; }
+.mag-classic .mg-bar { width: 15cqw; height: 8cqw; }
+/* trang ảnh lật như giở tạp chí */
+.reel-card .pg { position: absolute; z-index: 3; transform-origin: 0 50%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 6px 9px 5px 8px; box-shadow: 0 0 14px rgba(40, 20, 0, .35); pointer-events: none; }

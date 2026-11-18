@@ -212,24 +212,20 @@
       const dt = new Date(W.date), parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).formatToParts(dt).map((p) => [p.type, p.value]));
       const dm = `${parts.day}.${parts.month}`, yr = parts.year, mo = +parts.month;
       const season = mo >= 3 && mo <= 5 ? "Xuân" : mo >= 6 && mo <= 8 ? "Hè" : mo >= 9 && mo <= 11 ? "Thu" : "Đông";
-      const p0 = photos[0], pp = posOf(p0), z = zoomOf(p0);
+      const p0 = W.albumCoverImg || photos[0], pp = posOf(p0), z = zoomOf(p0);
       const img = `<img src="${esc(p0)}" alt="" style="object-position:${pp};transform-origin:${pp};transform:scale(${z})">`;
       const bars = [100, 80, 100, 60, 100, 80, 100, 70, 100, 100].map((hh) => `<i style="height:${hh}%"></i>`).join("");
       mag.className = "mag mag-" + magStyle;
       mag.setAttribute("role", "button"); mag.setAttribute("aria-label", "Bìa album, chạm để lật trang");
       mag.innerHTML = magStyle === "doodle"
         ? `<div class="mg-top"><div class="mg-issue"><span>SỐ 01 · ALBUM CƯỚI</span><span>${dm}.${yr}</span></div><div class="mg-mast">${names}</div><div class="mg-sub">WEDDING MAGAZINE</div></div>
-           <i class="mg-tape t1"></i><i class="mg-tape t2"></i><div class="mg-photo">${img}</div>
-           <div class="mg-date"><span>SỐ</span><b>01</b><span>ĐẶC BIỆT</span></div>
-           <div class="mg-bub b1">Hai trái tim,<br>một hành trình!</div><div class="mg-bub b2">Bên trong:<br>nụ cười &amp; nước mắt</div><div class="mg-bub b3">Chạm để<br>lật trang</div>
-           <span class="mg-star s1">✦</span><span class="mg-star s2">✦</span>
-           <div class="mg-price">Giá bán: vô giá<br>(chỉ đổi bằng một lời chúc)</div><div class="mg-bar">${bars}</div>`
+           <div class="mg-photo">${img}</div>
+           <div class="mg-bub b3">Chạm để lật trang</div><div class="mg-bar">${bars}</div>`
         : `<div class="mg-spine"></div><div class="mg-frame"></div>
            <div class="mg-top"><div class="mg-meta"><span>Vol. I · No. 1</span><span>Mùa ${season} ${yr}</span></div><div class="mg-mast">${names}</div><div class="mg-rule"></div><div class="mg-tag">Tạp chí đặc biệt về một mùa cưới</div></div>
            <div class="mg-photo">${img}</div>
-           <div class="mg-badge"><span>Số đặc biệt</span><b>${dm}</b><span>${yr}</span></div>
            <div class="mg-line">Hai trái tim, một hành trình<small>Câu chuyện tình yêu qua từng khung hình</small></div>
-           <div class="mg-foot"><div class="l">Album ảnh cưới<b>Chạm để lật trang</b></div><div class="mg-bar">${bars}</div></div>`;
+           <div class="mg-foot"><div class="l"><b>Chạm để lật trang</b></div><div class="mg-bar">${bars}</div></div>`;
       if (magStyle === "classic") mag.querySelector(".mg-mast").innerHTML = names.replace("&amp;", "<em>&amp;</em>");
       mag.hidden = false; coverOn = true;
       $("#reel").classList.add("has-cover");
@@ -300,7 +296,22 @@
     };
     const label = () => { countEl.textContent = idx < 0 ? `${photos.length} ảnh` : `Ảnh ${idx + 1} / ${photos.length}`; };
 
-    async function show(i, instant) {
+    let pageEl = null;
+    // lật trang như giở tạp chí (dùng khi có bìa tạp chí): bản lề ở mép trái, tiến thì trang cũ lật đi, lùi thì trang trước lật lại
+    const pageFlip = (im, i, dir) => {
+      if (pageEl) { pageEl.remove(); pageEl = null; }
+      const card = cv.parentElement, pg = document.createElement("canvas");
+      pg.className = "pg"; pg.width = cw; pg.height = ch;
+      pg.style.cssText = `left:${cv.offsetLeft}px;top:${cv.offsetTop}px;width:${cv.offsetWidth}px;height:${cv.offsetHeight}px`;
+      const g = pg.getContext("2d");
+      if (dir >= 0) { g.drawImage(cv, 0, 0); paint(ctx, im, i); } else paint(g, im, i);
+      card.appendChild(pg); pageEl = pg;
+      const A = "perspective(1500px) rotateY(", open = A + "-112deg)", shut = A + "0deg)";
+      const frames = dir >= 0 ? [{ transform: shut, opacity: 1 }, { transform: A + "-80deg)", opacity: 1, offset: .75 }, { transform: open, opacity: 0 }] : [{ transform: open, opacity: 0 }, { transform: A + "-80deg)", opacity: 1, offset: .25 }, { transform: shut, opacity: 1 }];
+      const an = pg.animate(frames, { duration: 850, easing: "cubic-bezier(.5,.05,.3,1)", fill: "forwards" });
+      an.onfinish = () => { if (pageEl === pg) { if (dir < 0) paint(ctx, im, i); pg.remove(); pageEl = null; } };
+    };
+    async function show(i, instant, dir = 1) {
       const n = photos.length;
       i = ((i % n) + n) % n;
       const id = ++anim;
@@ -309,7 +320,9 @@
       idx = i; label();
       load((i + 1) % n); // nạp sẵn ảnh kế tiếp
       size();
+      if (pageEl) { pageEl.remove(); pageEl = null; }
       if (instant) { paint(ctx, im, i); return; }
+      if (magStyle !== "off") { pageFlip(im, i, dir); return; }
       const base = document.createElement("canvas");
       base.width = cw; base.height = ch;
       base.getContext("2d").drawImage(cv, 0, 0);
@@ -336,7 +349,7 @@
     const go = (d) => {
       if (coverOn) return openCover();
       if (magStyle !== "off" && idx === 0 && d < 0 && mag) return closeCover();
-      started = true; show((idx < 0 ? (d > 0 ? -1 : 0) : idx) + d);
+      started = true; show((idx < 0 ? (d > 0 ? -1 : 0) : idx) + d, false, d);
     };
     prevBtn.addEventListener("click", () => go(-1));
     nextBtn.addEventListener("click", () => go(1));

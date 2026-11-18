@@ -203,11 +203,15 @@
 
     <h2>Album ảnh</h2>
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link), album hiện từng ảnh một theo đúng thứ tự các dòng. Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
-    <label>Bìa album kiểu tạp chí (dùng ảnh đầu tiên của album)</label>
+    <label>Bìa album kiểu tạp chí</label>
     <select data-k="albumCover"><option value="doodle">Tạp chí doodle</option><option value="classic">Tạp chí cổ điển</option><option value="off">Tắt bìa</option></select>
+    <label>Ảnh bìa album (ảnh riêng cho bìa, để trống thì dùng ảnh đầu tiên của album). Nên dùng ảnh <span class="sz">1200 x 1000px (hơi ngang, tỉ lệ 6:5)</span></label>
+    <input data-k="albumCoverImg" placeholder="Đường dẫn ảnh bìa, hoặc tải ảnh lên bên dưới">
+    <input type="file" accept="image/*" id="albumCoverUp">
+    <div class="thumbs" id="albumCoverThumb"></div>
     <textarea rows="6" id="gallery"></textarea>
     <label>Tải ảnh lên (chọn được nhiều ảnh)</label><input type="file" accept="image/*" multiple id="galUp">
-    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí và phóng to ảnh trong khung. Đổi thứ tự trước/sau bằng cách kéo thả ảnh nhỏ (máy tính) hoặc bấm mũi tên trái phải dưới mỗi ảnh (cả điện thoại), bấm dấu x để xóa ảnh.</p>
+    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí và phóng to ảnh trong khung. Khi dùng bìa tạp chí, các ảnh sau bìa lật trang như giở tạp chí. Đổi thứ tự trước/sau bằng cách kéo thả ảnh nhỏ (máy tính) hoặc bấm mũi tên trái phải dưới mỗi ảnh (cả điện thoại), bấm dấu x để xóa ảnh.</p>
     <div class="thumbs" id="galThumbs"></div>
 
     <div class="pghead"><span>Trang 6</span> Xác nhận tham dự và lời chúc</div>
@@ -490,7 +494,13 @@
     posModal.hidden = true; ps = null;
     renderThumbs(); changed(); toast("Đã lưu vị trí ảnh");
   });
+  const COVER_ASPECT = 1.2;
+  function renderCoverThumb() {
+    const u = cfg.albumCoverImg, box = $("#albumCoverThumb");
+    box.innerHTML = u ? `<button type="button" class="thumb" data-cover="1" title="Bấm để chỉnh vị trí và phóng to ảnh bìa" style="width:150px;height:${Math.round(150 / COVER_ASPECT)}px;cursor:pointer"><img src="${esc(u)}" alt="" style="object-position:${posCss(u)};transform-origin:${posCss(u)};transform:scale(${zoomOf(u)})"><span class="del" data-cclear="1" title="Xóa ảnh bìa">&times;</span></button>` : "";
+  }
   function renderThumbs() {
+    renderCoverThumb();
     $("#galThumbs").innerHTML = (cfg.gallery || []).map((u, i) =>
       `<button type="button" class="thumb" draggable="true" data-pos="${i}" title="Bấm để chỉnh vị trí, kéo thả để đổi thứ tự"><img src="${esc(u)}" alt="" draggable="false" style="object-position:${posCss(u)};transform-origin:${posCss(u)};transform:scale(${zoomOf(u)})"><span class="no">${i + 1}</span><span class="del" data-gdel="${i}" title="Xóa ảnh">&times;</span><span class="mv l${i === 0 ? " off" : ""}" data-gmv="${i},-1" title="Chuyển lên trước">&#9664;</span><span class="mv r${i === (cfg.gallery || []).length - 1 ? " off" : ""}" data-gmv="${i},1" title="Chuyển ra sau">&#9654;</span></button>`).join("");
   }
@@ -509,6 +519,10 @@
     });
   })();
   document.addEventListener("click", (e) => {
+    const cc = e.target.closest && e.target.closest("[data-cclear]");
+    if (cc) { e.stopPropagation(); cfg.albumCoverImg = ""; fill(); changed(); return; }
+    const cth = e.target.closest && e.target.closest("[data-cover]");
+    if (cth && cfg.albumCoverImg) { openPos(cfg.albumCoverImg, COVER_ASPECT); return; }
     const mv = e.target.closest && e.target.closest("[data-gmv]");
     if (mv) {
       e.stopPropagation(); const [i, d] = mv.dataset.gmv.split(",").map(Number), j = i + d;
@@ -685,6 +699,10 @@
     introMode = !introMode;
     $("#modeBtn").textContent = introMode ? "Xem toàn bộ thiệp" : "Xem trang Mở thiệp";
     loadFrame();
+  });
+  $("#albumCoverUp").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { toast("Đang tải ảnh bìa..."); cfg.albumCoverImg = await uploadImage(f); fill(); changed(); toast("Đã tải ảnh bìa"); openPos(cfg.albumCoverImg, COVER_ASPECT); } catch (err) { toastErr(err.message); }
   });
   $("#galUp").addEventListener("change", async (e) => {
     const files = [...e.target.files]; if (!files.length) return;
