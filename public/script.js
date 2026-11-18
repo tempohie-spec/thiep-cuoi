@@ -28,6 +28,7 @@
   const okPos = (v) => /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/.test(v || "");
   const posOf = (u) => { const v = W.imgPos && W.imgPos[u]; return okPos(v) ? v : "50% 50%"; };
   // Vị trí riêng cho máy tính (nếu có), không thì dùng vị trí của điện thoại
+  const zoomOf = (u) => { const z = Number(W.imgZoom && W.imgZoom[u]); return z >= 1 && z <= 4 ? z : 1; };
   const posOfD = (u) => { const v = W.imgPosD && W.imgPosD[u]; return okPos(v) ? v : posOf(u); };
 
   document.title = `Thiệp Cưới ${pair[0].name} & ${pair[1].name}`;
@@ -220,7 +221,7 @@
     const paint = (c, im, i) => {
       if (!im) { c.fillStyle = "#f1e3c1"; c.fillRect(0, 0, cw, ch); return; }
       const [px, py] = posOf(photos[i]).split(" ").map((v) => parseFloat(v) / 100);
-      const sc = Math.max(cw / im.naturalWidth, ch / im.naturalHeight), w = im.naturalWidth * sc, h = im.naturalHeight * sc;
+      const sc = Math.max(cw / im.naturalWidth, ch / im.naturalHeight) * zoomOf(photos[i]), w = im.naturalWidth * sc, h = im.naturalHeight * sc;
       c.drawImage(im, (cw - w) * px, (ch - h) * py, w, h);
     };
     // đường cọ zíc zắc từ trên xuống, hơi run tay

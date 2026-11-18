@@ -205,7 +205,7 @@
     <p class="hint">Mỗi dòng một ảnh (đường dẫn hoặc link), album hiện từng ảnh một theo đúng thứ tự các dòng. Bạn có thể tải nhiều ảnh lên, ảnh sẽ tự thêm vào danh sách. Kích thước nên dùng: <span class="sz">900 x 1200px (ảnh đứng, 3:4)</span>, dùng chung cho điện thoại và máy tính.</p>
     <textarea rows="6" id="gallery"></textarea>
     <label>Tải ảnh lên (chọn được nhiều ảnh)</label><input type="file" accept="image/*" multiple id="galUp">
-    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí ảnh trong khung. Đổi thứ tự trước/sau bằng cách kéo thả ảnh nhỏ (máy tính) hoặc bấm mũi tên trái phải dưới mỗi ảnh (cả điện thoại), bấm dấu x để xóa ảnh.</p>
+    <p class="hint" style="margin-top:8px">Bấm vào ảnh nhỏ để chỉnh vị trí và phóng to ảnh trong khung. Đổi thứ tự trước/sau bằng cách kéo thả ảnh nhỏ (máy tính) hoặc bấm mũi tên trái phải dưới mỗi ảnh (cả điện thoại), bấm dấu x để xóa ảnh.</p>
     <div class="thumbs" id="galThumbs"></div>
 
     <div class="pghead"><span>Trang 6</span> Xác nhận tham dự và lời chúc</div>
@@ -245,12 +245,13 @@
 
 <div class="modal" id="posModal" hidden>
   <div class="modal-box">
-    <h3>Kéo ảnh để chọn vị trí</h3>
+    <h3>Kéo ảnh để chọn vị trí (ảnh album có thể phóng to)</h3>
     <p class="hint">Nhấn giữ và kéo ảnh trong khung. Khung có tỉ lệ gần giống cách ảnh hiện trên thiệp. Bấm Lưu vị trí khi ưng ý.</p>
     <div class="seg" id="posDev" hidden><button type="button" data-dev="m" class="on">Điện thoại</button><button type="button" data-dev="d">Máy tính</button></div>
     <p class="size" id="posSize" hidden></p>
     <p class="hint" id="posDevHint" hidden>Ảnh này hiện khác nhau trên điện thoại và máy tính. Chọn từng tab rồi kéo để đặt vị trí cho mỗi loại.</p>
     <div class="pos-frame" id="posFrame"><img id="posImg" alt="" draggable="false"></div>
+    <div id="posZoomBox" hidden style="margin:0 auto 10px;max-width:300px"><label>Phóng to ảnh <b id="posZoomV"></b></label><input type="range" id="posZoom" min="100" max="300" step="5" class="rail" style="background:#e6d9c3"></div>
     <div class="modal-actions"><button type="button" id="posCancel">Hủy</button><button type="button" class="primary" id="posSave">Lưu vị trí</button></div>
   </div>
 </div>
@@ -413,6 +414,9 @@
   const posCss = (u) => parsePos((cfg.imgPos || {})[u]).map((n) => n + "%").join(" ");
   const posModal = $("#posModal"), posFrame = $("#posFrame"), posImg = $("#posImg"), posDev = $("#posDev");
   let ps = null, drag = null;
+  const zoomOf = (u) => { const z = Number((cfg.imgZoom || {})[u]); return z >= 1 && z <= 4 ? z : 1; };
+  // phóng to quanh điểm đang chọn: cùng công thức với album trên thiệp
+  const applyZoom = (img, z, p) => { img.style.transformOrigin = `${p[0]}% ${p[1]}%`; img.style.transform = z > 1 ? `scale(${z})` : ""; };
   const frameSize = (a) => (a >= 1 ? "340px" : a > 0.7 ? "300px" : "230px");
   const fmtPos = (p) => `${p[0].toFixed(1)}% ${p[1].toFixed(1)}%`;
   // Hiện khung theo thiết bị đang chọn (điện thoại hoặc máy tính): mỗi thiết bị có tỉ lệ khung và vị trí riêng
@@ -422,6 +426,7 @@
     posFrame.style.aspectRatio = String(a);
     posFrame.style.width = frameSize(a);
     posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
+    applyZoom(posImg, ps.zoomOk ? ps.zoom : 1, p);
     const sz = $("#posSize");
     sz.hidden = !(ps.sizes && ps.sizes[dev]);
     sz.textContent = ps.sizes && ps.sizes[dev] ? "Kích thước ảnh nên dùng cho " + (dev === "m" ? "điện thoại" : "máy tính") + ": " + ps.sizes[dev] : "";
@@ -435,8 +440,9 @@
     const dUrl = desktop ? desktop.url || url : url;
     const m = parsePos((cfg.imgPos || {})[url]);
     const d = parsePos((cfg.imgPosD || {})[dUrl] || (cfg.imgPos || {})[dUrl]);
-    ps = { sizes, urls: { m: url, d: dUrl }, aspects: { m: aspect, d: desktop ? desktop.aspect : aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktop };
+    ps = { zoomOk: !desktop && !sizes, zoom: zoomOf(url), sizes, urls: { m: url, d: dUrl }, aspects: { m: aspect, d: desktop ? desktop.aspect : aspect }, pos: { m, d }, dev: "m", dTouched: false, hasD: !!desktop };
     posDev.hidden = !ps.hasD;
+    $("#posZoomBox").hidden = !ps.zoomOk; $("#posZoom").value = Math.round(ps.zoom * 100); $("#posZoomV").textContent = Math.round(ps.zoom * 100) + "%";
     $("#posDevHint").hidden = !ps.hasD;
     posImg.dataset.u = "";
     showDev(startDev || "m");
@@ -457,12 +463,19 @@
     drag = { x: e.clientX, y: e.clientY };
     const fw = posFrame.clientWidth, fh = posFrame.clientHeight;
     const nw = posImg.naturalWidth || fw, nh = posImg.naturalHeight || fh;
-    const sc = Math.max(fw / nw, fh / nh), ox = nw * sc - fw, oy = nh * sc - fh;
+    const zz = ps.zoomOk ? ps.zoom : 1;
+    const sc = Math.max(fw / nw, fh / nh) * zz, ox = nw * sc - fw, oy = nh * sc - fh;
     const p = ps.pos[ps.dev];
     if (ox > 1) p[0] = Math.min(100, Math.max(0, p[0] - (dx / ox) * 100));
     if (oy > 1) p[1] = Math.min(100, Math.max(0, p[1] - (dy / oy) * 100));
     if (ps.dev === "d") ps.dTouched = true;
     posImg.style.objectPosition = `${p[0]}% ${p[1]}%`;
+    applyZoom(posImg, zz, p);
+  });
+  $("#posZoom").addEventListener("input", (e) => {
+    if (!ps || !ps.zoomOk) return;
+    ps.zoom = Number(e.target.value) / 100; $("#posZoomV").textContent = Math.round(ps.zoom * 100) + "%";
+    applyZoom(posImg, ps.zoom, ps.pos[ps.dev]);
   });
   ["pointerup", "pointercancel"].forEach((n) => posFrame.addEventListener(n, () => (drag = null)));
   $("#posCancel").addEventListener("click", () => { posModal.hidden = true; ps = null; });
@@ -470,13 +483,14 @@
     if (!ps) return;
     cfg.imgPos = cfg.imgPos || {};
     cfg.imgPos[ps.urls.m] = fmtPos(ps.pos.m);
+    if (ps.zoomOk) { cfg.imgZoom = cfg.imgZoom || {}; if (ps.zoom > 1) cfg.imgZoom[ps.urls.m] = ps.zoom; else delete cfg.imgZoom[ps.urls.m]; }
     if (ps.hasD && (ps.dTouched || (cfg.imgPosD || {})[ps.urls.d])) { cfg.imgPosD = cfg.imgPosD || {}; cfg.imgPosD[ps.urls.d] = fmtPos(ps.pos.d); }
     posModal.hidden = true; ps = null;
     renderThumbs(); changed(); toast("Đã lưu vị trí ảnh");
   });
   function renderThumbs() {
     $("#galThumbs").innerHTML = (cfg.gallery || []).map((u, i) =>
-      `<button type="button" class="thumb" draggable="true" data-pos="${i}" title="Bấm để chỉnh vị trí, kéo thả để đổi thứ tự"><img src="${esc(u)}" alt="" draggable="false" style="object-position:${posCss(u)}"><span class="no">${i + 1}</span><span class="del" data-gdel="${i}" title="Xóa ảnh">&times;</span><span class="mv l${i === 0 ? " off" : ""}" data-gmv="${i},-1" title="Chuyển lên trước">&#9664;</span><span class="mv r${i === (cfg.gallery || []).length - 1 ? " off" : ""}" data-gmv="${i},1" title="Chuyển ra sau">&#9654;</span></button>`).join("");
+      `<button type="button" class="thumb" draggable="true" data-pos="${i}" title="Bấm để chỉnh vị trí, kéo thả để đổi thứ tự"><img src="${esc(u)}" alt="" draggable="false" style="object-position:${posCss(u)};transform-origin:${posCss(u)};transform:scale(${zoomOf(u)})"><span class="no">${i + 1}</span><span class="del" data-gdel="${i}" title="Xóa ảnh">&times;</span><span class="mv l${i === 0 ? " off" : ""}" data-gmv="${i},-1" title="Chuyển lên trước">&#9664;</span><span class="mv r${i === (cfg.gallery || []).length - 1 ? " off" : ""}" data-gmv="${i},1" title="Chuyển ra sau">&#9654;</span></button>`).join("");
   }
   // kéo thả để đổi thứ tự ảnh trong album
   (() => {
