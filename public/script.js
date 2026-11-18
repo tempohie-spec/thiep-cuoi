@@ -204,6 +204,49 @@
     let idx = -1, anim = 0, started = false, cw = 0, ch = 0;
     $("#p5").hidden = !photos.length;
     if (!photos.length) return;
+    // ---- Bìa album kiểu tạp chí (doodle hoặc cổ điển), dùng ảnh đầu tiên của album; bấm hoặc vuốt thì bìa lật mở
+    const magStyle = W.albumCover === "classic" ? "classic" : W.albumCover === "off" ? "off" : "doodle";
+    const mag = $("#mag");
+    let coverOn = false;
+    if (magStyle !== "off" && mag) {
+      const dt = new Date(W.date), parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" }).formatToParts(dt).map((p) => [p.type, p.value]));
+      const dm = `${parts.day}.${parts.month}`, yr = parts.year, mo = +parts.month;
+      const season = mo >= 3 && mo <= 5 ? "Xuân" : mo >= 6 && mo <= 8 ? "Hè" : mo >= 9 && mo <= 11 ? "Thu" : "Đông";
+      const p0 = photos[0], pp = posOf(p0), z = zoomOf(p0);
+      const img = `<img src="${esc(p0)}" alt="" style="object-position:${pp};transform-origin:${pp};transform:scale(${z})">`;
+      const bars = [100, 80, 100, 60, 100, 80, 100, 70, 100, 100].map((hh) => `<i style="height:${hh}%"></i>`).join("");
+      mag.className = "mag mag-" + magStyle;
+      mag.setAttribute("role", "button"); mag.setAttribute("aria-label", "Bìa album, chạm để lật trang");
+      mag.innerHTML = magStyle === "doodle"
+        ? `<div class="mg-top"><div class="mg-issue"><span>SỐ 01 · ALBUM CƯỚI</span><span>${dm}.${yr}</span></div><div class="mg-mast">${names}</div><div class="mg-sub">WEDDING MAGAZINE</div></div>
+           <i class="mg-tape t1"></i><i class="mg-tape t2"></i><div class="mg-photo">${img}</div>
+           <div class="mg-date"><span>SỐ</span><b>01</b><span>ĐẶC BIỆT</span></div>
+           <div class="mg-bub b1">Hai trái tim,<br>một hành trình!</div><div class="mg-bub b2">Bên trong:<br>nụ cười &amp; nước mắt</div><div class="mg-bub b3">Chạm để<br>lật trang</div>
+           <span class="mg-star s1">✦</span><span class="mg-star s2">✦</span>
+           <div class="mg-price">Giá bán: vô giá<br>(chỉ đổi bằng một lời chúc)</div><div class="mg-bar">${bars}</div>`
+        : `<div class="mg-spine"></div><div class="mg-frame"></div>
+           <div class="mg-top"><div class="mg-meta"><span>Vol. I · No. 1</span><span>Mùa ${season} ${yr}</span></div><div class="mg-mast">${names}</div><div class="mg-rule"></div><div class="mg-tag">Tạp chí đặc biệt về một mùa cưới</div></div>
+           <div class="mg-photo">${img}</div>
+           <div class="mg-badge"><span>Số đặc biệt</span><b>${dm}</b><span>${yr}</span></div>
+           <div class="mg-line">Hai trái tim, một hành trình<small>Câu chuyện tình yêu qua từng khung hình</small></div>
+           <div class="mg-foot"><div class="l">Album ảnh cưới<b>Chạm để lật trang</b></div><div class="mg-bar">${bars}</div></div>`;
+      if (magStyle === "classic") mag.querySelector(".mg-mast").innerHTML = names.replace("&amp;", "<em>&amp;</em>");
+      mag.hidden = false; coverOn = true;
+      $("#reel").classList.add("has-cover");
+    }
+    const openCover = () => {
+      if (!coverOn) return false;
+      coverOn = false; started = true;
+      mag.classList.remove("closing"); mag.classList.add("opening");
+      setTimeout(() => { mag.hidden = true; mag.classList.remove("opening"); $("#reel").classList.remove("has-cover"); }, 950);
+      show(0, true);
+      return true;
+    };
+    const closeCover = () => {
+      coverOn = true; anim++; idx = -1; label();
+      mag.hidden = false; mag.classList.remove("opening"); mag.classList.add("closing"); $("#reel").classList.add("has-cover");
+      setTimeout(() => mag.classList.remove("closing"), 800);
+    };
 
     const load = (i) => new Promise((res) => {
       if (imgs[i]) return res(imgs[i]);
@@ -290,7 +333,11 @@
       };
       requestAnimationFrame(step);
     }
-    const go = (d) => { started = true; show((idx < 0 ? (d > 0 ? -1 : 0) : idx) + d); };
+    const go = (d) => {
+      if (coverOn) return openCover();
+      if (magStyle !== "off" && idx === 0 && d < 0 && mag) return closeCover();
+      started = true; show((idx < 0 ? (d > 0 ? -1 : 0) : idx) + d);
+    };
     prevBtn.addEventListener("click", () => go(-1));
     nextBtn.addEventListener("click", () => go(1));
     let down = null;
@@ -309,12 +356,13 @@
     onWidthChange(() => { if (idx >= 0) show(idx, true); }, 150);
     label();
     load(0);
+    if (coverOn) { size(); paint(ctx, null, 0); }
     // khi khung ảnh vừa hiện ra trên màn hình thì tự "tô" ảnh đầu tiên sau nửa giây, kể cả khi người xem lướt qua luôn mà không dừng lại
     const io2 = new IntersectionObserver((en) => {
       if (started) return io2.disconnect();
       if (!en.some((x) => x.isIntersecting)) return;
       io2.disconnect();
-      setTimeout(() => { if (!started) { started = true; show(0); } }, 500);
+      setTimeout(() => { if (!started && !coverOn) { started = true; show(0); } }, 500);
     }, { threshold: 0.15 });
     io2.observe(wrap);
   })();
@@ -604,7 +652,8 @@
     if (cov && !/\.(mp4|webm|mov)(\?|#|$)/i.test(cov)) urls.push(cov);
     urls.push(wide ? "images/frame-desktop.webp" : "images/frame-phone.webp");
     const img = (u) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = () => res(); i.src = u; if (i.decode) i.decode().then(res, res); });
-    const fonts = document.fonts ? Promise.all(["400 1rem 'Fuzzy Bubbles'", "700 1rem 'Fuzzy Bubbles'", "700 1rem 'Dancing Script'", "700 1rem 'Noto Serif SC'"].map((f) => document.fonts.load(f, "Hiếu Duyên 囍").catch(() => {}))).then(() => document.fonts.ready) : Promise.resolve();
+    const extra = W.albumCover === "classic" ? ["900 1rem 'Playfair Display'", "italic 600 1rem 'Cormorant Garamond'"] : [];
+    const fonts = document.fonts ? Promise.all([...extra, "400 1rem 'Fuzzy Bubbles'", "700 1rem 'Fuzzy Bubbles'", "700 1rem 'Dancing Script'", "700 1rem 'Noto Serif SC'"].map((f) => document.fonts.load(f, "Hiếu Duyên 囍").catch(() => {}))).then(() => document.fonts.ready) : Promise.resolve();
     await Promise.race([Promise.all([fonts, ...urls.map(img)]), new Promise((r) => setTimeout(r, 4500))]);
     requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove("loading")));
   })();

@@ -37,6 +37,7 @@ window.WEDDING = {
   coverFitMode: "contain", // contain: vừa trong khung, nằm sát đáy | cover: phủ kín khung
   coverLocked: true,
   coverStrength: 100, // độ đậm ảnh bìa, 0 đến 100
+  albumCover: "doodle", // bìa album kiểu tạp chí: "doodle", "classic" (cổ điển) hoặc "off" (tắt)
   heroAlign: "bottom", // vị trí chữ trên ảnh bìa: top, center, bottom
   music: "" // ví dụ: "music.mp3"
 };
