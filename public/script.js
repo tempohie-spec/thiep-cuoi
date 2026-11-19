@@ -151,7 +151,7 @@
       const io = new IntersectionObserver((en) => {
         if (done || touched || !en.some((x) => x.isIntersecting)) return;
         io.disconnect();
-        timer = setTimeout(() => { timer = null; if (!done && !touched) { done = true; flip(); } }, 1000);
+        timer = setTimeout(() => { timer = null; if (!done && !touched) { done = true; flip(); } }, 3000);
       }, { threshold: 0.15 });
       io.observe(wrap);
     });
