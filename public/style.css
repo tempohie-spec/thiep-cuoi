@@ -577,7 +577,7 @@ body { background: #fbf3e2 url("images/paper-be.webp") 0 0 / 256px; }
 .rsvp-card .dcard-title { font-size: .95rem !important; margin-bottom: .35rem !important; }
 .rsvp-card .rsvp { gap: .35rem !important; }
 .rsvp-card .rsvp input, .rsvp-card .rsvp select, .rsvp-card .rsvp textarea { padding: .38rem .75rem !important; font-size: .9rem !important; }
-.rsvp-card .rsvp textarea { height: 2.5rem !important; }
+.rsvp-card .rsvp textarea { height: 5rem !important; }
 .rsvp-card .dbtn { padding: .45rem 1rem !important; font-size: .95rem; }
 .rsvp-card .msg-count { font-size: .68rem; margin-top: -.2rem; }
 .rsvp-card .rsvp-msg { font-size: .82rem; }
